@@ -43,6 +43,21 @@ namespace SistemaGestionJudicial.Controllers
             return View();
         }
 
+        public IActionResult Fiscales()
+        {
+            return View();
+        }
+
+        public IActionResult CrimeReports()
+        {
+            return View();
+        }
+
+        public IActionResult CaseReports()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

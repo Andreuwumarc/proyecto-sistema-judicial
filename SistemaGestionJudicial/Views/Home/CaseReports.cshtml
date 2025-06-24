@@ -1,0 +1,151 @@
+﻿
+@{
+    ViewData["Title"] = "CaseReports";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/casereports.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+
+<div class="flex">
+    <!-- Main Content -->
+    <div class="flex-1 p-6">
+        <!-- Header -->
+        <div class="bg-white p-4 rounded-lg mb-6 shadow-sm">
+            <h1 class="text-xl font-semibold">Case Reports</h1>
+            <p class="text-gray-600">Track and analyze case progress</p>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="bg-white p-4 rounded-lg mb-6 shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm text-gray-500 mb-1">Status</label>
+                    <select class="w-full p-2 border rounded">
+                        <option>All Statuses</option>
+                        <option>Pending</option>
+                        <option>Active</option>
+                        <option>Closed</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-500 mb-1">Judge</label>
+                    <select class="w-full p-2 border rounded">
+                        <option>All Judges</option>
+                        <option>Judge Smith</option>
+                        <option>Judge Johnson</option>
+                        <option>Judge Williams</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-500 mb-1">Prosecutor</label>
+                    <select class="w-full p-2 border rounded">
+                        <option>All Prosecutors</option>
+                        <option>ADA Johnson</option>
+                        <option>ADA Smith</option>
+                        <option>ADA Davis</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded w-full">
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-lg shadow-sm">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-gray-500">Total Cases</p>
+                        <h3 class="text-2xl font-bold">372</h3>
+                    </div>
+                    <i class="fas fa-folder text-blue-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-gray-500">Active Cases</p>
+                        <h3 class="text-2xl font-bold">158</h3>
+                    </div>
+                    <i class="fas fa-gavel text-yellow-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-gray-500">Conviction Rate</p>
+                        <h3 class="text-2xl font-bold">82%</h3>
+                    </div>
+                    <i class="fas fa-scale-balanced text-green-500 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cases Table -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Case ID</th>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Case Title</th>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Judge</th>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Prosecutor</th>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr>
+                            <td class="p-3 text-sm">CR-2023-1245</td>
+                            <td class="p-3 text-sm">State vs. Johnson</td>
+                            <td class="p-3 text-sm">Judge Smith</td>
+                            <td class="p-3 text-sm">ADA Johnson</td>
+                            <td class="p-3">
+                                <span class="status-badge active">Active</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 text-sm">CR-2023-1244</td>
+                            <td class="p-3 text-sm">State vs. Anderson</td>
+                            <td class="p-3 text-sm">Judge Williams</td>
+                            <td class="p-3 text-sm">ADA Smith</td>
+                            <td class="p-3">
+                                <span class="status-badge closed">Closed</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 text-sm">CR-2023-1243</td>
+                            <td class="p-3 text-sm">State vs. Martinez</td>
+                            <td class="p-3 text-sm">Judge Johnson</td>
+                            <td class="p-3 text-sm">ADA Davis</td>
+                            <td class="p-3">
+                                <span class="status-badge pending">Pending</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 text-sm">CR-2023-1242</td>
+                            <td class="p-3 text-sm">State vs. Brown</td>
+                            <td class="p-3 text-sm">Judge Smith</td>
+                            <td class="p-3 text-sm">ADA Johnson</td>
+                            <td class="p-3">
+                                <span class="status-badge active">Active</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-4 text-center border-t">
+                <button class="text-blue-600 hover:underline">
+                    Show More Cases <i class="fas fa-chevron-down ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+

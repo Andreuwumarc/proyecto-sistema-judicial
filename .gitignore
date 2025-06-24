@@ -4,6 +4,12 @@ bin/
 obj/
 *.user
 *.suo
+*.log
+*.tmp
+*.db
+*.sqlite
+*.pdb
+*.cache
 *.userosscache
 *.sln.docstates
 SistemaGestionJudicial/Properties/launchSettings.json

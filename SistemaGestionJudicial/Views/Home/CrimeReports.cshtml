@@ -1,0 +1,194 @@
+﻿
+@{
+    ViewData["Title"] = "CrimeReports";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/crimereports.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+}
+
+
+    <!-- Main Content -->
+    <div class="flex-1 p-4 overflow-auto">
+        <header class="bg-white p-4 rounded-lg shadow-sm mb-4">
+            <h1 class="text-xl font-semibold">Crime Analytics Dashboard</h1>
+            <p class="text-gray-600">Latest crime statistics and trends</p>
+        </header>
+
+        <!-- Quick Filters -->
+        <div class="bg-white p-4 rounded-lg mb-4">
+            <div class="flex flex-wrap gap-4">
+                <select class="p-2 border rounded">
+                    <option>Last 12 Months</option>
+                    <option>Last 30 Days</option>
+                    <option>Year to Date</option>
+                </select>
+                <select class="p-2 border rounded">
+                    <option>All Crime Types</option>
+                    <option>Violent Crimes</option>
+                    <option>Property Crimes</option>
+                </select>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded">
+                    <i class="fas fa-filter mr-2"></i> Apply
+                </button>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div class="card bg-white p-4 rounded-lg">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-gray-500">Total Crimes</p>
+                        <h3 class="text-2xl font-bold">1,842</h3>
+                    </div>
+                    <div class="text-blue-500 text-2xl">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <span class="badge badge-up">
+                        <i class="fas fa-arrow-up mr-1"></i> 12% from last month
+                    </span>
+                </div>
+            </div>
+
+            <div class="card bg-white p-4 rounded-lg">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-gray-500">Violent Crimes</p>
+                        <h3 class="text-2xl font-bold">387</h3>
+                    </div>
+                    <div class="text-red-500 text-2xl">
+                        <i class="fas fa-skull-crossbones"></i>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <span class="badge badge-up">
+                        <i class="fas fa-arrow-up mr-1"></i> 8% from last month
+                    </span>
+                </div>
+            </div>
+
+            <div class="card bg-white p-4 rounded-lg">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-gray-500">Clearance Rate</p>
+                        <h3 class="text-2xl font-bold">68%</h3>
+                    </div>
+                    <div class="text-green-500 text-2xl">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <span class="badge badge-down">
+                        <i class="fas fa-arrow-down mr-1"></i> 5% improvement
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chart -->
+        <div class="card bg-white p-4 rounded-lg mb-4">
+            <h3 class="font-semibold mb-2">Monthly Crime Trends</h3>
+            <div class="chart-container">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Crime Distribution -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="card bg-white p-4 rounded-lg">
+                <h3 class="font-semibold mb-2">Crime Types</h3>
+                <div class="chart-container">
+                    <canvas id="typeChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card bg-white p-4 rounded-lg">
+                <h3 class="font-semibold mb-2">Top Offenses</h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span>Theft/Burglary</span>
+                        <span class="font-medium">524 cases</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Assault</span>
+                        <span class="font-medium">387 cases</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Drug Offenses</span>
+                        <span class="font-medium">321 cases</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Fraud</span>
+                        <span class="font-medium">198 cases</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // Initialize charts
+    document.addEventListener('DOMContentLoaded', function() {
+        // Trend Chart
+        new Chart(
+            document.getElementById('trendChart'),
+            {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [
+                        {
+                            label: 'Total Crimes',
+                            data: [210, 190, 220, 240, 235, 260],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            }
+        );
+
+        // Type Chart
+        new Chart(
+            document.getElementById('typeChart'),
+            {
+                type: 'doughnut',
+                data: {
+                    labels: ['Theft', 'Assault', 'Drugs', 'Fraud', 'Other'],
+                    datasets: [{
+                        data: [524, 387, 321, 198, 412],
+                        backgroundColor: [
+                            '#3b82f6',
+                            '#ef4444',
+                            '#10b981',
+                            '#f59e0b',
+                            '#64748b'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            }
+        );
+    });
+</script>
+

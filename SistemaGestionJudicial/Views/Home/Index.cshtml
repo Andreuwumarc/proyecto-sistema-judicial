@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Panel";
 }
+
 @section Styles {
     <link rel="stylesheet" href="~/css/index.css" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -10,256 +11,256 @@
 
         
 
-        
-            <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print">
-                <h2 class="text-xl font-semibold text-gray-800" id="view-title">Dashboard</h2>
-                <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <input type="text" placeholder="Search..."
-                               class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+      
+<header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print">
+    <h2 class="text-xl font-semibold text-gray-800" id="view-title">Dashboard</h2>
+    <div class="flex items-center space-x-4">
+        <div class="relative">
+            <input type="text" placeholder="Search..."
+                    class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+        </div>
+        <div class="flex items-center space-x-2">
+            <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                <i class="fas fa-user"></i>
+            </div>
+            <span class="text-sm font-medium">Admin</span>
+        </div>
+    </div>
+</header>
+
+<div class="p-6">
+    <div id="dashboard-view" class="view-content">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div class="card bg-white rounded-lg p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Offenders</p>
+                        <h3 class="text-2xl font-bold mt-1">1,248</h3>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <span class="text-sm font-medium">Admin</span>
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                        <i class="fas fa-user-shield"></i>
                     </div>
                 </div>
-            </header>
-
-            <div class="p-6">
-                <div id="dashboard-view" class="view-content">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                        <div class="card bg-white rounded-lg p-6">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-gray-500 text-sm">Total Offenders</p>
-                                    <h3 class="text-2xl font-bold mt-1">1,248</h3>
-                                </div>
-                                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-                                    <i class="fas fa-user-shield"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 text-sm text-blue-600 font-medium">
-                                <i class="fas fa-arrow-up mr-1"></i> 12% from last month
-                            </div>
-                        </div>
-                        <div class="card bg-white rounded-lg p-6">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-gray-500 text-sm">Active Cases</p>
-                                    <h3 class="text-2xl font-bold mt-1">387</h3>
-                                </div>
-                                <div class="p-3 rounded-full bg-green-100 text-green-600">
-                                    <i class="fas fa-folder-open"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 text-sm text-green-600 font-medium">
-                                <i class="fas fa-arrow-down mr-1"></i> 5% from last month
-                            </div>
-                        </div>
-                        <div class="card bg-white rounded-lg p-6">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-gray-500 text-sm">Convictions</p>
-                                    <h3 class="text-2xl font-bold mt-1">214</h3>
-                                </div>
-                                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                                    <i class="fas fa-gavel"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 text-sm text-purple-600 font-medium">
-                                <i class="fas fa-arrow-up mr-1"></i> 8% from last month
-                            </div>
-                        </div>
-                        <div class="card bg-white rounded-lg p-6">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-gray-500 text-sm">Pending Trials</p>
-                                    <h3 class="text-2xl font-bold mt-1">156</h3>
-                                </div>
-                                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                                    <i class="fas fa-clock"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 text-sm text-yellow-600 font-medium">
-                                <i class="fas fa-arrow-up mr-1"></i> 15% from last month
-                            </div>
-                        </div>
+                <div class="mt-4 text-sm text-blue-600 font-medium">
+                    <i class="fas fa-arrow-up mr-1"></i> 12% from last month
+                </div>
+            </div>
+            <div class="card bg-white rounded-lg p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-500 text-sm">Active Cases</p>
+                        <h3 class="text-2xl font-bold mt-1">387</h3>
                     </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                        <div class="card bg-white rounded-lg p-6 lg:col-span-2">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="font-semibold text-lg">Crime Statistics</h3>
-                                <select class="border rounded px-3 py-1 text-sm">
-                                    <option>Last 7 days</option>
-                                    <option>Last 30 days</option>
-                                    <option selected>Last 12 months</option>
-                                </select>
-                            </div>
-                            <div class="h-64">
-                                <canvas id="crimeChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="card bg-white rounded-lg p-6">
-                            <h3 class="font-semibold text-lg mb-4">Recent Activities</h3>
-                            <div class="space-y-4">
-                                <div class="flex items-start">
-                                    <div class="p-2 bg-blue-100 rounded-full mr-3">
-                                        <i class="fas fa-user-plus text-blue-600"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-medium">New offender registered</p>
-                                        <p class="text-xs text-gray-500">John Doe, Murder case #2456</p>
-                                        <p class="text-xs text-gray-400 mt-1">2 hours ago</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start">
-                                    <div class="p-2 bg-green-100 rounded-full mr-3">
-                                        <i class="fas fa-gavel text-green-600"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-medium">Case resolved</p>
-                                        <p class="text-xs text-gray-500">Case #1892 - Conviction</p>
-                                        <p class="text-xs text-gray-400 mt-1">5 hours ago</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start">
-                                    <div class="p-2 bg-purple-100 rounded-full mr-3">
-                                        <i class="fas fa-file-alt text-purple-600"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-medium">New police report</p>
-                                        <p class="text-xs text-gray-500">Burglary in downtown area</p>
-                                        <p class="text-xs text-gray-400 mt-1">Yesterday</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start">
-                                    <div class="p-2 bg-yellow-100 rounded-full mr-3">
-                                        <i class="fas fa-calendar-alt text-yellow-600"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-medium">Trial scheduled</p>
-                                        <p class="text-xs text-gray-500">Case #2011 - Judge Smith</p>
-                                        <p class="text-xs text-gray-400 mt-1">Yesterday</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card bg-white rounded-lg p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-semibold text-lg">Recent Cases</h3>
-                            <button class="text-blue-600 text-sm font-medium">View All</button>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Case ID</th>
-                                        <th>Offender</th>
-                                        <th>Crime</th>
-                                        <th>Judge</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>#2456</td>
-                                        <td>John Doe</td>
-                                        <td>Murder</td>
-                                        <td>Judge Smith</td>
-                                        <td>
-                                            <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">Pending</span>
-                                        </td>
-                                        <td>
-                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button class="text-green-600 hover:text-green-800">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>#2455</td>
-                                        <td>Jane Smith</td>
-                                        <td>Fraud</td>
-                                        <td>Judge Johnson</td>
-                                        <td>
-                                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">
-                                                In
-                                                Trial
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button class="text-green-600 hover:text-green-800">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>#2454</td>
-                                        <td>Robert Brown</td>
-                                        <td>Burglary</td>
-                                        <td>Judge Williams</td>
-                                        <td>
-                                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Convicted</span>
-                                        </td>
-                                        <td>
-                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button class="text-green-600 hover:text-green-800">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>#2453</td>
-                                        <td>Emily Davis</td>
-                                        <td>Assault</td>
-                                        <td>Judge Brown</td>
-                                        <td>
-                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Investigation</span>
-                                        </td>
-                                        <td>
-                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button class="text-green-600 hover:text-green-800">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="p-3 rounded-full bg-green-100 text-green-600">
+                        <i class="fas fa-folder-open"></i>
                     </div>
                 </div>
-
-                <div id="offenders-view" class="view-content hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold">Offender Management</h2>
-                        <button onclick="openModal('add-offender-modal')"
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                            <i class="fas fa-plus mr-2"></i> Add Offender
-                        </button>
+                <div class="mt-4 text-sm text-green-600 font-medium">
+                    <i class="fas fa-arrow-down mr-1"></i> 5% from last month
+                </div>
+            </div>
+            <div class="card bg-white rounded-lg p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-500 text-sm">Convictions</p>
+                        <h3 class="text-2xl font-bold mt-1">214</h3>
                     </div>
+                    <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                        <i class="fas fa-gavel"></i>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-purple-600 font-medium">
+                    <i class="fas fa-arrow-up mr-1"></i> 8% from last month
+                </div>
+            </div>
+            <div class="card bg-white rounded-lg p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-500 text-sm">Pending Trials</p>
+                        <h3 class="text-2xl font-bold mt-1">156</h3>
+                    </div>
+                    <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-yellow-600 font-medium">
+                    <i class="fas fa-arrow-up mr-1"></i> 15% from last month
+                </div>
+            </div>
+        </div>
 
-                    <div class="card bg-white rounded-lg p-6">
-                        <div class="flex justify-between items-center mb-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div class="card bg-white rounded-lg p-6 lg:col-span-2">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-lg">Crime Statistics</h3>
+                    <select class="border rounded px-3 py-1 text-sm">
+                        <option>Last 7 days</option>
+                        <option>Last 30 days</option>
+                        <option selected>Last 12 months</option>
+                    </select>
+                </div>
+                <div class="h-64">
+                    <canvas id="crimeChart"></canvas>
+                </div>
+            </div>
+            <div class="card bg-white rounded-lg p-6">
+                <h3 class="font-semibold text-lg mb-4">Recent Activities</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <div class="p-2 bg-blue-100 rounded-full mr-3">
+                            <i class="fas fa-user-plus text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium">New offender registered</p>
+                            <p class="text-xs text-gray-500">John Doe, Murder case #2456</p>
+                            <p class="text-xs text-gray-400 mt-1">2 hours ago</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="p-2 bg-green-100 rounded-full mr-3">
+                            <i class="fas fa-gavel text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium">Case resolved</p>
+                            <p class="text-xs text-gray-500">Case #1892 - Conviction</p>
+                            <p class="text-xs text-gray-400 mt-1">5 hours ago</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="p-2 bg-purple-100 rounded-full mr-3">
+                            <i class="fas fa-file-alt text-purple-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium">New police report</p>
+                            <p class="text-xs text-gray-500">Burglary in downtown area</p>
+                            <p class="text-xs text-gray-400 mt-1">Yesterday</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="p-2 bg-yellow-100 rounded-full mr-3">
+                            <i class="fas fa-calendar-alt text-yellow-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium">Trial scheduled</p>
+                            <p class="text-xs text-gray-500">Case #2011 - Judge Smith</p>
+                            <p class="text-xs text-gray-400 mt-1">Yesterday</p>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="card bg-white rounded-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold text-lg">Recent Cases</h3>
+                <button class="text-blue-600 text-sm font-medium">View All</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Case ID</th>
+                            <th>Offender</th>
+                            <th>Crime</th>
+                            <th>Judge</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#2456</td>
+                            <td>John Doe</td>
+                            <td>Murder</td>
+                            <td>Judge Smith</td>
+                            <td>
+                                <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">Pending</span>
+                            </td>
+                            <td>
+                                <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-800">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#2455</td>
+                            <td>Jane Smith</td>
+                            <td>Fraud</td>
+                            <td>Judge Johnson</td>
+                            <td>
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">
+                                    In
+                                    Trial
+                                </span>
+                            </td>
+                            <td>
+                                <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-800">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#2454</td>
+                            <td>Robert Brown</td>
+                            <td>Burglary</td>
+                            <td>Judge Williams</td>
+                            <td>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Convicted</span>
+                            </td>
+                            <td>
+                                <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-800">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#2453</td>
+                            <td>Emily Davis</td>
+                            <td>Assault</td>
+                            <td>Judge Brown</td>
+                            <td>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Investigation</span>
+                            </td>
+                            <td>
+                                <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-800">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="offenders-view" class="view-content hidden">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Offender Management</h2>
+            <button onclick="openModal('add-offender-modal')"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-plus mr-2"></i> Add Offender
+            </button>
+        </div>
+
+        <div class="card bg-white rounded-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+            </div>
+        </div>
+    </div>
+</div>
         
     
 
