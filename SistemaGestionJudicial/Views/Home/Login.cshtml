@@ -1,0 +1,135 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Judicial System Management</title>
+    <link rel="stylesheet" href="~/css/login.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="login-card bg-white w-full max-w-md mx-4">
+        <div class="bg-gradient-to-r from-blue-900 to-blue-700 p-6 text-white text-center">
+            <i class="fas fa-balance-scale judicial-icon mb-4"></i>
+            <h1 class="text-2xl font-bold">Judicial System Management</h1>
+            <p class="text-blue-200 mt-1">Secure Access Portal</p>
+        </div>
+
+        <div class="p-8">
+            <form id="loginForm" class="space-y-6">
+                <div id="errorMessage" class="hidden error-message bg-red-50 text-red-700 p-3 rounded-md text-sm"></div>
+
+                <div class="input-group">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="username" name="username" placeholder="Username" required
+                           class="form-input input-with-icon" autocomplete="username">
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" name="password" placeholder="Password" required
+                           class="form-input input-with-icon" autocomplete="current-password">
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="remember" name="remember"
+                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="remember" class="ml-2 block text-sm text-gray-700">Remember me</label>
+                    </div>
+                    <a href="#" class="text-sm text-blue-600 hover:text-blue-800">Forgot password?</a>
+                </div>
+
+                <button type="submit"
+                        class="btn-primary text-white w-full py-2 px-4 rounded-md flex items-center justify-center">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Login
+                </button>
+
+                <div class="security-tip text-sm text-gray-600">
+                    For security reasons, please log out and exit your web browser when you are done accessing services
+                    that require authentication.
+                </div>
+            </form>
+        </div>
+
+        <div class="bg-gray-50 px-6 py-4 text-center border-t">
+            <p class="text-xs text-gray-500">
+                &copy; 2023 Judicial System Management. All rights reserved.<br>
+                <span class="text-gray-400">v2.4.1</span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('errorMessage');
+
+            // Clear previous errors
+            errorElement.classList.add('hidden');
+
+            // Basic validation
+            if (!username || !password) {
+                showError('Please enter both username and password');
+                return;
+            }
+
+            // Simulate authentication (replace with actual authentication)
+            simulateAuthentication(username, password);
+        });
+
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+        }
+
+        function simulateAuthentication(username, password) {
+            // In a real application, you would make an API call here
+            // For demo purposes, we'll use a timeout to simulate network delay
+
+            const submitButton = document.querySelector('#loginForm button[type="submit"]');
+            const originalButtonText = submitButton.innerHTML;
+
+            // Show loading state
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Authenticating...';
+
+            setTimeout(() => {
+                // Demo credentials (in production, this would be server-side validation)
+                const validCredentials = [
+                    { username: 'admin', password: 'adminis', role: 'Administrator' },
+                    { username: 'judge', password: 'OrderInCourt', role: 'Judge' },
+                    { username: 'prosecutor', password: 'LegalEagle', role: 'Prosecutor' }
+                ];
+
+                const matchedCredential = validCredentials.find(
+                    cred => cred.username === username && cred.password === password
+                );
+
+                if (matchedCredential) {
+                    // Successful login - redirect to main application
+                    window.location.href = '/Home/Index';
+                } else {
+                    showError('Invalid credentials. Please try again.');
+                }
+
+                // Restore button state
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalButtonText;
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>

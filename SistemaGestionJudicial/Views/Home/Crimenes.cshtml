@@ -1,0 +1,224 @@
+﻿
+@{
+    ViewData["Title"] = "Crimenes";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/crimenes.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+
+<div class="flex h-screen overflow-hidden">
+    
+
+    <div class="flex-1 overflow-auto">
+        <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print">
+            <h2 class="text-xl font-semibold text-gray-800" id="view-title">Crime Management</h2>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" placeholder="Search..."
+                           class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="text-sm font-medium">Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Crime Management</h2>
+                <button onclick="openModal('add-crime-modal')"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-plus mr-2"></i> Add Crime
+                </button>
+            </div>
+
+            <div class="card bg-white rounded-lg p-6">
+                <div class="overflow-x-auto">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Case ID</th>
+                                <th>Crime Type</th>
+                                <th>Date</th>
+                                <th>Location</th>
+                                <th>Offender(s)</th>
+                                <th>Severity</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CR-2023-1001</td>
+                                <td>Murder</td>
+                                <td>12/05/2023</td>
+                                <td>123 Main St, Springfield</td>
+                                <td>John Doe</td>
+                                <td><span class="bg-red-100 text-red-800 px-2 py-1 rounded">Critical</span></td>
+                                <td>
+                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Trial Ongoing</span>
+                                </td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <div class="tooltip">
+                                            <button class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <span class="tooltip-text">View</span>
+                                        </div>
+                                        <div class="tooltip">
+                                            <button class="text-green-600 hover:text-green-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <span class="tooltip-text">Edit</span>
+                                        </div>
+                                        <div class="tooltip">
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <span class="tooltip-text">Delete</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CR-2023-1002</td>
+                                <td>Fraud</td>
+                                <td>22/06/2023</td>
+                                <td>456 Oak Ave, Rivertown</td>
+                                <td>Jane Smith</td>
+                                <td><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Medium</span></td>
+                                <td>
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Convicted</span>
+                                </td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <div class="tooltip">
+                                            <button class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <span class="tooltip-text">View</span>
+                                        </div>
+                                        <div class="tooltip">
+                                            <button class="text-green-600 hover:text-green-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <span class="tooltip-text">Edit</span>
+                                        </div>
+                                        <div class="tooltip">
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <span class="tooltip-text">Delete</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CR-2023-1003</td>
+                                <td>Assault</td>
+                                <td>03/07/2023</td>
+                                <td>789 Pine St, Rivertown</td>
+                                <td>Robert Johnson</td>
+                                <td><span class="bg-orange-100 text-orange-800 px-2 py-1 rounded">High</span></td>
+                                <td>
+                                    <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">In Trial</span>
+                                </td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <div class="tooltip">
+                                            <button class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <span class="tooltip-text">View</span>
+                                        </div>
+                                        <div class="tooltip">
+                                            <button class="text-green-600 hover:text-green-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <span class="tooltip-text">Edit</span>
+                                        </div>
+                                        <div class="tooltip">
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <span class="tooltip-text">Delete</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Crime Modal -->
+<div id="add-crime-modal"
+     class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+    <div class="modal-content bg-white rounded-lg p-6 w-96">
+        <h3 class="text-lg font-bold mb-4">Add New Crime</h3>
+        <form id="addCrimeForm">
+            <div class="mb-4">
+                <label for="crimeType" class="block text-sm font-medium text-gray-700">Crime Type</label>
+                <input type="text" id="crimeType" class="form-input" required>
+            </div>
+            <div class="mb-4">
+                <label for="crimeDate" class="block text-sm font-medium text-gray-700">Date</label>
+                <input type="date" id="crimeDate" class="form-input" required>
+            </div>
+            <div class="mb-4">
+                <label for="crimeLocation" class="block text-sm font-medium text-gray-700">Location</label>
+                <input type="text" id="crimeLocation" class="form-input" required>
+            </div>
+            <div class="mb-4">
+                <label for="offenderNames" class="block text-sm font-medium text-gray-700">Offender(s)</label>
+                <input type="text" id="offenderNames" class="form-input" placeholder="Separate with commas"
+                       required>
+            </div>
+            <div class="mb-4">
+                <label for="crimeSeverity" class="block text-sm font-medium text-gray-700">Severity</label>
+                <select id="crimeSeverity" class="form-input" required>
+                    <option value="">Select Severity</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="critical">Critical</option>
+                </select>
+            </div>
+            <div class="flex justify-end">
+                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
+                        onclick="closeModal('add-crime-modal')">
+                    Cancel
+                </button>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Add Crime</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+
+    document.getElementById('addCrimeForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        // Logic to add crime goes here
+        closeModal('add-crime-modal');
+        alert('Crime added successfully!');
+    });
+</script>

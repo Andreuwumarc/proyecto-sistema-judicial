@@ -1,0 +1,247 @@
+﻿
+@{
+    ViewData["Title"] = "Jueces";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/jueces.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+
+<div class="flex h-screen overflow-hidden">
+        
+        <!-- Main Content Area -->
+        <div class="flex-1 overflow-auto">
+            <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print">
+                <h2 class="text-xl font-semibold text-gray-800" id="view-title">Judge Management</h2>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search judges..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="text-sm font-medium">Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-6">
+                <!-- Judge Management Controls -->
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Judge Management</h2>
+                    <div class="flex space-x-4">
+                        <button onclick="openModal('add-judge-modal')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Add Judge
+                        </button>
+                        <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-filter mr-2"></i> Filter
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Judges Statistics Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="card bg-white rounded-lg p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Total Judges</p>
+                                <h3 class="text-2xl font-bold mt-1">42</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card bg-white rounded-lg p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Active Judges</p>
+                                <h3 class="text-2xl font-bold mt-1">36</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                <i class="fas fa-gavel"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card bg-white rounded-lg p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Inactive Judges</p>
+                                <h3 class="text-2xl font-bold mt-1">6</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                <i class="fas fa-user-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card bg-white rounded-lg p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Avg. Cases per Judge</p>
+                                <h3 class="text-2xl font-bold mt-1">12</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Judges Table -->
+                <div class="card bg-white rounded-lg p-6">
+                    <div class="overflow-x-auto">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Judge ID</th>
+                                    <th>Judge</th>
+                                    <th>Court</th>
+                                    <th>Specialization</th>
+                                    <th>Years</th>
+                                    <th>Active Cases</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>J-1001</td>
+                                    <td>
+                                        <div class="flex items-center">
+                                            <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Judge" class="judge-avatar">
+                                            <span>Hon. Sarah Williams</span>
+                                        </div>
+                                    </td>
+                                    <td>District Court</td>
+                                    <td>Criminal Law</td>
+                                    <td>15</td>
+                                    <td>8</td>
+                                    <td><span class="badge badge-active">Active</span></td>
+                                    <td>
+                                        <div class="flex space-x-2">
+                                            <div class="tooltip">
+                                                <button class="text-blue-600 hover:text-blue-800">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <span class="tooltip-text">View Profile</span>
+                                            </div>
+                                            <div class="tooltip">
+                                                <button class="text-green-600 hover:text-green-800">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <span class="tooltip-text">Edit Judge</span>
+                                            </div>
+                                            <div class="tooltip">
+                                                <button class="text-gray-600 hover:text-gray-800">
+                                                    <i class="fas fa-calendar"></i>
+                                                </button>
+                                                <span class="tooltip-text">View Schedule</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>J-1002</td>
+                                    <td>
+                                        <div class="flex items-center">
+                                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Judge" class="judge-avatar">
+                                            <span>Hon. Robert Johnson</span>
+                                        </div>
+                                    </td>
+                                    <td>Superior Court</td>
+                                    <td>Civil Law</td>
+                                    <td>22</td>
+                                    <td>5</td>
+                                    <td><span class="badge badge-on-leave">On Leave</span></td>
+                                    <td>
+                                        <div class="flex space-x-2">
+                                            <div class="tooltip">
+                                                <button class="text-blue-600 hover:text-blue-800">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <span class="tooltip-text">View Profile</span>
+                                            </div>
+                                            <div class="tooltip">
+                                                <button class="text-green-600 hover:text-green-800">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <span class="tooltip-text">Edit Judge</span>
+                                            </div>
+                                            <div class="tooltip">
+                                                <button class="text-gray-600 hover:text-gray-800">
+                                                    <i class="fas fa-calendar"></i>
+                                                </button>
+                                                <span class="tooltip-text">View Schedule</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>J-1003</td>
+                                    <td>
+                                        <div class="flex items-center">
+                                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Judge" class="judge-avatar">
+                                            <span>Hon. Emily Davis</span>
+                                        </div>
+                                    </td>
+                                    <td>Supreme Court</td>
+                                    <td>Constitutional Law</td>
+                                    <td>28</td>
+                                    <td>2</td>
+                                    <td><span class="badge badge-retired">Retired</span></td>
+                                    <td>
+                                        <div class="flex space-x-2">
+                                            <div class="tooltip">
+                                                <button class="text-blue-600 hover:text-blue-800">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <span class="tooltip-text">View Profile</span>
+                                            </div>
+                                            <div class="tooltip">
+                                                <button class="text-green-600 hover:text-green-800">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <span class="tooltip-text">Edit Judge</span>
+                                            </div>
+                                            <div class="tooltip">
+                                                <button class="text-gray-600 hover:text-gray-800">
+                                                    <i class="fas fa-calendar"></i>
+                                                </button>
+                                                <span class="tooltip-text">View Schedule</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Judge Modal -->
+    <div id="add-judge-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-bold mb-4">Add New Judge</h3>
+            <form id="addJudgeForm">
+                <div class="mb-4">
+                    <label for="judgeName" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="judgeName" class="form-input" placeholder="Hon. First Last" required>
+                </div>
+                <div class="mb-4">
+                    <label for="judgeCourt" class="block text-sm font-medium text-gray-700">Court</label>
+                    <select id="judgeCourt" class="form-input" required>
+                        <option value="">Select Court</option>
+                        <option value="district">District Court</option>
+                        <option value="superior">Superior Court</option>
+                        <option value="supreme">Supreme Court</option>
+                        <option value="federal">Federal</option>
+                    </select>
+                </div>
+            </form>
+
