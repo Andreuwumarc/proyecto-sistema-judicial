@@ -44,7 +44,7 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Case ID</th>
+                                <th>Crime ID</th>
                                 <th>Crime Type</th>
                                 <th>Date</th>
                                 <th>Location</th>
@@ -66,26 +66,15 @@
                                     <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Trial Ongoing</span>
                                 </td>
                                 <td>
-                                    <div class="flex space-x-2">
-                                        <div class="tooltip">
-                                            <button class="text-blue-600 hover:text-blue-800">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <span class="tooltip-text">View</span>
-                                        </div>
-                                        <div class="tooltip">
-                                            <button class="text-green-600 hover:text-green-800">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <span class="tooltip-text">Edit</span>
-                                        </div>
-                                        <div class="tooltip">
-                                            <button class="text-red-600 hover:text-red-800">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                            <span class="tooltip-text">Delete</span>
-                                        </div>
-                                    </div>
+                                    <button class="text-blue-600 hover:text-blue-800 mr-2" onclick="openDetailModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft', 'Incarcerated')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800 mr-2" onclick="openEditModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-red-600 hover:text-red-800" onclick="confirmDelete('OF-1001')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </td>
                             </tr>
                             <tr>
@@ -99,26 +88,15 @@
                                     <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Convicted</span>
                                 </td>
                                 <td>
-                                    <div class="flex space-x-2">
-                                        <div class="tooltip">
-                                            <button class="text-blue-600 hover:text-blue-800">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <span class="tooltip-text">View</span>
-                                        </div>
-                                        <div class="tooltip">
-                                            <button class="text-green-600 hover:text-green-800">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <span class="tooltip-text">Edit</span>
-                                        </div>
-                                        <div class="tooltip">
-                                            <button class="text-red-600 hover:text-red-800">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                            <span class="tooltip-text">Delete</span>
-                                        </div>
-                                    </div>
+                                    <button class="text-blue-600 hover:text-blue-800 mr-2" onclick="openDetailModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft', 'Incarcerated')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800 mr-2" onclick="openEditModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-red-600 hover:text-red-800" onclick="confirmDelete('OF-1001')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </td>
                             </tr>
                             <tr>
@@ -132,26 +110,15 @@
                                     <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">In Trial</span>
                                 </td>
                                 <td>
-                                    <div class="flex space-x-2">
-                                        <div class="tooltip">
-                                            <button class="text-blue-600 hover:text-blue-800">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <span class="tooltip-text">View</span>
-                                        </div>
-                                        <div class="tooltip">
-                                            <button class="text-green-600 hover:text-green-800">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <span class="tooltip-text">Edit</span>
-                                        </div>
-                                        <div class="tooltip">
-                                            <button class="text-red-600 hover:text-red-800">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                            <span class="tooltip-text">Delete</span>
-                                        </div>
-                                    </div>
+                                    <button class="text-blue-600 hover:text-blue-800 mr-2" onclick="openDetailModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft', 'Incarcerated')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800 mr-2" onclick="openEditModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-red-600 hover:text-red-800" onclick="confirmDelete('OF-1001')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -184,7 +151,7 @@
                 <label for="offenderNames" class="block text-sm font-medium text-gray-700">Offender(s)</label>
                 <input type="text" id="offenderNames" class="form-input" placeholder="Separate with commas"
                        required>
-            </div>
+            </div>@*FK*@
             <div class="mb-4">
                 <label for="crimeSeverity" class="block text-sm font-medium text-gray-700">Severity</label>
                 <select id="crimeSeverity" class="form-input" required>
@@ -206,6 +173,92 @@
     </div>
 </div>
 
+<!-- Offender Detail Modal -->
+<div id="offender-detail-modal"
+     class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+    <div class="modal-content bg-white rounded-lg p-6 w-full max-w-lg">
+        <h3 class="text-lg font-bold mb-4">Offender Details</h3>
+        <div class="flex flex-col md:flex-row gap-6">
+            <div class="w-full md:w-1/3">
+                <div class="bg-gray-100 rounded-lg overflow-hidden mb-2">
+                    <img id="detail-image" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3cbb0810-b517-4b39-bed3-3487e544f5a1.png"
+                         class="w-full h-auto object-cover">
+                </div>
+            </div>
+            <div class="w-full md:w-2/3" id="offender-details">
+                <p><strong>ID:</strong> <span id="detail-id"></span></p>
+                <p><strong>Name:</strong> <span id="detail-name"></span></p>
+                <p><strong>DOB:</strong> <span id="detail-dob"></span></p>
+                <p><strong>Gender:</strong> <span id="detail-gender"></span></p>
+                <p><strong>Associated Case:</strong> <span id="detail-case">Case #2023-1245 (State vs. Johnson)</span></p>
+                <p><strong>Crimes:</strong> <span id="detail-crimes"></span></p>
+                <p><strong>Status:</strong> <span id="detail-status"></span></p>
+            </div>
+        </div>
+        <div class="flex justify-end mt-4">
+            <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg"
+                    onclick="closeModal('offender-detail-modal')">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Offender Modal -->
+<div id="edit-offender-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+    <div class="modal-content bg-white rounded-lg p-6 w-96">
+        <h3 class="text-lg font-bold mb-4">Edit Offender</h3>
+        <form id="editOffenderForm">
+            <div class="mb-4">
+                <label for="editName" class="block text-sm font-medium text-gray-700">Full Name</label>
+                <input type="text" id="editName" class="form-input" required>
+            </div>
+            <div class="mb-4">
+                <label for="editDOB" class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                <input type="date" id="editDOB" class="form-input" required>
+            </div>
+            <div class="mb-4">
+                <label for="editGender" class="block text-sm font-medium text-gray-700">Gender</label>
+                <select id="editGender" class="form-input" required>
+                    <option value="">Select</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="editCrimes" class="block text-sm font-medium text-gray-700">Crimes Committed</label>
+                <input type="text" id="editCrimes" class="form-input" placeholder="Separate with commas" required>
+            </div>
+            <div class="flex justify-end">
+                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
+                        onclick="closeModal('edit-offender-modal')">
+                    Cancel
+                </button>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-confirm-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+    <div class="modal-content bg-white rounded-lg p-6 w-96">
+        <h3 class="text-lg font-bold mb-4">Confirm Deletion</h3>
+        <p class="mb-6">Are you sure you want to delete this offender record? This action cannot be undone.</p>
+        <div class="flex justify-end">
+            <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
+                    onclick="closeModal('delete-confirm-modal')">
+                Cancel
+            </button>
+            <button type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg"
+                    onclick="deleteOffender()">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     function openModal(modalId) {
         document.getElementById(modalId).classList.remove('hidden');
@@ -221,4 +274,60 @@
         closeModal('add-crime-modal');
         alert('Crime added successfully!');
     });
+
+    let currentOffenderId = null;
+
+    function openEditModal(id, name, dob, gender, crimes) {
+        currentOffenderId = id;
+        document.getElementById('editName').value = name;
+        document.getElementById('editDOB').value = dob.split('/').reverse().join('-');
+        document.getElementById('editGender').value = gender.toLowerCase();
+        document.getElementById('editCrimes').value = crimes;
+        openModal('edit-offender-modal');
+    }
+
+    function confirmDelete(id) {
+        currentOffenderId = id;
+        openModal('delete-confirm-modal');
+    }
+
+    function deleteOffender() {
+        // Delete logic would go here
+        alert(`Offender ${currentOffenderId} deleted`);
+        closeModal('delete-confirm-modal');
+    }
+
+    document.getElementById('editOffenderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Save logic would go here
+        alert(`Changes saved for offender ${currentOffenderId}`);
+        closeModal('edit-offender-modal');
+    });
+
+    function openDetailModal(id, name, dob, gender, crimes, status) {
+        document.getElementById('detail-id').innerText = id;
+        document.getElementById('detail-name').innerText = name;
+        document.getElementById('detail-dob').innerText = dob;
+        document.getElementById('detail-gender').innerText = gender;
+        document.getElementById('detail-crimes').innerText = crimes;
+        document.getElementById('detail-status').innerText = status;
+
+        // Set sample case data (in a real app this would come from your data)
+        const caseMap = {
+            'OF-1001': 'Case #2023-1245 (State vs. Johnson)',
+            'OF-1002': 'Case #2023-1246 (State vs. Smith)',
+            'OF-1003': 'Case #2023-1247 (State vs. Johnson)'
+        };
+        document.getElementById('detail-case').innerText = caseMap[id] || 'No case assigned';
+
+        // Set sample image (in a real app this would come from your uploaded file)
+        const imageMap = {
+            'OF-1001': 'https://randomuser.me/api/portraits/men/32.jpg',
+            'OF-1002': 'https://randomuser.me/api/portraits/women/44.jpg',
+            'OF-1003': 'https://randomuser.me/api/portraits/men/65.jpg'
+        };
+        document.getElementById('detail-image').src = imageMap[id] || 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/30c8e3f5-bf7a-49c4-a1e7-07a179d2ee51.png';
+
+        openModal('offender-detail-modal');
+    }
 </script>

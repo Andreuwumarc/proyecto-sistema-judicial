@@ -92,15 +92,15 @@
         </div>
 
         <!-- Main Chart -->
-        <div class="card bg-white p-4 rounded-lg mb-4">
+        @*<div class="card bg-white p-4 rounded-lg mb-4">
             <h3 class="font-semibold mb-2">Monthly Crime Trends</h3>
             <div class="chart-container">
                 <canvas id="trendChart"></canvas>
             </div>
-        </div>
+        </div>*@
 
         <!-- Crime Distribution -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        @*<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="card bg-white p-4 rounded-lg">
                 <h3 class="font-semibold mb-2">Crime Types</h3>
                 <div class="chart-container">
@@ -129,6 +129,71 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>*@
+
+    <!-- Cases Table -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="p-3 text-left text-sm font-medium text-gray-600">Case ID</th>
+                        <th class="p-3 text-left text-sm font-medium text-gray-600">Crime Type</th>
+                        <th class="p-3 text-left text-sm font-medium text-gray-600">Date</th>
+                        <th class="p-3 text-left text-sm font-medium text-gray-600">Location</th>
+                        <th class="p-3 text-left text-sm font-medium text-gray-600">Offender(s)</th>
+                        <th class="p-3 text-left text-sm font-medium text-gray-600">Severity</th>
+                        <th class="p-3 text-left text-sm font-medium text-gray-600">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    <tr>
+                        <td class="p-3 text-sm">CR-2023-1001</td>
+                        <td class="p-3 text-sm">Fraud</td>
+                        <td class="p-3 text-sm">12/05/2023</td>
+                        <td class="p-3 text-sm">123 Main St, Springfield</td>
+                        <td class="p-3 text-sm">John Doe</td>
+                        <td>
+                            <span class="status-badge active">Critical</span>
+                        </td>
+                        <td>
+                            <span class="status-badge active">Trial Ongoing</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-sm">CR-2023-1002</td>
+                        <td class="p-3 text-sm">Fraud</td>
+                        <td class="p-3 text-sm">22/06/2023</td>
+                        <td class="p-3 text-sm">456 Oak Ave, Rivertown</td>
+                        <td class="p-3 text-sm">Jane Smith</td>
+                        <td>
+                            <span class="status-badge closed">Medium</span>
+                        </td>
+                        <td>
+                            <span class="status-badge closed">Convicted</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 text-sm">CR-2023-1003</td>
+                        <td class="p-3 text-sm">Assault</td>
+                        <td class="p-3 text-sm">03/07/2023</td>
+                        <td class="p-3 text-sm">789 Pine St, Rivertown</td>
+                        <td class="p-3 text-sm">Robert Johnson</td>
+                        <td>
+                            <span class="status-badge pending">High</span>
+                        </td>
+                        <td>
+                            <span class="status-badge pending">In Trial</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="p-4 text-center border-t">
+            <button class="text-blue-600 hover:underline">
+                Show More Cases <i class="fas fa-chevron-down ml-1"></i>
+            </button>
         </div>
     </div>
 

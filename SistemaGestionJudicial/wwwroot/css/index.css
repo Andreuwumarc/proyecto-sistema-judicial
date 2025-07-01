@@ -1,4 +1,4 @@
-﻿<style >
+﻿
 :root {
     --primary: #1e40af;
     --secondary: #1e3a8a;
@@ -79,9 +79,38 @@ body {
     visibility: visible;
 }
 
-    .modal.active .modal-content {
-        transform: translateY(0);
-    }
+.modal.active .modal-content {
+    transform: translateY(0);
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.badge-active {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-completed {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.badge-canceled {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
 
 /* Print styles */
 @media print {
@@ -99,4 +128,4 @@ body {
     }
 }
 
-</style >
+

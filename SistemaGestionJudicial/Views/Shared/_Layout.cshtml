@@ -11,7 +11,7 @@
     @RenderSection("Styles", required: false)
 </head>
 <body class="min-h-screen flex flex-col">
-    <div class="flex flex-1">
+    <div class="flex flex-1 overflow-hidden">
         <div class="sidebar bg-blue-900 text-white w-64 flex-shrink-0 no-print">
             <div class="p-4 border-b border-blue-800">
                 <h1 class="text-xl font-bold flex items-center">
@@ -71,13 +71,13 @@
         </div>
 
         <div class="flex-1 overflow-auto flex flex-col">
-            <main role="main" class="pb-3">
+            <main role="main" class="flex-1 pb-3">
                 @RenderBody()
             </main>
         </div>
     </div>
 
-    <footer class="border-top footer text-muted py-3 bg-gray-100">
+    <footer class="border-top footer text-muted py-3 bg-gray-100 w-full">
         <div class="container">
             &copy; 2025 - SistemaGestionJudicial -
             <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacidad</a>
