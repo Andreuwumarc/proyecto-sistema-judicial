@@ -18,6 +18,15 @@ namespace SistemaGestionJudicial.Controllers
             return View();
         }
 
+        public IActionResult RecuperacionCuenta()
+        {
+            return View();
+        }
+        public IActionResult Token()
+        {
+            return View();
+        }
+
         public IActionResult Index()
         {
             return View();
