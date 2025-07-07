@@ -41,7 +41,10 @@ namespace SistemaGestionJudicial.Controllers
         {
             return View();
         }
-
+        public IActionResult Polices()
+        {
+            return View();
+        }
         public IActionResult Casos()
         {
             return View();
