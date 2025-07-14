@@ -1,0 +1,44 @@
+﻿@model SistemaGestionJudicial.Models.PartePolicial
+
+@{
+    ViewData["Title"] = "Crear Parte Policial";
+}
+
+@section Styles {
+    <script src="https://cdn.tailwindcss.com"></script>
+}
+
+<div class="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-6">Crear Parte Policial</h2>
+
+    <form asp-action="Create" method="post">
+        <div class="mb-4">
+            <label asp-for="Fecha_Parte" class="block text-gray-700 font-semibold mb-2">Fecha</label>
+            <input asp-for="Fecha_Parte" type="date" class="w-full px-4 py-2 border rounded-md" />
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="Descripcion" class="block text-gray-700 font-semibold mb-2">Descripción</label>
+            <textarea asp-for="Descripcion" class="w-full px-4 py-2 border rounded-md"></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="Id_Persona_Policia" class="block text-gray-700 font-semibold mb-2">Persona</label>
+            <select asp-for="Id_Persona_Policia" asp-items="ViewBag.Personas" class="w-full px-4 py-2 border rounded-md">
+                <option value="">Seleccione una persona</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="Id_Denuncia" class="block text-gray-700 font-semibold mb-2">Denuncia</label>
+            <select asp-for="Id_Denuncia" asp-items="ViewBag.Denuncias" class="w-full px-4 py-2 border rounded-md">
+                <option value="">Seleccione una denuncia</option>
+            </select>
+        </div>
+
+        <div class="flex justify-end">
+            <a asp-action="Polices" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2">Cancelar</a>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Guardar</button>
+        </div>
+    </form>
+</div>

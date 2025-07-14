@@ -1,7 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+using SistemaGestionJudicial.Context;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<SistemaContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("MiConexion")));
 
 var app = builder.Build();
 
