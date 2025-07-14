@@ -1,0 +1,61 @@
+﻿
+@{
+    Layout = "~/Views/Shared/LayoutPublico.cshtml";
+    ViewData["Title"] = "HomePage";
+}
+
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<style>
+    /* Imagen de fondo estilo greco-romano */
+    .background-roman {
+        background-image: url('/images/image_2021-09-14_173108.png'); /* Cambia la ruta a tu imagen */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        min-height: 100vh;
+    }
+
+    /* Fondo oscuro semi-transparente para mejor legibilidad del texto */
+    .overlay-dark {
+        background-color: rgba(10, 10, 10, 0.6);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+</style>
+
+<div class="background-roman">
+    <div class="overlay-dark text-white p-8 max-w-4xl mx-auto font-serif" style="font-family: 'Cinzel', serif;">
+        <h1 class="text-5xl font-bold mb-6">Bienvenido a nuestro sistema</h1>
+
+        <p class="text-lg mb-4">
+            Somos estudiantes de la carrera de Desarrollo de Software, cursando la materia de Programación usando Framework.
+        </p>
+
+        <p class="text-lg mb-4 font-semibold">Integrantes del equipo:</p>
+
+        <ul class="list-disc list-inside space-y-1 text-lg">
+            <li>Ávila Moreno David Alexander</li>
+            <li>Bedón Pacheco Billy Joshua</li>
+            <li>Córdova Fernández Alex Daniel</li>
+            <li>Ayapata Mendoza Joel Gustavo</li>
+            <li>García Sánchez Medardo Ángel</li>
+            <li>Huiracocha Alvarado Fernando Jesús</li>
+            <li>Intriago Mora Carlos Stuart</li>
+            <li>Jijon Garcia Jimmy Alejandro</li>
+            <li>Mercado Villamar Ricardo Andrés</li>
+            <li>Mora Vite Aarón Eliezer</li>
+            <li>Romero Chávez Marcos Andrés</li>
+            <li>Villacís Arteaga Juan Andrés</li>
+        </ul>
+
+        <!-- <p class="mt-8 text-xl font-semibold">Opciones para visitantes:</p>
+         Aquí puedes agregar botones o enlaces para las opciones -->
+    </div>
+</div>
+
+
