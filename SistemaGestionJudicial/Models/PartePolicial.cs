@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaGestionJudicial.Models
 {
     public class PartePolicial
     {
+        [Key]
         public long Id_Parte { get; set; }
         public DateTime Fecha_Parte { get; set; }
         public string? Descripcion { get; set; }

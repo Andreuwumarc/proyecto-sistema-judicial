@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using SistemaGestionJudicial.Context;
+using SistemaGestionJudicial.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

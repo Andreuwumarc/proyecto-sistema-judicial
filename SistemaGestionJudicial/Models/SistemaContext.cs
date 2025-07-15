@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
-using SistemaGestionJudicial.Models;
 
-namespace SistemaGestionJudicial.Context
+namespace SistemaGestionJudicial.Models
 {
 
     public class SistemaContext : DbContext
