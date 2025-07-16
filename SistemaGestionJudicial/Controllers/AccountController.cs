@@ -32,15 +32,16 @@ namespace SistemaGestionJudicial.Controllers
 
             if (user == null)
             {
-                ModelState.AddModelError(string.Empty, "Usuario o contraseña incorrectos.");
-                return View();
+                ViewBag.Error = "Usuario o contraseña incorrectos.";
+                //ModelState.AddModelError(string.Empty, "Usuario o contraseña incorrectos.");
+                return View("~/Views/Home/Login.cshtml");
             }
 
             // Guardar en sesión
             HttpContext.Session.SetInt32("UsuarioId", (int)user.IdUsuario);
             HttpContext.Session.SetString("NombreUsuario", user.Usuario1);
 
-            return RedirectToAction("Home", "Index");
+            return RedirectToAction("Index", "Home");
         }
 
 
