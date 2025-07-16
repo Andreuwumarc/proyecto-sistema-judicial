@@ -13,6 +13,20 @@ namespace SistemaGestionJudicial.Controllers
             _logger = logger;
         }
 
+
+        public IActionResult Home()
+        {
+            return View();
+        }
+
+
+
+        public IActionResult CrearDenuncia()
+        {
+            return View();
+        }
+
+
         public IActionResult Login()
         {
             return View();
