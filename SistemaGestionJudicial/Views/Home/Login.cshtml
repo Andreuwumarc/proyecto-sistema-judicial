@@ -34,7 +34,8 @@
 
             <form id="loginForm" asp-controller="Account" asp-action="Login" method="post" class="space-y-6">
 
-                <div id="errorMessage" class="hidden error-message bg-red-50 text-red-700 p-3 rounded-md text-sm"></div>
+				@*<div id="errorMessage" class="hidden error-message bg-red-50 text-red-700 p-3 rounded-md text-sm"></div>*@
+
 
                 <div class="input-group">
                     <i class="fas fa-user input-icon"></i>
@@ -177,6 +178,16 @@
         });
 
         // Login form submit
+        document.addEventListener('DOMContentLoaded', function () {
+            const errorFromServer = '@ViewBag.Error';
+
+            if (errorFromServer && errorFromServer !== '') {
+                const errorElement = document.getElementById('errorMessage');
+                errorElement.textContent = errorFromServer;
+                errorElement.classList.remove('hidden');
+            }
+        });
+
         /*document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
