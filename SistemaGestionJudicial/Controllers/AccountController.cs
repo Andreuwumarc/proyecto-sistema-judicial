@@ -63,6 +63,7 @@ namespace SistemaGestionJudicial.Controllers
             return Ok("Cuenta creada correctamente");
         }
 
+        
         // 3️⃣ Generar Token
         [HttpPost]
         public async Task<IActionResult> GenerarToken(string email)
