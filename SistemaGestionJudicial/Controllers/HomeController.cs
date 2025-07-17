@@ -16,6 +16,20 @@ namespace SistemaGestionJudicial.Controllers
             _context = context;
         }
 
+
+        public IActionResult Home()
+        {
+            return View();
+        }
+
+
+
+        public IActionResult CrearDenuncia()
+        {
+            return View();
+        }
+
+
         public IActionResult Login()
         {
             return View();
