@@ -1,71 +1,166 @@
-﻿
-@{
+﻿@{
     Layout = null;
 }
-
-
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Password Recovery | Judicial System Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 
 <body class="bg-gray-100 flex items-center justify-center h-screen">
-    <div class="login-card bg-white w-full max-w-md mx-4 shadow-lg rounded-lg p-8">
-        <div class="text-center mb-6">
-            <i class="fas fa-unlock-alt text-blue-700 text-4xl mb-4"></i>
-            <h1 class="text-2xl font-bold text-gray-700">Password Recovery</h1>
-            <p class="text-sm text-gray-500 mt-2">Enter your email to receive a recovery token.</p>
-        </div>
 
-        <form id="recoveryForm" class="space-y-6">
-            <div class="input-group relative">
-                <i class="fas fa-envelope input-icon absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400"></i>
-                <input type="email" id="email" name="email" placeholder="Email address" required
-                        class="form-input input-with-icon pl-10 w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <div class="login-card bg-white w-full max-w-md mx-4 shadow-lg rounded-lg p-8">
+
+        <!-- Paso 1: Ingresar Email -->
+        <div id="stepEmail">
+            <div class="text-center mb-6">
+                <i class="fas fa-unlock-alt text-blue-700 text-4xl mb-4"></i>
+                <h1 class="text-2xl font-bold text-gray-700">Recuperar Contraseña</h1>
+                <p class="text-sm text-gray-500 mt-2">Ingresa tu correo electrónico para recibir un token.</p>
             </div>
 
-            <button type="submit"
-                    class="btn-primary bg-blue-700 hover:bg-blue-800 text-white w-full py-2 px-4 rounded-md flex items-center justify-center">
-                <i class="fas fa-paper-plane mr-2"></i> Recover
-            </button>
-        </form>
+            <form id="recoveryForm" class="space-y-6">
+                <div class="input-group relative">
+                    <i class="fas fa-envelope input-icon absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="email" id="email" name="email" placeholder="Correo electrónico" required
+                           class="form-input input-with-icon pl-10 w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
 
-        <div id="tokenMessage" class="mt-6 hidden text-green-700 bg-green-100 p-3 rounded-md text-center"></div>
-
-        <div class="mt-6 text-center">
-            <a href="@Url.Action("Token", "Home")" class="text-sm text-blue-600 hover:text-blue-800">
-                Login Token
-            </a>
+                <button type="submit"
+                        class="btn-primary bg-blue-700 hover:bg-blue-800 text-white w-full py-2 px-4 rounded-md flex items-center justify-center">
+                    <i class="fas fa-paper-plane mr-2"></i> Generar Token
+                </button>
+            </form>
         </div>
+
+        <!-- Paso 2: Ingresar Token -->
+        <div id="stepToken" class="hidden">
+            <div class="text-center mb-6">
+                <i class="fas fa-key text-blue-700 text-4xl mb-4"></i>
+                <h1 class="text-2xl font-bold text-gray-700">Ingresar Token</h1>
+                <p class="text-sm text-gray-500 mt-2">Introduce el token generado.</p>
+            </div>
+
+            <form id="tokenForm" class="space-y-6">
+                <div class="input-group relative">
+                    <i class="fas fa-ticket-alt input-icon absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="tokenInput" name="token" placeholder="Token" required
+                           class="form-input input-with-icon pl-10 w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+
+                <button type="submit"
+                        class="btn-primary bg-blue-700 hover:bg-blue-800 text-white w-full py-2 px-4 rounded-md flex items-center justify-center">
+                    <i class="fas fa-check mr-2"></i> Validar Token
+                </button>
+            </form>
+        </div>
+
+        <!-- Paso 3: Cambiar Contraseña -->
+        <div id="stepChangePassword" class="hidden">
+            <div class="text-center mb-6">
+                <i class="fas fa-lock text-green-600 text-4xl mb-4"></i>
+                <h1 class="text-2xl font-bold text-gray-700">Cambiar Contraseña</h1>
+                <p class="text-sm text-gray-500 mt-2">Ingresa y confirma tu nueva contraseña.</p>
+            </div>
+
+            <form id="changePasswordForm" class="space-y-6">
+                <div class="input-group relative">
+                    <i class="fas fa-lock input-icon absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="password" id="newPassword" name="newPassword" placeholder="Nueva Contraseña" required
+                           class="form-input input-with-icon pl-10 w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" />
+                </div>
+                <div class="input-group relative">
+                    <i class="fas fa-lock input-icon absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirmar Contraseña"
+                           required class="form-input input-with-icon pl-10 w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" />
+                </div>
+
+                <button type="submit"
+                        class="btn-primary bg-green-600 hover:bg-green-700 text-white w-full py-2 px-4 rounded-md flex items-center justify-center">
+                    <i class="fas fa-key mr-2"></i> Guardar Contraseña
+                </button>
+            </form>
+
+            <div id="successMessage"
+                 class="hidden mt-4 text-green-700 bg-green-100 p-3 rounded-md text-center font-semibold">
+                Contraseña cambiada correctamente. Redirigiendo al login...
+            </div>
+        </div>
+
     </div>
 
     <script>
+        let generatedToken = '';
+
+        // Paso 1: Generar Token
         document.getElementById('recoveryForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
             const email = document.getElementById('email').value.trim();
-
             if (!email) {
-                alert('Please enter a valid email address.');
+                alert('Por favor ingresa un correo válido.');
                 return;
             }
 
-            const token = generateToken();
-            const messageElement = document.getElementById('tokenMessage');
-            messageElement.textContent = `Your recovery token is: ${token}`;
-            messageElement.classList.remove('hidden');
+            generatedToken = Math.floor(100000 + Math.random() * 900000).toString();
+            console.log("Token generado (solo demo):", generatedToken);
+            alert(`Tu token generado es: ${generatedToken}`);
+
+            // Ir al paso 2
+            document.getElementById('stepEmail').classList.add('hidden');
+            document.getElementById('stepToken').classList.remove('hidden');
         });
 
-        function generateToken() {
-            // Generate a simple 6-digit random token
-            return Math.floor(100000 + Math.random() * 900000);
-        }
+        // Paso 2: Validar Token
+        document.getElementById('tokenForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const tokenInput = document.getElementById('tokenInput').value.trim();
+            if (tokenInput === generatedToken) {
+                // Ir al paso 3
+                document.getElementById('stepToken').classList.add('hidden');
+                document.getElementById('stepChangePassword').classList.remove('hidden');
+            } else {
+                alert('Token incorrecto. Intenta de nuevo.');
+            }
+        });
+
+        // Paso 3: Cambiar Contraseña
+        document.getElementById('changePasswordForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const newPassword = document.getElementById('newPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+            if (!newPassword || !confirmPassword) {
+                alert('Completa ambos campos.');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert('Las contraseñas no coinciden.');
+                return;
+            }
+
+            // Simula cambio de contraseña
+            console.log('Contraseña nueva:', newPassword);
+
+            document.getElementById('successMessage').classList.remove('hidden');
+            document.getElementById('changePasswordForm').classList.add('hidden');
+
+            // Redirige en 2 seg
+            setTimeout(() => {
+                window.location.href = '@Url.Action("Login", "Account")';
+            }, 2000);
+        });
     </script>
+
 </body>
+
+</html>

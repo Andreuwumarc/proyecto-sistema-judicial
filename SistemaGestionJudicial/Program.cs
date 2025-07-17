@@ -14,6 +14,11 @@ builder.Services.AddDbContext<ProyectoContext>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddSession();
+
+builder.Services.AddDbContext<ProyectoContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("MiConexion")));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -26,6 +31,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 
@@ -40,3 +47,6 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+
+

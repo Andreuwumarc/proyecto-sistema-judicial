@@ -7,7 +7,7 @@ namespace SistemaGestionJudicial.Models
     {
         [Key]
         [Column("id_usuario")]
-        public long IdUsuario { get; set; }
+    public long IdUsuario { get; set; }
 
         [Required]
         [Column("id_persona")]
@@ -17,6 +17,7 @@ namespace SistemaGestionJudicial.Models
         [StringLength(50)]
         [Column("nombre_usuario")]
         public string NombreUsuario { get; set; }
+    public string Usuario1 { get; set; } = null!;
 
         [Required]
         [StringLength(255)]
@@ -26,9 +27,11 @@ namespace SistemaGestionJudicial.Models
         [StringLength(50)]
         [Column("rol_usuario")]
         public string RolUsuario { get; set; }
+    public string? Token { get; set; }
 
         // Navegación: Persona relacionada (FK)
         [ForeignKey("IdPersona")]
         public virtual Persona Persona { get; set; }
     }
+    public virtual Persona? IdPersonaNavigation { get; set; }
 }
