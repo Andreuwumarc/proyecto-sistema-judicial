@@ -7,31 +7,28 @@ namespace SistemaGestionJudicial.Models
     {
         [Key]
         [Column("id_usuario")]
-    public long IdUsuario { get; set; }
+        public long IdUsuario { get; set; }
 
         [Required]
         [Column("id_persona")]
-        public long IdPersona { get; set; }
+        public long? IdPersona { get; set; }
 
         [Required]
+        [Column("usuario")]
         [StringLength(50)]
-        [Column("nombre_usuario")]
-        public string NombreUsuario { get; set; }
-    public string Usuario1 { get; set; } = null!;
+        public string Usuario1 { get; set; } = null!; // ✅ Debe coincidir con DB y scaffolding
 
         [Required]
+        [Column("contraseña")]
         [StringLength(255)]
-        [Column("contrasena")]
-        public string Contrasena { get; set; }
+        public string Contraseña { get; set; } = null!; // ✅ coincide con scaffold
 
+        [Column("token")]
         [StringLength(50)]
-        [Column("rol_usuario")]
-        public string RolUsuario { get; set; }
-    public string? Token { get; set; }
+        public string? Token { get; set; }
 
-        // Navegación: Persona relacionada (FK)
+        // Navegación
         [ForeignKey("IdPersona")]
-        public virtual Persona Persona { get; set; }
+        public virtual Persona? IdPersonaNavigation { get; set; }
     }
-    public virtual Persona? IdPersonaNavigation { get; set; }
 }

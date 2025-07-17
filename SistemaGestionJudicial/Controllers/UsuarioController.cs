@@ -19,7 +19,7 @@ namespace SistemaGestionJudicial.Controllers
         public async Task<IActionResult> Index()
         {
             var usuarios = await _context.Usuarios
-                .Include(u => u.Persona)
+                .Include(u => u.IdPersona)
                 .ToListAsync();
             return View(usuarios); // Views/Usuario/Index.cshtml
         }
@@ -31,7 +31,7 @@ namespace SistemaGestionJudicial.Controllers
                 return NotFound();
 
             var usuario = await _context.Usuarios
-                .Include(u => u.Persona)
+                .Include(u => u.IdPersona)
                 .FirstOrDefaultAsync(u => u.IdUsuario == id);
 
             if (usuario == null)
@@ -109,7 +109,7 @@ namespace SistemaGestionJudicial.Controllers
                 return NotFound();
 
             var usuario = await _context.Usuarios
-                .Include(u => u.Persona)
+                .Include(u => u.IdPersona)
                 .FirstOrDefaultAsync(u => u.IdUsuario == id);
             if (usuario == null)
                 return NotFound();
