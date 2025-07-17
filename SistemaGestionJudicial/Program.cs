@@ -1,4 +1,15 @@
+using SistemaGestionJudicial.Models;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Leer la cadena de conexión desde el archivo appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("MiConexion");
+
+//Registrar EF Core y el DbContext
+builder.Services.AddDbContext<ProyectoContext>(options =>
+    options.UseSqlServer(connectionString)
+);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

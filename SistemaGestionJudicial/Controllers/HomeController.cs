@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SistemaGestionJudicial.Models;
 
 namespace SistemaGestionJudicial.Controllers
@@ -7,10 +8,12 @@ namespace SistemaGestionJudicial.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ProyectoContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ProyectoContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         public IActionResult Login()
@@ -50,10 +53,14 @@ namespace SistemaGestionJudicial.Controllers
             return View();
         }
 
-        public IActionResult Jueces()
-        {
-            return View();
-        }
+        //public IActionResult Jueces()
+        //{
+        //    var jueces = _context.Personas
+        //        .Include(p => p.Rol)
+        //        .Where(p => p.Rol != null && p.Rol.Nombre == "Juez")
+        //        .ToList();
+        //    return View(jueces);
+        //}
 
         public IActionResult Fiscales()
         {
