@@ -13,6 +13,7 @@ namespace SistemaGestionJudicial.Models
 
         public DbSet<PartePolicial> PartesPoliciales { get; set; }
         public DbSet<Persona> Personas { get; set; }
+        public virtual DbSet<Rol> Roles { get; set; }
         public DbSet<Denuncia> Denuncias { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -41,6 +42,21 @@ namespace SistemaGestionJudicial.Models
             {
                 entity.ToTable("personas");   // Nombre real de la tabla
                 entity.HasKey(e => e.Id_Persona);
+            });
+
+            modelBuilder.Entity<Rol>(entity =>
+            {
+                entity.HasKey(e => e.IdRol).HasName("PK__roles__6ABCB5E0BE2F1518");
+
+                entity.ToTable("roles");
+
+                entity.Property(e => e.IdRol)
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("id_rol");
+                entity.Property(e => e.Nombre)
+                    .HasMaxLength(30)
+                    .IsUnicode(false)
+                    .HasColumnName("nombre");
             });
         }
 

@@ -11,5 +11,9 @@ namespace SistemaGestionJudicial.Models
         public string? Nombres { get; set; }
         public string? Apellidos { get; set; }
 
+        [ForeignKey("Rol")]
+        public long Id_Rol { get; set; }
+        public Rol? Rol { get; set; }
+
     }
 }

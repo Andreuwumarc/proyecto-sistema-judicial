@@ -14,36 +14,6 @@ namespace SistemaGestionJudicial.Controllers
         {
             _context = context;
         }
-
-        //public async Task<IActionResult> Polices()
-        //{
-        //    var partes = await _context.PartesPoliciales
-        //        .Include(p => p.PersonaPolicia)
-        //        .Include(p => p.Denuncia)
-        //        .ToListAsync();
-
-        //    // Cargar ViewBag para el modal de Crear y Editar en la misma vista
-        //    var personas = _context.Personas
-        //        .Select(p => new
-        //        {
-        //            p.Id_Persona,
-        //            NombreCompleto = p.Nombres + " " + p.Apellidos + " - " + p.Cedula
-        //        })
-        //        .ToList();
-        //    ViewBag.Personas = new SelectList(personas, "Id_Persona", "NombreCompleto");
-
-        //    var denuncias = _context.Denuncias
-        //        .Select(d => new
-        //        {
-        //            d.Id_Denuncia,
-        //            Texto = d.Descripcion
-        //        })
-        //        .ToList();
-        //    ViewBag.Denuncias = new SelectList(denuncias, "Id_Denuncia", "Texto");
-
-        //    return View("~/Views/Home/Police/Polices.cshtml", partes);
-        //}
-
         public async Task<IActionResult> Polices()
         {
             var partes = await _context.PartesPoliciales
@@ -52,8 +22,8 @@ namespace SistemaGestionJudicial.Controllers
                 .ToListAsync();
 
             // Cargar ViewBag para el modal de Crear y Editar en la misma vista
-            var personas = await _context.Personas // Usar await
-                .Where(p => p.Id_Persona == 5)
+            var personas = await _context.Personas
+                .Where(p => p.Id_Rol == 5)
                 .Select(p => new
                 {
                     p.Id_Persona,
@@ -77,74 +47,6 @@ namespace SistemaGestionJudicial.Controllers
 
 
         // ========== Crear ==========
-
-        // GET: Police/Create
-
-
-        [HttpGet]
-        public IActionResult Create()
-        {
-            // Personas: todas
-            var personas = _context.Personas
-                .Where(p => p.Id_Persona == 5)
-                .Select(p => new {
-                    p.Id_Persona,
-                    NombreCompleto = p.Nombres + " " + p.Apellidos + " - " + p.Cedula
-                })
-                .ToList();
-            ViewBag.Personas = new SelectList(personas, "Id_Persona", "NombreCompleto");
-
-            // Denuncias: mostrar descripción y cédula de quien denunció
-            var denuncias = _context.Denuncias
-                .Select(d => new {
-                    d.Id_Denuncia,
-                    Texto = d.Descripcion
-                })
-                .ToList();
-
-            ViewBag.Denuncias = new SelectList(denuncias, "Id_Denuncia", "Texto");
-
-            return View("~/Views/Home/Police/Create.cshtml");
-        }
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create(PartePolicial parte)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        // Generar el ID manualmente
-        //        var ultimoId = await _context.PartesPoliciales
-        //            .OrderByDescending(p => p.Id_Parte)
-        //            .Select(p => p.Id_Parte)
-        //            .FirstOrDefaultAsync();
-
-        //        parte.Id_Parte = ultimoId + 1;
-
-        //        _context.Add(parte);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Polices));
-        //    }
-
-        //    // Volver a cargar combos si hay error en el formulario
-        //    var personas = _context.Personas
-        //        .Select(p => new {
-        //            p.Id_Persona,
-        //            NombreCompleto = p.Nombres + " " + p.Apellidos + " - " + p.Cedula
-        //        })
-        //        .ToList();
-        //    ViewBag.Personas = new SelectList(personas, "Id_Persona", "NombreCompleto", parte.Id_Persona_Policia);
-
-        //    var denuncias = _context.Denuncias
-        //        .Select(d => new {
-        //            d.Id_Denuncia,
-        //            Texto = d.Descripcion
-        //        })
-        //        .ToList();
-        //    ViewBag.Denuncias = new SelectList(denuncias, "Id_Denuncia", "Texto", parte.Id_Denuncia);
-
-        //    return View("~/Views/Home/Police/Create.cshtml", parte);
-        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -174,73 +76,6 @@ namespace SistemaGestionJudicial.Controllers
 
 
         // ========== EDIT ==========
-
-        [HttpGet]
-        public async Task<IActionResult> Edit(long id)
-        {
-            var parte = await _context.PartesPoliciales.FindAsync(id);
-            if (parte == null)
-            {
-                return NotFound();
-            }
-
-            // Lista de policías (personas)
-            var personas = _context.Personas
-                .Where(p => p.Id_Persona == 5)
-                .Select(p => new
-                {
-                    p.Id_Persona,
-                    NombreCompleto = p.Nombres + " " + p.Apellidos
-                })
-                .ToList();
-            ViewBag.Personas = new SelectList(personas, "Id_Persona", "NombreCompleto", parte.Id_Persona_Policia);
-
-            // Lista de denuncias (solo descripción)
-            var denuncias = _context.Denuncias
-                .Select(d => new
-                {
-                    d.Id_Denuncia,
-                    Texto = d.Descripcion
-                })
-                .ToList();
-            ViewBag.Denuncias = new SelectList(denuncias, "Id_Denuncia", "Texto", parte.Id_Denuncia);
-
-            return View("~/Views/Home/Police/Edit.cshtml", parte);
-        }
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(PartePolicial parte)
-        //{
-        //    if (parte == null || parte.Id_Parte == 0)
-        //    {
-        //        return BadRequest();
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Update(parte);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Polices));
-        //    }
-
-        //    // Recargar combos si hay error de validación
-        //    var personas = _context.Personas
-        //        .Select(p => new {
-        //            p.Id_Persona,
-        //            NombreCompleto = p.Nombres + " " + p.Apellidos
-        //        }).ToList();
-        //    ViewBag.Personas = new SelectList(personas, "Id_Persona", "NombreCompleto", parte.Id_Persona_Policia);
-
-        //    var denuncias = _context.Denuncias
-        //        .Select(d => new {
-        //            d.Id_Denuncia,
-        //            Texto = d.Descripcion
-        //        }).ToList();
-        //    ViewBag.Denuncias = new SelectList(denuncias, "Id_Denuncia", "Texto", parte.Id_Denuncia);
-
-        //    return View("~/Views/Home/Police/Edit.cshtml", parte);
-        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -298,18 +133,5 @@ namespace SistemaGestionJudicial.Controllers
             // ===> REDIRIGE A LA ACCIÓN POLICES EN EL MISMO CONTROLADOR <===
             return RedirectToAction(nameof(Polices));
         }
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Delete(long id)
-        //{
-        //    var parte = await _context.PartesPoliciales.FindAsync(id);
-        //    if (parte != null)
-        //    {
-        //        _context.PartesPoliciales.Remove(parte);
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    return RedirectToAction(nameof(Polices));
-        //}
     }
 }
