@@ -182,7 +182,7 @@
     <div id="add-judge-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
         <div class="modal-content bg-white rounded-lg p-6 w-96">
             <h3 class="text-lg font-bold mb-4">Añadir Juez</h3>
-            <form asp-action="CreateJuez" asp-controller="Persona" method="post">
+            <form asp-action="CreateJuez" asp-controller="Jueces" method="post">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Cédula</label>
                     <input type="text" name="Cedula" class="form-input" maxlength="10" required>
@@ -360,13 +360,13 @@
         }
         function submitEditForm() {
             var form = document.getElementById('editJudgeForm');
-            form.action = '/Persona/Edit/' + document.getElementById('editIdPersona').value;
+            form.action = '/Jueces/Edit/' + document.getElementById('editIdPersona').value;
             form.method = 'post';
             form.submit();
         }
         function submitDeleteForm() {
             var form = document.getElementById('deleteJudgeForm');
-            form.action = '/Persona/Delete/' + document.getElementById('deleteIdPersona').value;
+            form.action = '/Jueces/Delete/' + document.getElementById('deleteIdPersona').value;
             form.method = 'post';
             form.submit();
         }

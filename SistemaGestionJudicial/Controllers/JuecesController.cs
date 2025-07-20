@@ -18,15 +18,22 @@ namespace SistemaGestionJudicial.Controllers
         // -----------------------
         // Métodos de PersonaController (Jueces)
         // -----------------------
+        [Route("/Home/Jueces")]
+        public IActionResult Jueces()
+        {
+            var jueces = _context.Personas.Where(p => p.IdRol == 1).ToList();
+            return View("~/Views/Home/Jueces.cshtml", jueces);
+        }
 
+        /*
         public async Task<IActionResult> Jueces()
         {
             var jueces = await _context.Personas
                 .Include(p => p.IdRolNavigation)
                 .Where(p => p.IdRol == 1)
                 .ToListAsync();
-            return View(jueces);
-        }
+            return View("~/Views/Home/Jueces.cshtml", jueces);
+        }*/
 
         [HttpPost]
         public async Task<IActionResult> CreateJuez([Bind("Cedula,Nombres,Apellidos,FechaNacimiento,Genero,Direccion,Telefono,CorreoElectronico")] Persona persona)
