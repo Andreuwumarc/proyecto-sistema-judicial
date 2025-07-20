@@ -1,22 +1,79 @@
-﻿
+﻿@* Ruta: SistemaGestionJudicial/Views/Home/Delincuentes.cshtml *@
+@model List<SistemaGestionJudicial.Models.Persona>
+
 @{
     ViewData["Title"] = "Delincuentes";
+    var requestToken = Html.AntiForgeryToken();
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/delincuentes.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-}
-<div class="flex h-screen overflow-hidden">
-    
+    <style>
+        /* Estilos básicos para el acordeón de juicios */
+        .accordion-header {
+            background-color: #f3f4f6; /* bg-gray-100 */
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600; /* font-semibold */
+            color: #4b5563; /* text-gray-700 */
+            transition: background-color 0.2s ease;
+        }
 
+            .accordion-header:hover {
+                background-color: #e5e7eb; /* hover:bg-gray-200 */
+            }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            padding: 0 1rem; /* Padding horizontal inicial */
+            border-left: 2px solid #d1d5db; /* border-gray-300 */
+            margin-left: 0.75rem; /* ml-3 */
+            background-color: #ffffff; /* bg-white */
+            border-radius: 0.5rem; /* rounded-lg */
+        }
+
+            .accordion-content.active {
+                max-height: 500px; /* Suficientemente grande para el contenido */
+                padding: 1rem; /* Padding cuando está activo */
+                box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+            }
+
+        /* Estilo para las sentencias dentro del acordeón (ahora no se usarán, pero se mantienen para referencia) */
+        .sentencia-item {
+            border-left: 2px solid #a7f3d0; /* border-green-300 */
+            padding-left: 0.75rem;
+            margin-bottom: 0.5rem;
+            background-color: #f7fee7; /* bg-green-50 */
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+        }
+
+        /* Ajuste para el modal de añadir delincuente */
+        #add-offender-modal .modal-content {
+            max-height: 90vh; /* Permite que el modal ocupe hasta el 90% de la altura de la ventana */
+            overflow-y: auto; /* Habilita el scroll vertical si el contenido excede el max-height */
+            width: 95%; /* Asegura que no sea demasiado angosto en pantallas grandes */
+            max-width: 600px; /* Un poco más ancho para mejor distribución de campos */
+        }
+    </style>
+}
+
+<div class="flex h-screen overflow-hidden">
     <div class="flex-1 overflow-auto">
         <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print">
-            <h2 class="text-xl font-semibold text-gray-800" id="view-title">Offender Management</h2>
+            <h2 class="text-xl font-semibold text-gray-800" id="view-title">Gestión de Delincuentes</h2>
             <div class="flex items-center space-x-4">
                 <div class="relative">
-                    <input type="text" placeholder="Search..."
+                    @* Campo de búsqueda para filtrar la tabla *@
+                    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Buscar por cédula, nombre, género..."
                            class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                 </div>
@@ -31,10 +88,10 @@
 
         <div class="p-6">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Offender Management</h2>
-                <button onclick="openModal('add-offender-modal')"
+                <h2 class="text-2xl font-bold">Listado de Delincuentes</h2>
+                <button onclick="openAddModal()"
                         class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                    <i class="fas fa-plus mr-2"></i> Add Offender
+                    <i class="fas fa-plus mr-2"></i> Añadir Delincuente
                 </button>
             </div>
 
@@ -44,74 +101,40 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Name</th>
-                                <th>DOB</th>
-                                <th>Gender</th>
-                                <th>Crimes</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>Cédula</th>
+                                <th>Nombre Completo</th>
+                                <th>Fecha Nacimiento</th>
+                                <th>Género</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>OF-1001</td>
-                                <td>John Doe</td>
-                                <td>15/05/1985</td>
-                                <td>Male</td>
-                                <td>Murder, Theft</td>
-                                <td><span class="bg-red-100 text-red-800 px-2 py-1 rounded">Incarcerated</span></td>
-                                <td>
-                                    <button class="text-blue-600 hover:text-blue-800 mr-2" onclick="openDetailModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft', 'Incarcerated')">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="text-green-600 hover:text-green-800 mr-2" onclick="openEditModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft')">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-800" onclick="confirmDelete('OF-1001')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>OF-1002</td>
-                                <td>Jane Smith</td>
-                                <td>22/11/1990</td>
-                                <td>Female</td>
-                                <td>Fraud</td>
-                                <td>
-                                    <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">On Bail</span>
-                                </td>
-                                <td>
-                                    <button class="text-blue-600 hover:text-blue-800 mr-2" onclick="openDetailModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft', 'Incarcerated')">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="text-green-600 hover:text-green-800 mr-2" onclick="openEditModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft')">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-800" onclick="confirmDelete('OF-1001')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>OF-1003</td>
-                                <td>Robert Johnson</td>
-                                <td>03/07/1978</td>
-                                <td>Male</td>
-                                <td>Assault, Drug Possession</td>
-                                <td><span class="bg-green-100 text-green-800 px-2 py-1 rounded">Released</span></td>
-                                <td>
-                                    <button class="text-blue-600 hover:text-blue-800 mr-2" onclick="openDetailModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft', 'Incarcerated')">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="text-green-600 hover:text-green-800 mr-2" onclick="openEditModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft')">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-800" onclick="confirmDelete('OF-1001')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
+                        <tbody id="delincuentesTableBody">
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var persona in Model)
+                                {
+                                    <tr>
+                                        <td>@persona.IdPersona</td>
+                                        <td>@persona.Cedula</td>
+                                        <td>@($"{persona.Nombres} {persona.Apellidos}")</td>
+                                        <td>@(persona.FechaNacimiento?.ToShortDateString() ?? "N/A")</td>
+                                        <td>@(persona.Genero == "M" ? "Masculino" : (persona.Genero == "F" ? "Femenino" : "Otro"))</td>
+                                        <td>
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2"
+                                                    onclick="fetchAndOpenDetailModal(@persona.IdPersona)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            @* El botón de Eliminar ha sido quitado aquí *@
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">No se encontraron delincuentes con IdRol = 3.</td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -120,137 +143,120 @@
     </div>
 </div>
 
-<!-- Add Offender Modal -->
-<div id="add-offender-modal"
-     class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-4">Add New Offender</h3>
-        <form id="addOffenderForm">
-            <div class="mb-4">
-                <label for="offenderName" class="block text-sm font-medium text-gray-700">Full Name</label>
-                <input type="text" id="offenderName" class="form-input" required>
-            </div>
-            <div class="mb-4">
-                <label for="offenderDOB" class="block text-sm font-medium text-gray-700">Date of Birth</label>
-                <input type="date" id="offenderDOB" class="form-input" required>
-            </div>
-            <div class="mb-4">
-                <label for="offenderGender" class="block text-sm font-medium text-gray-700">Gender</label>
-                <select id="offenderGender" class="form-input" required>
-                    <option value="">Select</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label for="offenderCrimes" class="block text-sm font-medium text-gray-700">Crimes Committed</label>
-                <input type="text" id="offenderCrimes" class="form-input" placeholder="Separate with commas"
-                       required>
-            </div>@*FK*@
-            <div class="mb-4">
-                <label for="offenderImage" class="block text-sm font-medium text-gray-700">Photo</label>
-                <input type="file" id="offenderImage" class="form-input" accept="image/*">
-            </div>
-            <div class="flex justify-end">
-                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
-                        onclick="closeModal('add-offender-modal')">
-                    Cancel
-                </button>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Add Offender</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-
-<!-- Offender Detail Modal -->
+@* MODAL DE DETALLES *@
 <div id="offender-detail-modal"
-     class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-full max-w-lg">
-        <h3 class="text-lg font-bold mb-4">Offender Details</h3>
+     class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="modal-content bg-white rounded-lg p-6 w-full max-w-2xl overflow-y-auto max-h-[90vh]">
+        <h3 class="text-lg font-bold mb-4">Detalles del Delincuente</h3>
         <div class="flex flex-col md:flex-row gap-6">
             <div class="w-full md:w-1/3">
                 <div class="bg-gray-100 rounded-lg overflow-hidden mb-2">
-                    <img id="detail-image" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3cbb0810-b517-4b39-bed3-3487e544f5a1.png"
+                    <img id="detail-image" src="https://randomuser.me/api/portraits/lego/1.jpg"
                          class="w-full h-auto object-cover">
                 </div>
             </div>
             <div class="w-full md:w-2/3" id="offender-details">
                 <p><strong>ID:</strong> <span id="detail-id"></span></p>
-                <p><strong>Name:</strong> <span id="detail-name"></span></p>
-                <p><strong>DOB:</strong> <span id="detail-dob"></span></p>
-                <p><strong>Gender:</strong> <span id="detail-gender"></span></p>
-                <p><strong>Associated Case:</strong> <span id="detail-case">Case #2023-1245 (State vs. Johnson)</span></p>
-                <p><strong>Crimes:</strong> <span id="detail-crimes"></span></p>
-                <p><strong>Status:</strong> <span id="detail-status"></span></p>
+                <p><strong>Cédula:</strong> <span id="detail-cedula"></span></p>
+                <p><strong>Nombre:</strong> <span id="detail-name"></span></p>
+                <p><strong>Fecha Nacimiento:</strong> <span id="detail-dob"></span></p>
+                <p><strong>Género:</strong> <span id="detail-gender"></span></p>
+                <p><strong>Dirección:</strong> <span id="detail-direccion"></span></p>
+                <p><strong>Teléfono:</strong> <span id="detail-telefono"></span></p>
+                <p><strong>Correo:</strong> <span id="detail-correo"></span></p>
             </div>
         </div>
+
+        <div class="mt-6">
+            <h4 class="text-xl font-bold mb-3 text-gray-800">Juicios Asociados:</h4>
+            <div id="detail-juicios">
+            </div>
+        </div>
+
         <div class="flex justify-end mt-4">
             <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg"
                     onclick="closeModal('offender-detail-modal')">
-                Close
+                Cerrar
             </button>
         </div>
     </div>
 </div>
 
-<!-- Edit Offender Modal -->
-<div id="edit-offender-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-4">Edit Offender</h3>
-        <form id="editOffenderForm">
+@* MODAL PARA AÑADIR DELINCUENTE (AJUSTADO) *@
+<div id="add-offender-modal"
+     class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="modal-content bg-white rounded-lg p-6 w-full max-w-md">
+        @* Se ajustará el max-width y se añadirá el overflow-y en el style *@
+        <h3 class="text-lg font-bold mb-4">Añadir Nuevo Delincuente</h3>
+        <form id="addDelincuenteForm" method="post" action="/Delincuentes/Create">
+            @requestToken
             <div class="mb-4">
-                <label for="editName" class="block text-sm font-medium text-gray-700">Full Name</label>
-                <input type="text" id="editName" class="form-input" required>
+                <label for="addNombres" class="block text-gray-700 text-sm font-bold mb-2">Nombres:</label>
+                <input type="text" id="addNombres" name="Nombres" required
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>
             <div class="mb-4">
-                <label for="editDOB" class="block text-sm font-medium text-gray-700">Date of Birth</label>
-                <input type="date" id="editDOB" class="form-input" required>
+                <label for="addApellidos" class="block text-gray-700 text-sm font-bold mb-2">Apellidos:</label>
+                <input type="text" id="addApellidos" name="Apellidos" required
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>
             <div class="mb-4">
-                <label for="editGender" class="block text-sm font-medium text-gray-700">Gender</label>
-                <select id="editGender" class="form-input" required>
-                    <option value="">Select</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
+                <label for="addFechaNacimiento" class="block text-gray-700 text-sm font-bold mb-2">Fecha Nacimiento:</label>
+                <input type="date" id="addFechaNacimiento" name="FechaNacimiento"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mb-4">
+                <label for="addGenero" class="block text-gray-700 text-sm font-bold mb-2">Género:</label>
+                <select id="addGenero" name="Genero"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">Seleccione</option>
+                    <option value="M">Masculino</option>
+                    <option value="F">Femenino</option>
+                    <option value="O">Otro</option>
                 </select>
             </div>
             <div class="mb-4">
-                <label for="editCrimes" class="block text-sm font-medium text-gray-700">Crimes Committed</label>
-                <input type="text" id="editCrimes" class="form-input" placeholder="Separate with commas" required>
+                <label for="addCedula" class="block text-gray-700 text-sm font-bold mb-2">Cédula:</label>
+                <input type="text" id="addCedula" name="Cedula" required
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>
-            <div class="flex justify-end">
-                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
-                        onclick="closeModal('edit-offender-modal')">
-                    Cancel
+            <div class="mb-4">
+                <label for="addDireccion" class="block text-gray-700 text-sm font-bold mb-2">Dirección:</label>
+                <input type="text" id="addDireccion" name="Direccion"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mb-4">
+                <label for="addTelefono" class="block text-gray-700 text-sm font-bold mb-2">Teléfono:</label>
+                <input type="text" id="addTelefono" name="Telefono"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mb-4">
+                <label for="addCorreoElectronico" class="block text-gray-700 text-sm font-bold mb-2">Correo Electrónico:</label>
+                <input type="email" id="addCorreoElectronico" name="CorreoElectronico"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg"
+                        onclick="closeModal('add-offender-modal')">
+                    Cancelar
                 </button>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Save Changes</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                    Guardar Delincuente
+                </button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
-<div id="delete-confirm-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-4">Confirm Deletion</h3>
-        <p class="mb-6">Are you sure you want to delete this offender record? This action cannot be undone.</p>
-        <div class="flex justify-end">
-            <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
-                    onclick="closeModal('delete-confirm-modal')">
-                Cancel
-            </button>
-            <button type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg"
-                    onclick="deleteOffender()">
-                Delete
-            </button>
-        </div>
-    </div>
-</div>
+@* El MODAL DE CONFIRMACIÓN DE ELIMINACIÓN ha sido ELIMINADO *@
+
 
 <script>
+    const antiForgeryToken = '@requestToken.ToString().Replace("\"", "'")';
+    const antiForgeryHeaderName = antiForgeryToken.split('=')[0].replace('<input name=', '').replace('type=\'hidden\' value=\'', '').replace('\' />', '').trim();
+    const antiForgeryTokenValue = antiForgeryToken.split('value=\'')[1].replace('\' />', '').trim();
+
     function openModal(modalId) {
         document.getElementById(modalId).classList.remove('hidden');
     }
@@ -259,67 +265,159 @@
         document.getElementById(modalId).classList.add('hidden');
     }
 
-    document.getElementById('addOffenderForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        // Logic to add offender goes here
-        closeModal('add-offender-modal');
-        alert('Offender added successfully!');
+    // --- FUNCIONALIDAD PARA AÑADIR DELINCUENTE ---
+    function openAddModal() {
+        document.getElementById('addDelincuenteForm').reset();
+        openModal('add-offender-modal');
+    }
+
+    document.getElementById('addDelincuenteForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+        data[antiForgeryHeaderName] = antiForgeryTokenValue;
+
+        try {
+            const response = await fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [antiForgeryHeaderName]: antiForgeryTokenValue
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(result.message);
+                closeModal('add-offender-modal');
+                window.location.reload(); // Recargar la página para ver el cambio
+            } else {
+                alert(`Error: ${result.message}\n${(result.errors ? result.errors.join('\n') : '')}`);
+            }
+        } catch (error) {
+            console.error('Error al añadir delincuente:', error);
+            alert('Error al añadir delincuente. Intente de nuevo.');
+        }
     });
 
-    let currentOffenderId = null;
+    // --- FUNCIONALIDAD PARA FILTRAR LA TABLA ---
+    function filterTable() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toLowerCase();
+        const tableBody = document.getElementById('delincuentesTableBody');
+        const trs = tableBody.getElementsByTagName('tr');
 
-        function openEditModal(id, name, dob, gender, crimes) {
-            currentOffenderId = id;
-            document.getElementById('editName').value = name;
-            document.getElementById('editDOB').value = dob.split('/').reverse().join('-');
-            document.getElementById('editGender').value = gender.toLowerCase();
-            document.getElementById('editCrimes').value = crimes;
-            openModal('edit-offender-modal');
+        for (let i = 0; i < trs.length; i++) {
+            let found = false;
+            const cedulaTd = trs[i].getElementsByTagName('td')[1]; // Cédula
+            const nombreCompletoTd = trs[i].getElementsByTagName('td')[2]; // Nombre Completo
+            const generoTd = trs[i].getElementsByTagName('td')[4]; // Género
+
+            if (cedulaTd && cedulaTd.textContent.toLowerCase().includes(filter)) {
+                found = true;
+            }
+            if (nombreCompletoTd && nombreCompletoTd.textContent.toLowerCase().includes(filter)) {
+                found = true;
+            }
+            if (generoTd && generoTd.textContent.toLowerCase().includes(filter)) {
+                const generoText = generoTd.textContent.toLowerCase();
+                if (generoText.includes(filter) ||
+                    (filter === 'm' && generoText.includes('masculino')) ||
+                    (filter === 'f' && generoText.includes('femenino')) ||
+                    (filter === 'o' && generoText.includes('otro'))
+                ) {
+                    found = true;
+                }
+            }
+
+            if (found) {
+                trs[i].style.display = '';
+            } else {
+                trs[i].style.display = 'none';
+            }
         }
+    }
 
-        function confirmDelete(id) {
-            currentOffenderId = id;
-            openModal('delete-confirm-modal');
-        }
+    // --- FUNCIONALIDAD PARA ELIMINAR DELINCUENTE (FUNCIONES ELIMINADAS) ---
+    // confirmDelete y deleteDelincuente han sido eliminadas ya que no se usarán.
 
-        function deleteOffender() {
-            // Delete logic would go here
-            alert(`Offender ${currentOffenderId} deleted`);
-            closeModal('delete-confirm-modal');
-        }
+    // --- FUNCIONALIDAD PARA VER DETALLES ---
+    async function fetchAndOpenDetailModal(id) {
+        try {
+            const response = await fetch(`/Delincuentes/GetDelincuenteDetails/${id}`);
+            if (!response.ok) {
+                alert('Error al obtener los detalles del delincuente.');
+                return;
+            }
+            const persona = await response.json();
 
-        document.getElementById('editOffenderForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Save logic would go here
-            alert(`Changes saved for offender ${currentOffenderId}`);
-            closeModal('edit-offender-modal');
-        });
+            document.getElementById('detail-id').innerText = persona.id;
+            document.getElementById('detail-cedula').innerText = persona.cedula;
+            document.getElementById('detail-name').innerText = `${persona.nombres} ${persona.apellidos}`;
+            document.getElementById('detail-dob').innerText = persona.fechaNacimiento || 'N/A';
+            document.getElementById('detail-gender').innerText = persona.genero === "M" ? "Masculino" : (persona.genero === "F" ? "Femenino" : "Otro");
+            document.getElementById('detail-direccion').innerText = persona.direccion || 'N/A';
+            document.getElementById('detail-telefono').innerText = persona.telefono || 'N/A';
+            document.getElementById('detail-correo').innerText = persona.correoElectronico || 'N/A';
 
-        function openDetailModal(id, name, dob, gender, crimes, status) {
-            document.getElementById('detail-id').innerText = id;
-            document.getElementById('detail-name').innerText = name;
-            document.getElementById('detail-dob').innerText = dob;
-            document.getElementById('detail-gender').innerText = gender;
-            document.getElementById('detail-crimes').innerText = crimes;
-            document.getElementById('detail-status').innerText = status;
+            document.getElementById('detail-image').src = `https://randomuser.me/api/portraits/${persona.genero === 'M' ? 'men' : 'women'}/${persona.id % 99}.jpg`;
 
-            // Set sample case data (in a real app this would come from your data)
-            const caseMap = {
-                'OF-1001': 'Case #2023-1245 (State vs. Johnson)',
-                'OF-1002': 'Case #2023-1246 (State vs. Smith)',
-                'OF-1003': 'Case #2023-1247 (State vs. Johnson)'
-            };
-            document.getElementById('detail-case').innerText = caseMap[id] || 'No case assigned';
+            const juiciosContainer = document.getElementById('detail-juicios');
+            juiciosContainer.innerHTML = '';
 
-            // Set sample image (in a real app this would come from your uploaded file)
-            const imageMap = {
-                'OF-1001': 'https://randomuser.me/api/portraits/men/32.jpg',
-                'OF-1002': 'https://randomuser.me/api/portraits/women/44.jpg',
-                'OF-1003': 'https://randomuser.me/api/portraits/men/65.jpg'
-            };
-            document.getElementById('detail-image').src = imageMap[id] || 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/30c8e3f5-bf7a-49c4-a1e7-07a179d2ee51.png';
+            if (persona.juiciosYDelitos && persona.juiciosYDelitos.length > 0) {
+                persona.juiciosYDelitos.forEach((item, index) => {
+                    const juicioDiv = document.createElement('div');
+                    juicioDiv.classList.add('mb-3');
+
+                    const header = document.createElement('div');
+                    header.classList.add('accordion-header', 'mb-2');
+                    header.innerHTML = `
+                        <span>Juicio #${item.idJuicio} - ${item.estadoJuicio || 'N/A'} (Delito: ${item.nombreDelito || 'Sin Especificar'})</span>
+                        <i class="fas fa-chevron-down ml-2"></i>
+                    `;
+                    header.onclick = () => {
+                        const content = juicioDiv.querySelector('.accordion-content');
+                        content.classList.toggle('active');
+                        const icon = header.querySelector('i');
+                        icon.classList.toggle('fa-chevron-down');
+                        icon.classList.toggle('fa-chevron-up');
+                    };
+
+                    const content = document.createElement('div');
+                    content.classList.add('accordion-content');
+                    content.innerHTML = `
+                        <p class="mb-1"><strong>ID Juicio Acusado:</strong> ${item.idJuicioAcusado || 'N/A'}</p>
+                        <p class="mb-1"><strong>Estado:</strong> ${item.estadoJuicio || 'N/A'}</p>
+                        <p class="mb-1"><strong>Inicio:</strong> ${item.fechaInicioJuicio || 'N/A'}</p>
+                        <p class="mb-1"><strong>Fin:</strong> ${item.fechaFinJuicio || 'N/A'}</p>
+
+                        <h5 class="text-sm font-semibold mt-3 mb-1 text-gray-700">Detalles del Delito:</h5>
+                        <div class="ml-4 border-l-2 border-gray-200 pl-3 py-1 mb-2">
+                            <p class="mb-1"><strong>Nombre:</strong> ${item.nombreDelito || 'N/A'}</p>
+                            <p class="mb-1"><strong>Tipo:</strong> ${item.tipoDelito || 'N/A'}</p>
+                            <p class="mb-1"><strong>Gravedad:</strong> ${item.gravedadDelito || 'N/A'}</p>
+                            <p class="mb-1"><strong>Descripción:</strong> ${item.descripcionDelito || 'N/A'}</p>
+                        </div>
+                        <p class="text-gray-500 italic mt-3">La información de sentencias no está disponible temporalmente.</p>
+                    `;
+
+                    juicioDiv.appendChild(header);
+                    juicioDiv.appendChild(content);
+                    juiciosContainer.appendChild(juicioDiv);
+                });
+            } else {
+                juiciosContainer.innerHTML = '<p class="text-gray-500 italic">No hay juicios asociados a este delincuente.</p>';
+            }
 
             openModal('offender-detail-modal');
-        }
-</script>
 
+        } catch (error) {
+            console.error('Error al obtener detalles del delincuente:', error);
+            alert('No se pudo cargar los detalles del delincuente.');
+        }
+    }
+</script>
