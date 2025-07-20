@@ -8,6 +8,7 @@ namespace SistemaGestionJudicial.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
+
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -20,23 +21,14 @@ namespace SistemaGestionJudicial.Controllers
         }
 
 
-
         public IActionResult CrearDenuncia()
         {
             return View();
         }
 
 
-        public IActionResult Login()
-        {
-            return View();
-        }
-
+        
         public IActionResult RecuperacionCuenta()
-        {
-            return View();
-        }
-        public IActionResult Token()
         {
             return View();
         }
