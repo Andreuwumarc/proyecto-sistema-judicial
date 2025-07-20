@@ -40,6 +40,8 @@ namespace SistemaGestionJudicial.Controllers
             // Guardar en sesión
             HttpContext.Session.SetInt32("UsuarioId", (int)user.IdUsuario);
             HttpContext.Session.SetString("NombreUsuario", user.Usuario1);
+            HttpContext.Session.SetInt32("RolUsuario", (int)user.IdPersonaNavigation.IdRol);
+
 
             return RedirectToAction("Index", "Home");
         }
