@@ -6,10 +6,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+<<<<<<< HEAD
 builder.Services.AddDbContext<ProyectoContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("ProyectoContext"));
 });
+=======
+builder.Services.AddSession();
+
+builder.Services.AddDbContext<ProyectoContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("MiConexion")));
+>>>>>>> develop
 
 var app = builder.Build();
 
@@ -24,6 +31,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseSession();
+
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -35,3 +44,6 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+
+
