@@ -1,15 +1,10 @@
-﻿@{
-    ViewData["Title"] = "Partes Policiales";
+﻿@model SistemaGestionJudicial.Models.PoliceViewModel
 
-    var partes = new[]
-    {
-        new { IdParte = 1, FechaParte = DateTime.Now.AddDays(-1), NombrePolicia = "Oficial Pérez", Descripcion = "Reporte de incidente menor", DenunciaResumen = "Denuncia #12345" },
-        new { IdParte = 2, FechaParte = DateTime.Now, NombrePolicia = "Sargento Gómez", Descripcion = "Reporte de accidente", DenunciaResumen = "Denuncia #12346" }
-    };
+@{
+    ViewData["Title"] = "Gestión de Partes Policiales"; // Título para la página
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/partespoliciales.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 }
@@ -17,53 +12,67 @@
 <div class="flex h-screen overflow-hidden">
     <div class="flex-1 overflow-auto">
         <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print">
-            <h2 class="text-xl font-semibold text-gray-800" id="view-title">Gestión de Partes Policiales</h2>
+            <h2 class="text-xl font-semibold text-gray-800">Gestión de Partes Policiales</h2>
         </header>
 
         <div class="p-6">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold">Partes Policiales</h2>
-                <button onclick="openModal('add-parte-modal')"
+                <button onclick="openModal('createParteModal')"
                         class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
                     <i class="fas fa-plus mr-2"></i> Agregar Parte
                 </button>
             </div>
 
-            <div class="card bg-white rounded-lg p-6">
+            <div class="bg-white rounded-lg p-6">
                 <div class="overflow-x-auto">
-                    <table class="data-table w-full border-collapse border border-gray-300">
-                        <thead>
-                            <tr class="bg-gray-100">
-                                <th class="border border-gray-300 px-4 py-2">ID</th>
-                                <th class="border border-gray-300 px-4 py-2">Fecha</th>
-                                <th class="border border-gray-300 px-4 py-2">Policía</th>
-                                <th class="border border-gray-300 px-4 py-2">Descripción</th>
-                                <th class="border border-gray-300 px-4 py-2">Denuncia Asociada</th>
-                                <th class="border border-gray-300 px-4 py-2">Acciones</th>
+                    <table class="w-full border border-gray-300">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="border px-4 py-2">ID</th>
+                                <th class="border px-4 py-2">Fecha</th>
+                                <th class="border px-4 py-2">Policía</th>
+                                <th class="border px-4 py-2">Descripción</th>
+                                <th class="border px-4 py-2">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var parte in partes)
+                            @foreach (var parte in Model.Partes)
                             {
                                 <tr>
-                                    <td class="border border-gray-300 px-4 py-2">@parte.IdParte</td>
-                                    <td class="border border-gray-300 px-4 py-2">@parte.FechaParte.ToShortDateString()</td>
-                                    <td class="border border-gray-300 px-4 py-2">@parte.NombrePolicia</td>
-                                    <td class="border border-gray-300 px-4 py-2">@parte.Descripcion</td>
-                                    <td class="border border-gray-300 px-4 py-2">@parte.DenunciaResumen</td>
-                                    <td class="border border-gray-300 px-4 py-2">
-                                        <button class="text-blue-600 hover:text-blue-800 mr-2" onclick="openDetailModal('@parte.IdParte')">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="text-green-600 hover:text-green-800 mr-2">
+                                    <td class="border px-4 py-2">@parte.IdParte</td>
+                                    <td class="border px-4 py-2">@parte.FechaParte?.ToString("dd/MM/yyyy")</td>
+                                    <td class="border px-4 py-2">
+                                        @(parte.IdPersonaPoliciaNavigation != null
+                                                                            ? $"{parte.IdPersonaPoliciaNavigation.Nombres} {parte.IdPersonaPoliciaNavigation.Apellidos}"
+                                                                            : "Desconocido")
+                                </td>
+                                <td class="border px-4 py-2">@parte.Descripcion</td>
+                                <td class="border px-4 py-2">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-2 btn-show-detail"
+                                            data-id="@parte.IdParte"
+                                            data-fecha="@parte.FechaParte?.ToString("dd/MM/yyyy")"
+                                            data-policia="@(parte.IdPersonaPoliciaNavigation != null ? parte.IdPersonaPoliciaNavigation.Nombres + " " + parte.IdPersonaPoliciaNavigation.Apellidos : "Desconocido")"
+                                            data-descripcion="@parte.Descripcion"
+                                            data-denuncia="@(parte.IdDenunciaNavigation != null ? parte.IdDenunciaNavigation.Descripcion : "")"
+                                            title="Ver detalle">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+
+                                        <button class="text-green-600 hover:text-green-800 mr-2"
+                                                onclick='openEditParteModal(@parte.IdParte, "@parte.FechaParte?.ToString("yyyy-MM-dd")", @Html.Raw(Json.Serialize(parte.Descripcion)), @parte.IdPersonaPolicia, @parte.IdDenuncia)'
+                                                title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="text-red-600 hover:text-red-800">
+
+                                        <button class="text-red-600 hover:text-red-800"
+                                                onclick="openDeleteParteModal(@parte.IdParte)"
+                                                title="Eliminar">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
-                            }
+                                                        }
                         </tbody>
                     </table>
                 </div>
@@ -72,55 +81,281 @@
     </div>
 </div>
 
-<!-- Modal para agregar parte -->
-<div id="add-parte-modal"
-     class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-4">Agregar Parte Policial</h3>
-        <form id="addParteForm">
+<!-- Modal Crear Parte Policial -->
+<div id="createParteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 overflow-auto">
+    <div class="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <h2 class="text-2xl font-bold mb-6">Crear Parte Policial</h2>
+        <form id="createParteForm" asp-controller="Police" asp-action="Create" method="post">
+            @* Se añadió id para el JavaScript *@
+            @Html.AntiForgeryToken()
             <div class="mb-4">
-                <label for="fechaParte" class="block text-sm font-medium text-gray-700">Fecha</label>
-                <input type="date" id="fechaParte" class="form-input" required />
+                <label for="createFecha_Parte" class="block text-gray-700 font-semibold mb-2">Fecha</label>
+                <input id="createFecha_Parte" name="Fecha_Parte" type="date" class="w-full px-4 py-2 border rounded-md" required />
+                <span class="text-red-500 text-sm" id="createFechaError"></span>
             </div>
+
             <div class="mb-4">
-                <label for="descripcionParte" class="block text-sm font-medium text-gray-700">Descripción</label>
-                <textarea id="descripcionParte" class="form-input" required></textarea>
+                <label for="createDescripcion" class="block text-gray-700 font-semibold mb-2">Descripción</label>
+                <textarea id="createDescripcion" name="Descripcion" class="w-full px-4 py-2 border rounded-md" rows="4" required></textarea>
+                <span class="text-red-500 text-sm" id="createDescripcionError"></span>
             </div>
+
             <div class="mb-4">
-                <label for="policia" class="block text-sm font-medium text-gray-700">Policía</label>
-                <select id="policia" class="form-input" required>
-                    <option value="">Seleccione</option>
+                <label for="createId_Persona_Policia" class="block font-semibold mb-2">Policía</label>
+                <select id="createId_Persona_Policia" name="Id_Persona_Policia" class="w-full px-4 py-2 border rounded-md" required>
+                    <option value="">Seleccione un policía</option>
+                    @{
+                        var personas = ViewBag.Personas as IEnumerable<SelectListItem>;
+                        if (personas != null)
+                        {
+                            foreach (var persona in personas)
+                            {
+                                <option value="@persona.Value">@persona.Text</option>
+                            }
+                        }
+                    }
                 </select>
+                <span class="text-red-500 text-sm" id="createPersonaError"></span>
             </div>
+
             <div class="mb-4">
-                <label for="denuncia" class="block text-sm font-medium text-gray-700">Denuncia Asociada</label>
-                <select id="denuncia" class="form-input" required>
-                    <option value="">Seleccione</option>
+                <label for="createId_Denuncia" class="block font-semibold mb-2">Denuncia</label>
+                <select id="createId_Denuncia" name="Id_Denuncia" class="w-full px-4 py-2 border rounded-md" required>
+                    <option value="">Seleccione una denuncia</option>
+                    @{
+                        var denuncias = ViewBag.Denuncias as IEnumerable<SelectListItem>;
+                        if (denuncias != null)
+                        {
+                            foreach (var denuncia in denuncias)
+                            {
+                                <option value="@denuncia.Value">@denuncia.Text</option>
+                            }
+                        }
+                    }
                 </select>
+                <span class="text-red-500 text-sm" id="createDenunciaError"></span>
             </div>
+
             <div class="flex justify-end">
-                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
-                        onclick="closeModal('add-parte-modal')">
-                    Cancelar
-                </button>
+                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2" onclick="closeModal('createParteModal')">Cancelar</button>
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Guardar</button>
             </div>
         </form>
     </div>
 </div>
 
+<!-- Modal Mostrar Detalles -->
+<div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full">
+        <h3 class="text-xl font-bold mb-4">Detalle del Parte Policial</h3>
+        <p><strong>ID:</strong> <span id="modalId"></span></p>
+        <p><strong>Fecha:</strong> <span id="modalFecha"></span></p>
+        <p><strong>Policía:</strong> <span id="modalPolicia"></span></p>
+        <p><strong>Descripción:</strong> <span id="modalDescripcion"></span></p>
+        <p><strong>Denuncia:</strong> <span id="modalDenuncia"></span></p>
+        <div class="mt-6 text-right">
+            <button id="closeDetailModalBtn" class="bg-gray-500 text-white px-4 py-2 rounded">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Parte Policial -->
+<div id="editParteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 overflow-auto">
+    <div class="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <h2 class="text-2xl font-bold mb-6">Editar Parte Policial</h2>
+        <form id="editParteForm" asp-controller="Police" asp-action="Edit" method="post">
+            @* Se añadió id para el JavaScript *@
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="editId_Parte" name="Id_Parte" />
+
+            <div class="mb-4">
+                <label for="editFecha_Parte" class="block text-gray-700 font-semibold mb-2">Fecha</label>
+                <input id="editFecha_Parte" name="Fecha_Parte" type="date" class="w-full px-4 py-2 border rounded-md" required />
+                <span class="text-red-500 text-sm" id="editFechaError"></span>
+            </div>
+
+            <div class="mb-4">
+                <label for="editDescripcion" class="block text-gray-700 font-semibold mb-2">Descripción</label>
+                <textarea id="editDescripcion" name="Descripcion" class="w-full px-4 py-2 border rounded-md" rows="4" required></textarea>
+                <span class="text-red-500 text-sm" id="editDescripcionError"></span>
+            </div>
+
+            <div class="mb-4">
+                <label for="editId_Persona_Policia" class="block font-semibold mb-2">Policía</label>
+                <select id="editId_Persona_Policia" name="Id_Persona_Policia" class="w-full px-4 py-2 border rounded-md" required>
+                    <option value="">Seleccione un policía</option>
+                    @{
+                        var personasEdit = ViewBag.Personas as IEnumerable<SelectListItem>;
+                        if (personasEdit != null)
+                        {
+                            foreach (var persona in personasEdit)
+                            {
+                                <option value="@persona.Value">@persona.Text</option>
+                            }
+                        }
+                    }
+                </select>
+                <span class="text-red-500 text-sm" id="editPersonaError"></span>
+            </div>
+
+            <div class="mb-4">
+                <label for="editId_Denuncia" class="block font-semibold mb-2">Denuncia</label>
+                <select id="editId_Denuncia" name="Id_Denuncia" class="w-full px-4 py-2 border rounded-md" required>
+                    <option value="">Seleccione una denuncia</option>
+                    @{
+                        var denunciasEdit = ViewBag.Denuncias as IEnumerable<SelectListItem>;
+                        if (denunciasEdit != null)
+                        {
+                            foreach (var denuncia in denunciasEdit)
+                            {
+                                <option value="@denuncia.Value">@denuncia.Text</option>
+                            }
+                        }
+                    }
+                </select>
+                <span class="text-red-500 text-sm" id="editDenunciaError"></span>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2" onclick="closeModal('editParteModal')">Cancelar</button>
+                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Confirmar Eliminación -->
+<div id="deleteParteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4">¿Eliminar Parte Policial?</h3>
+        <p class="mb-6">Esta acción no se puede deshacer. ¿Deseas continuar?</p>
+        <form asp-controller="Police" asp-action="Delete" method="post">
+            @Html.AntiForgeryToken() @* Añadir token de anti-falsificación aquí también *@
+            <input type="hidden" id="deleteId_Parte" name="id" />
+            <div class="flex justify-end">
+                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2" onclick="closeModal('deleteParteModal')">Cancelar</button>
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg">Eliminar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-    function openModal(modalId) {
-        document.getElementById(modalId).classList.remove('hidden');
+    // Función genérica para abrir un modal
+    function openModal(id) {
+        document.getElementById(id).classList.remove('hidden');
+        // Limpiar errores y formulario al abrir modal de creación
+        if (id === 'createParteModal') {
+            clearForm('create'); // Limpiar campos
+            clearFormErrors('create'); // Limpiar mensajes de error
+        }
     }
 
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.add('hidden');
+    // Función genérica para cerrar un modal
+    function closeModal(id) {
+        document.getElementById(id).classList.add('hidden');
+        // Limpiar errores al cerrar cualquier modal de formulario
+        if (id === 'createParteModal' || id === 'editParteModal') {
+            clearFormErrors(id.replace('ParteModal', '').replace('create', 'create').replace('edit', 'edit'));
+        }
     }
 
-    document.getElementById('addParteForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        alert('Parte policial agregado exitosamente.');
-        closeModal('add-parte-modal');
+    // Función para limpiar campos de un formulario dado un prefijo (ej. 'create')
+    function clearForm(prefix) {
+        document.getElementById(`${prefix}Fecha_Parte`).value = '';
+        document.getElementById(`${prefix}Descripcion`).value = '';
+        document.getElementById(`${prefix}Id_Persona_Policia`).value = '';
+        document.getElementById(`${prefix}Id_Denuncia`).value = '';
+    }
+
+    // Función para limpiar mensajes de error de un formulario dado un prefijo (ej. 'create', 'edit')
+    function clearFormErrors(prefix) {
+        document.getElementById(`${prefix}FechaError`).textContent = '';
+        document.getElementById(`${prefix}DescripcionError`).textContent = '';
+        document.getElementById(`${prefix}PersonaError`).textContent = '';
+        document.getElementById(`${prefix}DenunciaError`).textContent = '';
+    }
+
+    // Manejar la apertura y cierre del modal de detalles
+    document.querySelectorAll('.btn-show-detail').forEach(btn => {
+        btn.addEventListener('click', function () {
+            // Llenar los campos del modal de detalles con los datos del botón
+            document.getElementById('modalId').textContent = this.dataset.id;
+            document.getElementById('modalFecha').textContent = this.dataset.fecha;
+            document.getElementById('modalPolicia').textContent = this.dataset.policia;
+            document.getElementById('modalDescripcion').textContent = this.dataset.descripcion;
+            document.getElementById('modalDenuncia').textContent = this.dataset.denuncia;
+            openModal('detailModal'); // Abrir el modal de detalles
+        });
     });
+
+    document.getElementById('closeDetailModalBtn').addEventListener('click', () => {
+        closeModal('detailModal'); // Cerrar el modal de detalles
+    });
+
+    // Abrir modal editar con datos cargados
+    function openEditParteModal(id, fecha, descripcion, idPolicia, idDenuncia) {
+        // Cargar los valores en los campos del formulario de edición
+        document.getElementById('editId_Parte').value = id;
+        document.getElementById('editFecha_Parte').value = fecha;
+        document.getElementById('editDescripcion').value = descripcion;
+        document.getElementById('editId_Persona_Policia').value = idPolicia;
+        document.getElementById('editId_Denuncia').value = idDenuncia;
+
+        clearFormErrors('edit'); // Limpiar errores previos antes de abrir
+        openModal('editParteModal'); // Abrir el modal de edición
+    }
+
+    // Abrir modal eliminar
+    function openDeleteParteModal(id) {
+        document.getElementById('deleteId_Parte').value = id; // Establecer el ID en el campo oculto
+        openModal('deleteParteModal'); // Abrir el modal de confirmación de eliminación
+    }
+
+    // Función genérica para validar formularios de parte policial
+    function validateParteForm(prefix) {
+        let isValid = true;
+        clearFormErrors(prefix); // Limpiar errores al inicio de la validación
+
+        const fechaInput = document.getElementById(`${prefix}Fecha_Parte`);
+        const descripcionInput = document.getElementById(`${prefix}Descripcion`);
+        const policiaSelect = document.getElementById(`${prefix}Id_Persona_Policia`);
+        const denunciaSelect = document.getElementById(`${prefix}Id_Denuncia`);
+
+        if (!fechaInput.value) {
+            document.getElementById(`${prefix}FechaError`).textContent = 'La fecha es requerida.';
+            isValid = false;
+        }
+
+        if (!descripcionInput.value.trim()) {
+            document.getElementById(`${prefix}DescripcionError`).textContent = 'La descripción es requerida.';
+            isValid = false;
+        }
+
+        if (!policiaSelect.value) {
+            document.getElementById(`${prefix}PersonaError`).textContent = 'Debe seleccionar un policía.';
+            isValid = false;
+        }
+
+        if (!denunciaSelect.value) {
+            document.getElementById(`${prefix}DenunciaError`).textContent = 'Debe seleccionar una denuncia.';
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    // Asignar el evento submit para la validación de formularios de creación y edición
+    document.getElementById('createParteForm').addEventListener('submit', function(e) {
+        if (!validateParteForm('create')) {
+            e.preventDefault(); // Detener el envío del formulario si la validación falla
+        }
+    });
+
+    document.getElementById('editParteForm').addEventListener('submit', function(e) {
+        if (!validateParteForm('edit')) {
+            e.preventDefault(); // Detener el envío del formulario si la validación falla
+        }
+    });
+
 </script>

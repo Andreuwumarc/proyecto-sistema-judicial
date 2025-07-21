@@ -25,5 +25,5 @@ public partial class Denuncia
 
     public virtual ICollection<Juicio> Juicios { get; set; } = new List<Juicio>();
 
-    public virtual ICollection<PartesPoliciale> PartesPoliciales { get; set; } = new List<PartesPoliciale>();
+    public virtual ICollection<PartePolicial> PartesPoliciales { get; set; } = new List<PartePolicial>();
 }

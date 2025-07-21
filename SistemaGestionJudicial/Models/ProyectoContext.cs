@@ -25,7 +25,7 @@ public partial class ProyectoContext : DbContext
 
     public virtual DbSet<JuiciosAcusado> JuiciosAcusados { get; set; }
 
-    public virtual DbSet<PartesPoliciale> PartesPoliciales { get; set; }
+    public virtual DbSet<PartePolicial> PartesPoliciales { get; set; }
 
     public virtual DbSet<Persona> Personas { get; set; }
 
@@ -36,8 +36,11 @@ public partial class ProyectoContext : DbContext
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=localhost;Database=proyecto;Integrated Security=True;TrustServerCertificate=True");
+    {
+        //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        //        => optionsBuilder.UseSqlServer("Server=localhost;Database=proyecto;Integrated Security=True;TrustServerCertificate=True");
+
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -168,7 +171,7 @@ public partial class ProyectoContext : DbContext
                 .HasConstraintName("fk_acusados_personas");
         });
 
-        modelBuilder.Entity<PartesPoliciale>(entity =>
+        modelBuilder.Entity<PartePolicial>(entity =>
         {
             entity.HasKey(e => e.IdParte).HasName("PK__partes_p__3F12D5842FADFC0E");
 

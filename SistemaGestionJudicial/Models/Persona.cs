@@ -31,11 +31,13 @@ public partial class Persona
 
     public virtual Role? IdRolNavigation { get; set; }
 
+    //public long Id_Rol { get; set; }
+
     public virtual ICollection<Juicio> Juicios { get; set; } = new List<Juicio>();
 
     public virtual ICollection<JuiciosAcusado> JuiciosAcusados { get; set; } = new List<JuiciosAcusado>();
 
-    public virtual ICollection<PartesPoliciale> PartesPoliciales { get; set; } = new List<PartesPoliciale>();
+    public virtual ICollection<PartePolicial> PartesPoliciales { get; set; } = new List<PartePolicial>();
 
     public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }
