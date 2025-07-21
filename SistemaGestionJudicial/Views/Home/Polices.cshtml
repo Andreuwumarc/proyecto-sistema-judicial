@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SistemaGestionJudicial.Models.PartePolicial>
+﻿@model SistemaGestionJudicial.Models.PoliceViewModel
 
 @{
     ViewData["Title"] = "Gestión de Partes Policiales"; // Título para la página
@@ -37,7 +37,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var parte in Model)
+                            @foreach (var parte in Model.Partes)
                             {
                                 <tr>
                                     <td class="border px-4 py-2">@parte.Id_Parte</td>
