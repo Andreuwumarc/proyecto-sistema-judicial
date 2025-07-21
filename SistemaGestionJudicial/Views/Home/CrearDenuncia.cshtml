@@ -1,111 +1,109 @@
 ﻿@{
-    Layout = "~/Views/Shared/_HomePageLayout.cshtml";
-    ViewData["Title"] = "Crear denuncia";
+    ViewData["Title"] = "Crear Denuncia";
 }
 
-<div class="min-h-screen bg-cover bg-center bg-no-repeat py-12 px-4"
-     style="background-image: url('/img/Maccari-Cicero.jpg');">
+@section Styles {
+    <link rel="stylesheet" href="~/css/CrearDenuncia.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
 
-    <div class="bg-white bg-opacity-90 shadow-2xl rounded-xl max-w-4xl mx-auto p-8">
-        <h2 class="text-4xl font-bold text-blue-900 text-center mb-8 font-serif">@ViewData["Title"]</h2>
+<header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print fixed top-0 z-50" 
+        style="left: 16rem; width: calc(100% - 16rem);">
+    <h2 class="text-xl font-semibold text-gray-800" id="view-title">Ingresar denuncia</h2>
+</header>
+<div class="flex justify-center p-6 bg-gray-50 min-h-screen mt-[90px]">
+    <form method="post" class="bg-white rounded-lg shadow p-6 w-[80%] max-w-4xl space-y-8">
 
-        <form method="post" enctype="multipart/form-data" class="space-y-6">
 
-            <!-- DATOS DEL DENUNCIANTE -->
-            <div>
-                <h3 class="text-2xl font-semibold text-blue-800 border-b pb-2 mb-4">Datos del Denunciante</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                        <input type="text" name="nombreDenunciante"
-                               class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-blue-500" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Cédula</label>
-                        <input type="text" name="cedulaDenunciante"
-                               class="w-full border border-gray-300 rounded px-4 py-2" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                        <input type="tel" name="telefono"
-                               class="w-full border border-gray-300 rounded px-4 py-2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-                        <input type="email" name="correo"
-                               class="w-full border border-gray-300 rounded px-4 py-2">
-                    </div>
+
+        <!-- Datos del Denunciante -->
+        <section>
+            <h2 class="text-xl font-semibold text-blue-800 border-b border-blue-300 pb-2 mb-4">Datos del Denunciante</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Cédula</label>
+                    <input type="text" name="cedula" value="0123456789" disabled
+                           class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombres</label>
+                    <input type="text" name="nombres" value="Juan Carlos" disabled
+                           class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Apellidos</label>
+                    <input type="text" name="apellidos" value="Pérez López" disabled
+                           class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento</label>
+                    <input type="date" name="fechaNacimiento" value="1990-05-20" disabled
+                           class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Género</label>
+                    <input type="text" name="genero" value="Masculino" disabled
+                           class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                    <input type="text" name="direccion" value="Av. Siempre Viva 123" disabled
+                           class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                    <input type="tel" name="telefono" value="0998765432" disabled
+                           class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
+                    <input type="email" name="correo" value="juan.perez@example.com" disabled
+                           class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
                 </div>
             </div>
+        </section>
 
-            <!-- DATOS DEL DENUNCIADO -->
-            <div>
-                <h3 class="text-2xl font-semibold text-blue-800 border-b pb-2 mb-4">Datos del Denunciado</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre (si se conoce)</label>
-                        <input type="text" name="nombreDenunciado"
-                               class="w-full border border-gray-300 rounded px-4 py-2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
-                        <input type="text" name="direccionDenunciado"
-                               class="w-full border border-gray-300 rounded px-4 py-2">
-                    </div>
+        <!-- Detalles de la Denuncia -->
+        <section>
+            <h2 class="text-xl font-semibold text-blue-800 border-b border-blue-300 pb-2 mb-4">Detalles de la Denuncia</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Denuncia</label>
+                    <input type="date" name="fechaDenuncia" required
+                           class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Lugar del Hecho</label>
+                    <input type="text" name="lugarHecho" required
+                           class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Descripción del Hecho</label>
+                    <textarea name="descripcionHecho" rows="4" required
+                              class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Delito Cometido</label>
+                    <select name="delito" required
+                            class="w-full border border-gray-300 rounded px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="" disabled selected>Seleccione un delito</option>
+                        <option value="1">Robo</option>
+                        <option value="2">Agresión</option>
+                        <option value="3">Acoso</option>
+                        <option value="4">Violencia Intrafamiliar</option>
+                    </select>
                 </div>
             </div>
+        </section>
 
-            <!-- DETALLES DE LA DENUNCIA -->
-            <div>
-                <h3 class="text-2xl font-semibold text-blue-800 border-b pb-2 mb-4">Detalles de la Denuncia</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de delito</label>
-                        <select name="tipoDelito"
-                                class="w-full border border-gray-300 rounded px-4 py-2 bg-white" required>
-                            <option disabled selected>Seleccione un delito</option>
-                            <option value="1">Robo</option>
-                            <option value="2">Agresión</option>
-                            <option value="3">Acoso</option>
-                            <option value="4">Violencia intrafamiliar</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha del hecho</label>
-                        <input type="date" name="fechaHecho"
-                               class="w-full border border-gray-300 rounded px-4 py-2" required>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Lugar del hecho</label>
-                    <input type="text" name="lugarHecho"
-                           class="w-full border border-gray-300 rounded px-4 py-2" required>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-                    <textarea name="descripcion" rows="4"
-                              class="w-full border border-gray-300 rounded px-4 py-2" required></textarea>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Adjuntar evidencia (opcional)</label>
-                    <input type="file" name="evidencias" class="w-full text-sm text-gray-600">
-                </div>
-            </div>
+        <div class="text-right">
+            <button type="submit"
+                    class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-2 rounded shadow">
+                Enviar Denuncia
+            </button>
+        </div>
 
-            <!-- OPCIONES -->
-            <div class="flex items-center">
-                <input type="checkbox" name="anonima" id="anonima" class="mr-2">
-                <label for="anonima" class="text-sm text-gray-700">Enviar como denuncia anónima</label>
-            </div>
+    </form>
 
-            <!-- BOTÓN -->
-            <div class="text-right">
-                <button type="submit"
-                        class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-2 rounded shadow">
-                    Enviar Denuncia
-                </button>
-            </div>
-
-        </form>
-    </div>
 </div>

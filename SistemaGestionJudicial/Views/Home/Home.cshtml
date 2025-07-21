@@ -3,55 +3,82 @@
     ViewData["Title"] = "Inicio";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" />
+}
 
 
-<style>
-    /* Imagen de fondo estilo greco-romano */
-    .background-roman {
-        background-image: url('/img/image_2021-09-14_173108.png'); /* Cambia la ruta a tu imagen */
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        min-height: 100vh;
-    }
-
-    /* Fondo oscuro semi-transparente para mejor legibilidad del texto */
-    .overlay-dark {
-        background-color: rgba(10, 10, 10, 0.6);
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-</style>
-
-<div class="background-roman">
-    <div class="overlay-dark text-white p-8 max-w-4xl mx-auto font-serif" style="font-family: 'Cinzel', serif;">
-        <h1 class="text-5xl font-bold mb-6">Bienvenido a nuestro sistema</h1>
-
-        <p class="text-lg mb-4">
-            Somos estudiantes de la carrera de Desarrollo de Software, cursando la materia de Programación usando Framework.
-        </p>
-
-        <p class="text-lg mb-4 font-semibold">Integrantes del equipo:</p>
-
-        <ul class="list-disc list-inside space-y-1 text-lg">
-            <li>Ávila Moreno David Alexander</li>
-            <li>Bedón Pacheco Billy Joshua</li>
-            <li>Córdova Fernández Alex Daniel</li>
-            <li>Ayapata Mendoza Joel Gustavo</li>
-            <li>García Sánchez Medardo Ángel</li>
-            <li>Huiracocha Alvarado Fernando Jesús</li>
-            <li>Intriago Mora Carlos Stuart</li>
-            <li>Jijon Garcia Jimmy Alejandro</li>
-            <li>Mercado Villamar Ricardo Andrés</li>
-            <li>Mora Vite Aarón Eliezer</li>
-            <li>Romero Chávez Marcos Andrés</li>
-            <li>Villacís Arteaga Juan Andrés</li>
-        </ul>
-
-        <!-- <p class="mt-8 text-xl font-semibold">Opciones para visitantes:</p>
-         Aquí puedes agregar botones o enlaces para las opciones -->
+<!-- Hero principal -->
+<div class="hero-section text-white text-center d-flex align-items-center justify-content-center">
+    <div class="overlay"></div>
+    <div class="content py-5">
+        <h1 class="display-4 fw-bold">Sistema Judicial Grecorromano</h1>
+        <p class="lead">Administra denuncias, juicios, fiscales y sentencias de forma moderna, inspirada en la justicia de los antiguos imperios.</p>
+        <a href="/Denuncias" class="btn btn-transparente mt-3">Registrar una Denuncia</a>
     </div>
 </div>
+
+
+<!-- Sección de funcionalidades -->
+<section class="py-5 text-center seccion-funcionalidades">
+    <div class="container">
+        <h2 class="fw-bold mb-4 titulo-seccion">¿Qué puede hacer nuestro sistema?</h2>
+        <div class="row">
+            <div class="col-md-4 item-funcionalidad">
+                <img src="/images/2ef1696f0ca526b5cb0b267e54dc5a30.jpg" class="icono-funcion" />
+                <h5 class="titulo-funcion">Registrar Denuncias</h5>
+                <p class="texto-funcion">Permite ingresar casos legales con toda la información detallada del denunciante, acusado y el delito.</p>
+            </div>
+            <div class="col-md-4 item-funcionalidad">
+                <img src="/images/dcdd47348d4fef32d1b2fa28e5102673.jpg" class="icono-funcion" />
+                <h5 class="titulo-funcion">Asignar Fiscales y Jueces</h5>
+                <p class="texto-funcion">Administra la asignación de fiscales y jueces para cada proceso judicial, mejorando la transparencia.</p>
+            </div>
+            <div class="col-md-4 item-funcionalidad">
+                <img src="/images/3f12f4ca5e1f11b18e535ec5a60e4351.jpg" class="icono-funcion" />
+                <h5 class="titulo-funcion">Generar Reportes</h5>
+                <p class="texto-funcion">Consulta reportes por fecha, tipo de delito o estado del proceso, todo desde una interfaz amigable.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Sección de servicios -->
+<section class="servicios-section">
+    <div class="overlay"></div>
+    <div class="container content text-center">
+        <h2 class="fw-bold mb-4">Servicios Judiciales</h2>
+
+        <div class="mb-4 text-start">
+            <p>
+                Nuestro sistema judicial acompaña todo el proceso desde la ocurrencia del hecho hasta el cierre del caso. Permite registrar y dar seguimiento a denuncias formales presentadas por víctimas o testigos, facilita la gestión de la investigación policial y la evaluación fiscal, y apoya la realización de audiencias y juicios. Además, administra las sentencias dictadas y garantiza el registro completo y transparente de cada etapa del ciclo judicial.
+            </p>
+            <!--
+            <p>
+                Está diseñado para mejorar la eficiencia, la transparencia y la accesibilidad en la administración de justicia, permitiendo que autoridades, víctimas y ciudadanos puedan interactuar con información clara y actualizada durante todo el proceso legal.
+            </p>
+            -->
+        </div>
+
+        <!--
+        <div class="row">
+            <div class="col-md-4">
+                <h6 class="fw-bold">Seguimiento de Juicios</h6>
+                <p>Consulta el estado de un juicio en tiempo real, desde la denuncia hasta la sentencia.</p>
+            </div>
+            <div class="col-md-4">
+                <h6 class="fw-bold">Base de Datos de Delincuentes</h6>
+                <p>Accede a un registro con historial judicial, delitos cometidos y sentencias aplicadas.</p>
+            </div>
+            <div class="col-md-4">
+                <h6 class="fw-bold">Historial de Sentencias</h6>
+                <p>Revisa sentencias emitidas por jueces con detalles del caso, partes involucradas y fechas clave.</p>
+            </div>
+        </div>
+        -->
+    </div>
+</section>
+
+
 
