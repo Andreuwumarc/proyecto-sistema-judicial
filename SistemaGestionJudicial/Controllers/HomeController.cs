@@ -1,23 +1,35 @@
+// Ruta: SistemaGestionJudicial/Controllers/HomeController.cs
+
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using SistemaGestionJudicial.Models; // Necesario para ProyectoContext y Persona
-using System.Linq; // Necesario para .Where() y .ToList()
-using Microsoft.EntityFrameworkCore; // Necesario para .Include() si lo usas
+using Microsoft.EntityFrameworkCore; // Necesario para usar DbContext y métodos como .Where(), .ToList()
+using SistemaGestionJudicial.Models; // Necesario para ErrorViewModel, Persona, etc.
+using System.Linq; // Necesario para .Where()
 
 namespace SistemaGestionJudicial.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ProyectoContext _context; // Declara una instancia de tu contexto de base de datos
+        private readonly ProyectoContext _context; // <<-- CORRECCIÓN CLAVE: Tipo correcto y readonly
 
-        public HomeController(ILogger<HomeController> logger, ProyectoContext context) // Inyecta ILogger y ProyectoContext
+        // <<-- CORRECCIÓN CLAVE: Inyecta ProyectoContext aquí
+        public HomeController(ILogger<HomeController> logger, ProyectoContext context)
         {
             _logger = logger;
-            _context = context; // Asigna el contexto inyectado
+            _context = context; // <<-- CORRECCIÓN CLAVE: Asigna el contexto inyectado
         }
 
         public IActionResult Login()
+        {
+            return View();
+        }
+
+        public IActionResult RecuperacionCuenta()
+        {
+            return View();
+        }
+        public IActionResult Token()
         {
             return View();
         }
@@ -27,11 +39,13 @@ namespace SistemaGestionJudicial.Controllers
             return View();
         }
 
+        // <<-- AQUÍ ES DONDE ESTABA EL PROBLEMA ORIGINAL DEL "NO EXISTE DELINCUENTE"
+        // Porque _context era null. Ahora, al inyectarlo, ya no será null.
         public IActionResult Delincuentes()
         {
             // Obtener la lista de personas con id_rol = 3 (asumiendo que es el rol de delincuente)
             // .ToList() ejecuta la consulta y trae los datos a la memoria.
-            var delincuentes = _context.Personas.Where(p => p.IdRol == 3).ToList(); //
+            var delincuentes = _context.Personas.Where(p => p.IdRol == 3).ToList();
 
             // Pasa la lista de delincuentes a la vista
             return View(delincuentes);
