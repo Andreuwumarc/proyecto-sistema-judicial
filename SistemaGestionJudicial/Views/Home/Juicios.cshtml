@@ -1,0 +1,406 @@
+﻿@model List<SistemaGestionJudicial.Models.Juicio>
+@using System.Globalization
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Gestión de Juicios";
+    var jueces = (List<Persona>)ViewData["Jueces"];
+    var fiscales = (List<Persona>)ViewData["Fiscales"];
+    var delitos = (List<Delito>)ViewData["Delitos"];
+    var ests = (List<string>)ViewData["Estados"];
+    var sentTypes = (List<string>)ViewData["SentenciasPosibles"];
+    var denunciantes = (List<Persona>)ViewData["Denunciantes"];
+    var acusados = (List<Persona>)ViewData["PotencialesAcusados"];
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/juicios.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+
+<div class="p-6">
+    <h2 class="text-3xl font-bold mb-4 text-blue-900">Gestión de Juicios</h2>
+
+    <!-- BOTÓN Agregar -->
+    <button id="btnAgregar" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded shadow mb-4">
+        <i class="fas fa-plus"></i> Agregar Juicio
+    </button>
+
+    <!-- FILTROS -->
+    <div class="card bg-white rounded-lg p-6 shadow mb-6">
+        <form method="get" asp-action="Juicios" asp-controller="Juicios" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <select name="juezId" class="form-input">
+                <option value="">-- Juez --</option>
+                @foreach (var j in jueces)
+                {
+                    <option value="@j.IdPersona">@j.Nombres @j.Apellidos</option>
+                }
+            </select>
+
+            <select name="fiscalId" class="form-input">
+                <option value="">-- Fiscal --</option>
+                @foreach (var f in fiscales)
+                {
+                    <option value="@f.IdPersona">@f.Nombres @f.Apellidos</option>
+                }
+            </select>
+
+            <select name="ordenFecha" class="form-input">
+                <option value="">-- Ordenar fecha --</option>
+                <option value="asc">Ascendente</option>
+                <option value="desc">Descendente</option>
+            </select>
+
+            <input type="date" name="fechaDesde" class="form-input" />
+            <input type="date" name="fechaHasta" class="form-input" />
+
+            <div class="md:col-span-5 flex justify-end">
+                <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg">
+                    <i class="fas fa-filter mr-2"></i> Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- TABLA -->
+    <div class="card bg-white rounded-lg p-6 shadow">
+        <div class="overflow-x-auto">
+            <table class="data-table w-full">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th>ID</th><th>Inicio</th><th>Fin</th><th>Estado</th>
+                        <th>Juez</th><th>Fiscal</th><th>Delito</th>
+                        <th>Denunciante</th><th>Acusado</th><th>Sentencia</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var j in Model)
+                {
+                    <tr>
+                        <td>@j.IdJuicio</td>
+                        <td>@j.FechaInicio?.ToString("dd/MM/yyyy")</td>
+                        <td>@j.FechaFin?.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @{
+                                var est = (j.Estado ?? "").ToLower();
+                                var cls = est switch {
+                                    "en proceso" => "badge-active",
+                                    "concluido"  => "badge-completed",
+                                    "programado" => "badge-programado",
+                                    _            => "badge-pending"
+                                };
+                            }
+                            <span class="badge @cls">@j.Estado</span>
+                        </td>
+                            @{
+                                string fiscalNombre = "-";
+                                if (j.IdDenunciaNavigation?.Fiscales?.Any() == true)
+                                {
+                                    var fiscal = j.IdDenunciaNavigation.Fiscales.FirstOrDefault();
+                                    if (fiscal?.IdPersonaFiscalNavigation != null)
+                                    {
+                                        fiscalNombre = $"{fiscal.IdPersonaFiscalNavigation.Nombres} {fiscal.IdPersonaFiscalNavigation.Apellidos}";
+                                    }
+                                }
+                            }
+                            <td>@fiscalNombre</td>
+
+
+                        <td>@(j.IdDenunciaNavigation?.IdDelitoNavigation?.Nombre ?? "-")</td>
+                        <td>
+                            @{
+                                var n = j.IdDenunciaNavigation?.IdPersonaDenunciaNavigation;
+                                var denom = n != null ? $"{n.Nombres} {n.Apellidos}" : "-";
+                            }
+                            @denom
+                        </td>
+                        <td>
+                            @foreach (var a in j.JuiciosAcusados)
+                            {
+                                <div>@a.IdPersonaNavigation?.Nombres @a.IdPersonaNavigation?.Apellidos</div>
+                            }
+                        </td>
+                        <td>
+                            @{
+                                var s = j.Sentencia.FirstOrDefault();
+                                var key = s?.TipoSentencia?.ToLower();
+                                var cls2 = key switch {
+                                    "culpable" => "badge-completed",
+                                    "inocente" => "badge-canceled",
+                                    _          => "badge-pending"
+                                };
+                                var text = s?.TipoSentencia ?? "Pendiente";
+                            }
+                            <span class="badge @cls2">@text</span>
+                        </td>
+                        <td class="whitespace-nowrap">
+                            <!-- Ver -->
+                            <a href="javascript:void(0)"
+                               onclick="ver(this)"
+                               data-id="@j.IdJuicio"
+                               data-pena="@(j.Sentencia.FirstOrDefault()?.Pena ?? "-")"
+                               data-obs="@(j.Sentencia.FirstOrDefault()?.Observaciones ?? "-")"
+                               class="text-blue-600 hover:text-blue-800 mr-2">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <!-- Editar -->
+                                <a href="javascript:void(0)"
+                                   onclick="editar(this)"
+                                   class="text-green-600 hover:text-green-800 mr-2"
+                                   data-id="@j.IdJuicio"
+                                   data-inicio="@j.FechaInicio?.ToString("yyyy-MM-dd")"
+                                   data-fin="@j.FechaFin?.ToString("yyyy-MM-dd")"
+                                   data-estado="@j.Estado"
+                                   data-juez="@j.IdPersonaJuez"
+                                   data-denuncia-id="@j.IdDenuncia"
+                                   @{
+                                       var fiscalId = j.IdDenunciaNavigation?.Fiscales?.FirstOrDefault()?.IdPersonaFiscal ?? 0;
+                                   }
+                                   data-fiscal-id="@fiscalId"
+                                   data-delito-id="@j.IdDenunciaNavigation?.IdDelito"
+                                   data-denunciante-id="@j.IdDenunciaNavigation?.IdPersonaDenuncia"
+                                   data-acusado-id="@j.JuiciosAcusados.FirstOrDefault()?.IdPersona"
+                                   data-sentencia="@j.Sentencia.FirstOrDefault()?.TipoSentencia ?? " Pendiente"">
+                                   <i class="fas fa-edit"></i>
+                                </a>
+                            <!-- Eliminar -->
+                            <a href="javascript:void(0)"
+                               onclick="eliminar(this)"
+                               data-id="@j.IdJuicio"
+                               class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL Agregar/Editar Juicio -->
+<div id="modalJuicio" class="modal fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="modal-content bg-white p-6 rounded w-full max-w-xl">
+        <h3 id="tituloModal" class="text-xl font-semibold text-blue-900 mb-4">Nuevo Juicio</h3>
+        <form id="formJuicio" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="IdJuicio" id="juicioId" />
+            <input type="hidden" name="IdDenuncia" id="denunciaId" />
+
+
+            <div><label>Inicio</label><input type="date" name="FechaInicio" id="inicio" class="form-input" required /></div>
+            <div><label>Fin</label>   <input type="date" name="FechaFin" id="fin" class="form-input" /></div>
+
+            <div>
+                <label>Estado</label>
+                <select name="Estado" id="estado" class="form-input" required>
+                    <option value="">--Seleccione--</option>
+                    @foreach (var e in ests)
+                    {
+                        <option value="@e">@e</option>
+                    }
+                </select>
+            </div>
+
+            <div>
+                <label>Juez</label>
+                <select name="IdPersonaJuez" id="juez" class="form-input" required>
+                    <option value="">--Seleccione--</option>
+                    @foreach (var p in jueces)
+                    {
+                        <option value="@p.IdPersona">@p.Nombres @p.Apellidos</option>
+                    }
+                </select>
+            </div>
+
+            <div>
+                <label>Fiscal</label>
+                <select name="IdPersonaFiscal" id="fiscal" class="form-input" required>
+                    <option value="">--Seleccione Fiscal--</option>
+                    @foreach (var f in fiscales)
+                    {
+                        <option value="@f.IdPersona">@f.Nombres @f.Apellidos</option>
+                    }
+                </select>
+            </div>
+
+
+            <!-- Delito -->
+            <div>
+                <label>Delito</label>
+                <select name="IdDelito" id="delito" class="form-input" required>
+                    <option value="">--Seleccione--</option>
+                    @foreach (var d in delitos)
+                    {
+                        <option value="@d.IdDelito">@d.Nombre</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Denunciante -->
+            <div>
+                <label>Denunciante</label>
+                <select name="IdPersonaDenuncia" id="denunciante" class="form-input" required>
+                    <option value="">--Seleccione Denunciante--</option>
+                    @foreach (var p in (List<Persona>)ViewData["Denunciantes"])
+                    {
+                        <option value="@p.IdPersona">@p.Nombres @p.Apellidos</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Acusado -->
+            <div>
+                <label>Acusado</label>
+                <select name="IdPersonaAcusado" id="acusado" class="form-input" required>
+                    <option value="">--Seleccione Acusado--</option>
+                    @foreach (var p in (List<Persona>)ViewData["PotencialesAcusados"])
+                    {
+                        <option value="@p.IdPersona">@p.Nombres @p.Apellidos</option>
+                    }
+                </select>
+            </div>
+
+            @* Solo en EDIT: mostrar dropdown de Sentencia *@
+            <div id="divSentencia" class="hidden">
+                <label>Tipo de Sentencia</label>
+                <select name="TipoSentencia" id="sentencia" class="form-input">
+                    <option value="">--Seleccione--</option>
+                    @foreach (var s in sentTypes)
+                    {
+                        <option value="@s">@s</option>
+                    }
+                </select>
+            </div>
+            <!-- Observaciones (solo editar) -->
+            <div id="divObservaciones" class="hidden mb-4">
+                <label class="block mb-1 font-medium">Observaciones</label>
+                <textarea name="Observaciones"
+                  id="observaciones"
+                  class="form-input w-full h-24"
+                  placeholder="Escribe aquí las observaciones..."></textarea>
+            </div>
+
+            <div class="text-right space-x-2 mt-4">
+                <button type="button" onclick="cerrarModal('modalJuicio')" class="bg-gray-500 text-white px-4 py-2 rounded">Cancelar</button>
+                <button type="submit" class="bg-blue-700 text-white px-4 py-2 rounded">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL Ver Juicio -->
+<div id="modalVerJuicio" class="modal fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+  <div class="modal-content bg-white p-6 rounded w-full max-w-xl">
+    <h3 class="text-xl font-semibold text-blue-900 mb-4">Detalles del Juicio</h3>
+    <div id="contenidoVerJuicio" class="space-y-2"></div>
+    <div class="text-right mt-4">
+      <button onclick="cerrarModal('modalVerJuicio')" class="bg-gray-600 text-white px-4 py-2 rounded">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL Eliminar Juicio -->
+<div id="modalEliminarJuicio" class="modal fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+  <div class="modal-content bg-white p-6 rounded w-full max-w-md">
+    <h3 class="text-xl font-semibold text-red-700 mb-4">¿Eliminar Juicio?</h3>
+    <p id="textoEliminar" class="mb-4 text-gray-700"></p>
+    <form id="formEliminar" method="post">
+      @Html.AntiForgeryToken()
+      <div class="flex justify-end space-x-2">
+        <button type="button" onclick="cerrarModal('modalEliminarJuicio')" class="bg-gray-500 text-white px-4 py-2 rounded">Cancelar</button>
+        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Eliminar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+@section Scripts {
+  <script>
+    function openModal(id)   { document.getElementById(id).classList.remove('hidden'); }
+    function cerrarModal(id){ document.getElementById(id).classList.add('hidden'); }
+
+    // AGREGAR
+    document.getElementById('btnAgregar').onclick = () => {
+      let form = document.getElementById('formJuicio');
+      document.getElementById('tituloModal').innerText = 'Nuevo Juicio';
+      form.action = '/Juicios/Create';
+      form.reset();
+      document.getElementById('divSentencia').classList.add('hidden');
+      document.getElementById('divObservaciones').classList.add('hidden');
+      openModal('modalJuicio');
+    };
+
+    // VER
+    window.ver = function(el) {
+      var row = el.closest('tr');
+      var cells = row.querySelectorAll('td');
+      var pena = el.dataset.pena;
+      let obs = el.dataset.obs?.trim();
+      document.getElementById('contenidoVerJuicio').innerHTML = `
+        <p><strong>ID:</strong> ${cells[0].innerText}</p>
+        <p><strong>Inicio:</strong> ${cells[1].innerText}</p>
+        <p><strong>Fin:</strong> ${cells[2].innerText}</p>
+        <p><strong>Estado:</strong> ${cells[3].innerText}</p>
+        <p><strong>Juez:</strong> ${cells[4].innerText}</p>
+        <p><strong>Fiscal:</strong> ${cells[5].innerText}</p>
+        <p><strong>Delito:</strong> ${cells[6].innerText}</p>
+        <p><strong>Denunciante:</strong> ${cells[7].innerText}</p>
+        <p><strong>Acusado:</strong> ${cells[8].innerText}</p>
+        <p><strong>Sentencia:</strong> ${cells[9].innerText}</p>
+        <p><strong>Pena:</strong> ${pena}</p>
+        <p><strong>Observaciones:</strong> ${obs}</p>
+      `;
+      openModal('modalVerJuicio');
+    };
+
+    // EDITAR
+    window.editar = function(el) {
+      let form = document.getElementById('formJuicio'),
+          id   = el.dataset.id;
+      document.getElementById('tituloModal').innerText = 'Editar Juicio';
+      form.action = `/Juicios/Edit/${id}`;
+      form.reset();
+      document.getElementById('juicioId').value      = id;
+      document.getElementById('inicio').value        = el.dataset.inicio;
+      document.getElementById('fin').value           = el.dataset.fin;
+      document.getElementById('estado').value        = el.dataset.estado;
+      document.getElementById('juez').value          = el.dataset.juez;
+      document.getElementById('denunciaId').value    = el.dataset['denunciaId'] || "";
+      document.getElementById('fiscal').value        = el.dataset['fiscalId']   || "";
+      document.getElementById('delito').value        = el.dataset['delitoId']   || "";
+      document.getElementById('denunciante').value   = el.dataset['denuncianteId'] || "";
+      document.getElementById('acusado').value       = el.dataset['acusadoId']    || "";
+
+      const divS = document.getElementById('divSentencia');
+      divS.classList.remove('hidden');
+      document.getElementById('sentencia').value = el.dataset.sentencia;
+
+      const divO = document.getElementById('divObservaciones');
+      divO.classList.remove('hidden');
+      let obs = el.dataset.obs?.trim();
+      document.getElementById('observaciones').value = (obs && obs !== "-") ? obs : "";
+
+      openModal('modalJuicio');
+    };
+
+    // ELIMINAR
+    window.eliminar = function(el) {
+      var form = document.getElementById('formEliminar');
+      var id   = el.dataset.id;
+      form.action = `/Juicios/Delete/${id}`;
+      document.getElementById('textoEliminar').innerText = `¿Eliminar el juicio con ID ${id}?`;
+      openModal('modalEliminarJuicio');
+    };
+
+    // Forzar que se abra el calendario al hacer clic en los campos de fecha
+    document.querySelectorAll('input[type="date"]').forEach(input => {
+      input.addEventListener('focus', function () {
+        this.showPicker && this.showPicker(); // Para navegadores basados en Chromium
+      });
+    });
+  </script>
+}

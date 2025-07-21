@@ -1,258 +1,193 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaGestionJudicial.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SistemaGestionJudicial.Controllers
 {
     public class JuiciosController : Controller
     {
         private readonly ProyectoContext _context;
-
         public JuiciosController(ProyectoContext context)
         {
             _context = context;
         }
 
-        // GET: Juicios
-        public async Task<IActionResult> Index(long? juezId, long? fiscalId, string estado, string ordenFecha, DateOnly? fechaDesde, DateOnly? fechaHasta)
+        // GET: /Home/Juicios
+        [HttpGet("/Home/Juicios")]
+        public async Task<IActionResult> Juicios(
+            long? juezId,
+            long? fiscalId,
+            string ordenFecha,
+            DateTime? fechaDesde,
+            DateTime? fechaHasta)
         {
-            // Lista de jueces (Persona asociada al Juez en Juicio)
-            ViewData["JuezId"] = new SelectList(
-                _context.Personas
-                    .Where(p => _context.Juicios.Any(j => j.IdPersonaJuez == p.IdPersona))
-                    .Select(p => new { Id = p.IdPersona, NombreCompleto = p.Nombres + " " + p.Apellidos }),
-                "Id", "NombreCompleto", juezId
-            );
+            // Cargar dropdowns
+            ViewData["Jueces"] = await _context.Personas.Where(p => p.IdRol == 1).ToListAsync();
+            ViewData["Fiscales"] = await _context.Personas.Where(p => p.IdRol == 2).ToListAsync();
+            ViewData["Delitos"] = await _context.Delitos.ToListAsync();
+            ViewData["PotencialesAcusados"] = await _context.Personas.Where(p => p.IdRol == 3).ToListAsync();
+            ViewData["Denunciantes"] = await _context.Personas.Where(p => p.IdRol == 4).ToListAsync();
+            ViewData["Estados"] = new List<string> { "Programado", "En proceso", "Concluido" };
+            ViewData["SentenciasPosibles"] = new List<string> { "Pendiente", "Culpable", "Inocente" };
 
-            // Lista de fiscales (Persona asociada al Fiscal vía Fiscale)
-            ViewData["FiscalId"] = new SelectList(
-                _context.Personas
-                    .Where(p => _context.Fiscales.Any(f => f.IdPersonaFiscal == p.IdPersona))
-                    .Select(p => new { Id = p.IdPersona, NombreCompleto = p.Nombres + " " + p.Apellidos }),
-                "Id", "NombreCompleto", fiscalId
-            );
-
-            ViewData["Estados"] = new SelectList(
-                new List<string> { "Programado", "En Progreso", "Concluido", "Cancelado" },
-                estado
-            );
-
-            ViewData["OrdenFecha"] = ordenFecha ?? "";
-            ViewData["FechaDesde"] = fechaDesde?.ToString("yyyy-MM-dd");
-            ViewData["FechaHasta"] = fechaHasta?.ToString("yyyy-MM-dd");
-
-
-
-            // Consulta base con includes
-            var consulta = _context.Juicios
+            // Base query
+            var q = _context.Juicios
                 .Include(j => j.IdPersonaJuezNavigation)
+                .Include(j => j.IdDenunciaNavigation)
+                    .ThenInclude(d => d.Fiscales)
+                        .ThenInclude(f => f.IdPersonaFiscalNavigation)
                 .Include(j => j.IdDenunciaNavigation)
                     .ThenInclude(d => d.IdDelitoNavigation)
                 .Include(j => j.IdDenunciaNavigation)
                     .ThenInclude(d => d.IdPersonaDenunciaNavigation)
-                .Include(j => j.IdDenunciaNavigation)
-                    .ThenInclude(d => d.Fiscales)
-                        .ThenInclude(f => f.IdPersonaFiscalNavigation)
-                .Include(j => j.JuiciosAcusados)
-                    .ThenInclude(a => a.IdPersonaNavigation)
+                .Include(j => j.JuiciosAcusados).ThenInclude(a => a.IdPersonaNavigation)
                 .Include(j => j.Sentencia)
                 .AsQueryable();
 
-
-
-            // Filtros
+            // Aplicar filtros
             if (juezId.HasValue)
-                consulta = consulta.Where(j => j.IdPersonaJuez == juezId);
-
+                q = q.Where(j => j.IdPersonaJuez == juezId);
             if (fiscalId.HasValue)
-                consulta = consulta.Where(j =>
-                    _context.Fiscales.Any(f => f.IdDenuncia == j.IdDenuncia && f.IdPersonaFiscal == fiscalId)
-                );
-
-            //if (!string.IsNullOrEmpty(estado))
-            //{
-            //    consulta = consulta.Where(j => j.Estado != null && j.Estado.ToLower() == estado.ToLower());
-            //}
-
-            // Ordenamiento por fecha
-            if (ordenFecha == "asc")
-                consulta = consulta.OrderBy(j => j.FechaInicio);
-            else if (ordenFecha == "desc")
-                consulta = consulta.OrderByDescending(j => j.FechaInicio);
-
-            // Filtro por rango de fechas
+                q = q.Where(j => j.IdDenunciaNavigation!.Fiscales.Any(f => f.IdPersonaFiscal == fiscalId));
             if (fechaDesde.HasValue)
-                consulta = consulta.Where(j => j.FechaInicio >= fechaDesde.Value);
-
+                q = q.Where(j => j.FechaInicio >= DateOnly.FromDateTime(fechaDesde.Value));
             if (fechaHasta.HasValue)
-                consulta = consulta.Where(j => j.FechaInicio <= fechaHasta.Value);
+                q = q.Where(j => j.FechaFin <= DateOnly.FromDateTime(fechaHasta.Value));
 
+            // Orden
+            q = ordenFecha switch
+            {
+                "asc" => q.OrderBy(j => j.FechaInicio),
+                "desc" => q.OrderByDescending(j => j.FechaInicio),
+                _ => q
+            };
 
-            return View(await consulta.ToListAsync());
+            var lista = await q.ToListAsync();
+            return View("~/Views/Home/Juicios.cshtml", lista);
         }
 
-
-        // GET: Juicios/Details/5
-        public async Task<IActionResult> Details(long? id)
+        // POST: Crear
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(
+            [Bind("FechaInicio,FechaFin,IdPersonaJuez,Estado")] Juicio j,
+            long IdDelito,
+            long IdPersonaDenuncia,
+            long IdPersonaFiscal,
+            long IdPersonaAcusado)
         {
-            if (id == null)
+            // 1) Crear Denuncia
+            long maxDenunciaId = await _context.Denuncias.MaxAsync(d => (long?)d.IdDenuncia) ?? 0;
+            var nuevaDenuncia = new Denuncia
             {
-                return NotFound();
-            }
-
-            var juicio = await _context.Juicios
-                .Include(j => j.IdDenunciaNavigation)
-                .Include(j => j.IdPersonaJuezNavigation)
-                .FirstOrDefaultAsync(m => m.IdJuicio == id);
-            if (juicio == null)
+                IdDenuncia = maxDenunciaId + 1,
+                FechaDenuncia = j.FechaInicio ?? DateOnly.FromDateTime(DateTime.Today),
+                IdDelito = IdDelito,
+                IdPersonaDenuncia = IdPersonaDenuncia,
+                Descripcion = "Auto-generada desde juicio",
+                LugarHecho = "Desconocido",
+                Fiscales = new List<Fiscale>
+        {
+            new Fiscale
             {
-                return NotFound();
+                IdPersonaFiscal = IdPersonaFiscal,
+                FechaAsignacion = DateOnly.FromDateTime(DateTime.Today)
             }
-
-            return View(juicio);
         }
+            };
+            _context.Denuncias.Add(nuevaDenuncia);
+            await _context.SaveChangesAsync();
 
-        // GET: Juicios/Create
-        public IActionResult Create()
-        {
-            ViewBag.IdDenuncia = new SelectList(
-                _context.Denuncias
-                    .Include(d => d.IdPersonaDenunciaNavigation)
-                    .Select(d => new {
-                        Id = d.IdDenuncia,
-                        Texto = "Denuncia #" + d.IdDenuncia + " - " + d.IdPersonaDenunciaNavigation.Nombres + " " + d.IdPersonaDenunciaNavigation.Apellidos
-                    }),
-                "Id", "Texto"
-            );
+            // 2) Crear Juicio con la nueva denuncia
+            long maxJuicioId = await _context.Juicios.MaxAsync(x => (long?)x.IdJuicio) ?? 0;
+            j.IdJuicio = maxJuicioId + 1;
+            j.IdDenuncia = nuevaDenuncia.IdDenuncia;
+            _context.Juicios.Add(j);
+            await _context.SaveChangesAsync();
 
-            ViewBag.IdPersonaJuez = new SelectList(
-                _context.Personas.Select(p => new {
-                    Id = p.IdPersona,
-                    NombreCompleto = p.Nombres + " " + p.Apellidos
-                }),
-                "Id", "NombreCompleto"
-            );
-
-            return View();
-        }
-
-
-        // POST: Juicios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdJuicio,FechaInicio,FechaFin,IdDenuncia,IdPersonaJuez,Estado")] Juicio juicio)
-        {
-            if (ModelState.IsValid)
+            // 3) Agregar acusado
+            _context.JuiciosAcusados.Add(new JuiciosAcusado
             {
-                _context.Add(juicio);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdDenuncia"] = new SelectList(_context.Denuncias, "IdDenuncia", "IdDenuncia", juicio.IdDenuncia);
-            ViewData["IdPersonaJuez"] = new SelectList(_context.Personas, "IdPersona", "IdPersona", juicio.IdPersonaJuez);
-            return View(juicio);
-        }
-
-        // GET: Juicios/Edit/5
-        public async Task<IActionResult> Edit(long? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var juicio = await _context.Juicios.FindAsync(id);
-            if (juicio == null)
-            {
-                return NotFound();
-            }
-            ViewData["IdDenuncia"] = new SelectList(_context.Denuncias, "IdDenuncia", "IdDenuncia", juicio.IdDenuncia);
-            ViewData["IdPersonaJuez"] = new SelectList(_context.Personas, "IdPersona", "IdPersona", juicio.IdPersonaJuez);
-            return View(juicio);
-        }
-
-        // POST: Juicios/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("IdJuicio,FechaInicio,FechaFin,IdDenuncia,IdPersonaJuez,Estado")] Juicio juicio)
-        {
-            if (id != juicio.IdJuicio)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(juicio);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!JuicioExists(juicio.IdJuicio))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdDenuncia"] = new SelectList(_context.Denuncias, "IdDenuncia", "IdDenuncia", juicio.IdDenuncia);
-            ViewData["IdPersonaJuez"] = new SelectList(_context.Personas, "IdPersona", "IdPersona", juicio.IdPersonaJuez);
-            return View(juicio);
-        }
-
-        // GET: Juicios/Delete/5
-        public async Task<IActionResult> Delete(long? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var juicio = await _context.Juicios
-                .Include(j => j.IdDenunciaNavigation)
-                .Include(j => j.IdPersonaJuezNavigation)
-                .FirstOrDefaultAsync(m => m.IdJuicio == id);
-            if (juicio == null)
-            {
-                return NotFound();
-            }
-
-            return View(juicio);
-        }
-
-        // POST: Juicios/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
-        {
-            var juicio = await _context.Juicios.FindAsync(id);
-            if (juicio != null)
-            {
-                _context.Juicios.Remove(juicio);
-            }
+                IdJuicio = j.IdJuicio,
+                IdPersona = IdPersonaAcusado
+            });
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Juicios));
         }
 
-        private bool JuicioExists(long id)
+
+
+        // POST: Editar
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(
+            long id,
+            [Bind("IdJuicio,FechaInicio,FechaFin,IdDenuncia,IdPersonaJuez,Estado")] Juicio j,
+            long IdDelito,
+            long IdPersonaDenuncia,
+            long IdPersonaFiscal,
+            long IdPersonaAcusado)
         {
-            return _context.Juicios.Any(e => e.IdJuicio == id);
+            if (id != j.IdJuicio) return NotFound();
+            if (!ModelState.IsValid) return RedirectToAction(nameof(Juicios));
+
+            // 1) Actualiza el juicio (ya enlazado con IdDenuncia)
+            _context.Update(j);
+            await _context.SaveChangesAsync();
+
+            // 2) Actualiza la denuncia asociada
+            var denuncia = await _context.Denuncias
+                .Include(d => d.Fiscales)
+                .FirstOrDefaultAsync(d => d.IdDenuncia == j.IdDenuncia);
+
+            if (denuncia != null)
+            {
+                denuncia.IdDelito = IdDelito;
+                denuncia.IdPersonaDenuncia = IdPersonaDenuncia;
+
+                // Reemplazar fiscal
+                denuncia.Fiscales.Clear();
+                denuncia.Fiscales.Add(new Fiscale
+                {
+                    IdDenuncia = denuncia.IdDenuncia,
+                    IdPersonaFiscal = IdPersonaFiscal,
+                    FechaAsignacion = DateOnly.FromDateTime(DateTime.Today)
+                });
+
+                _context.Denuncias.Update(denuncia);
+            }
+
+            // 3) Reemplazar acusado
+            var antiguosAcusados = _context.JuiciosAcusados.Where(x => x.IdJuicio == j.IdJuicio);
+            _context.JuiciosAcusados.RemoveRange(antiguosAcusados);
+            _context.JuiciosAcusados.Add(new JuiciosAcusado
+            {
+                IdJuicio = j.IdJuicio,
+                IdPersona = IdPersonaAcusado
+            });
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Juicios));
+        }
+
+
+
+
+
+        // POST: Delete
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(long id)
+        {
+            var j = await _context.Juicios.FindAsync(id);
+            if (j != null)
+            {
+                _context.Juicios.Remove(j);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Juicios));
         }
     }
 }
