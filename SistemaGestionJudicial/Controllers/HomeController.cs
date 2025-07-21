@@ -1,17 +1,20 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SistemaGestionJudicial.Models;
+using System.Diagnostics;
 
 namespace SistemaGestionJudicial.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        //Lo intenté. Si puedes arreglarlo, te debo el mundo entero.
+        private readonly ProyectoContext _context;
 
-
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ProyectoContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
 
@@ -63,8 +66,19 @@ namespace SistemaGestionJudicial.Controllers
 
         public IActionResult Fiscales()
         {
-            return View();
+            var fiscales = _context.Fiscales
+                .Include(f => f.IdPersonaFiscalNavigation) // Datos de la tabla 'Persona'
+                .Include(f => f.IdDenunciaNavigation) // Datos de la tabla 'Denuncia'
+                .Include(f => f.IdDenunciaNavigation.IdDelitoNavigation)
+                .ToList();
+            return View(fiscales);
         }
+
+        //Línea original
+        /*public IActionResult Fiscales()
+        {
+            return View();
+        }*/
 
         public IActionResult CrimeReports()
         {

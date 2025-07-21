@@ -8,8 +8,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddSession();
 
-builder.Services.AddDbContext<ProyectoContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("MiConexion")));
+builder.Services.AddDbContext<ProyectoContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MiConexion")));
 
 var app = builder.Build();
 
