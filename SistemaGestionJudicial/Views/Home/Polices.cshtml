@@ -33,6 +33,7 @@
                                 <th class="border px-4 py-2">Fecha</th>
                                 <th class="border px-4 py-2">Policía</th>
                                 <th class="border px-4 py-2">Descripción</th>
+                                <th class="border px-4 py-2">Denuncia</th>
                                 <th class="border px-4 py-2">Acciones</th>
                             </tr>
                         </thead>
@@ -48,6 +49,9 @@
                                                                             : "Desconocido")
                                 </td>
                                 <td class="border px-4 py-2">@parte.Descripcion</td>
+                                <td class="border px-4 py-2">
+                                    @(parte.IdDenunciaNavigation?.Descripcion ?? "N/A") <!-- ¡CELDA PARA DESCRIPCIÓN DENUNCIA! -->
+                                </td>
                                 <td class="border px-4 py-2">
                                     <button class="text-blue-600 hover:text-blue-800 mr-2 btn-show-detail"
                                             data-id="@parte.IdParte"
