@@ -35,10 +35,9 @@ public partial class ProyectoContext : DbContext
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
-<<<<<<< HEAD
-//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-//        => optionsBuilder.UseSqlServer("server=DESKTOP-33GT7OA; database=proyecto; integrated security=true; TrustServerCertificate=true");
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=localhost;Database=proyecto;Integrated Security=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,18 +45,7 @@ public partial class ProyectoContext : DbContext
 
         modelBuilder.Entity<Delito>(entity =>
         {
-            entity.HasKey(e => e.IdDelito).HasName("PK__delitos__2C33B8391B3F8229");
-=======
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=localhost;Database=proyecto;Integrated Security=True;TrustServerCertificate=True");
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Delito>(entity =>
-        {
             entity.HasKey(e => e.IdDelito).HasName("PK__delitos__2C33B839D3CF507E");
->>>>>>> develop
 
             entity.ToTable("delitos");
 
@@ -84,11 +72,7 @@ public partial class ProyectoContext : DbContext
 
         modelBuilder.Entity<Denuncia>(entity =>
         {
-<<<<<<< HEAD
-            entity.HasKey(e => e.IdDenuncia).HasName("PK__denuncia__2BD955A41EA5EBD2");
-=======
             entity.HasKey(e => e.IdDenuncia).HasName("PK__denuncia__2BD955A495AF9B36");
->>>>>>> develop
 
             entity.ToTable("denuncias");
 
@@ -118,11 +102,7 @@ public partial class ProyectoContext : DbContext
 
         modelBuilder.Entity<Fiscale>(entity =>
         {
-<<<<<<< HEAD
-            entity.HasKey(e => e.IdFiscal).HasName("PK__fiscales__F787D6255EE09792");
-=======
             entity.HasKey(e => e.IdFiscal).HasName("PK__fiscales__F787D6251A47514F");
->>>>>>> develop
 
             entity.ToTable("fiscales");
 
@@ -144,11 +124,7 @@ public partial class ProyectoContext : DbContext
 
         modelBuilder.Entity<Juicio>(entity =>
         {
-<<<<<<< HEAD
-            entity.HasKey(e => e.IdJuicio).HasName("PK__juicios__C34C7089F3A7A308");
-=======
             entity.HasKey(e => e.IdJuicio).HasName("PK__juicios__C34C7089D25FC735");
->>>>>>> develop
 
             entity.ToTable("juicios");
 
@@ -175,11 +151,7 @@ public partial class ProyectoContext : DbContext
 
         modelBuilder.Entity<JuiciosAcusado>(entity =>
         {
-<<<<<<< HEAD
-            entity.HasKey(e => e.IdJuicioAcusado).HasName("PK__juicios___099870E2CFB29903");
-=======
             entity.HasKey(e => e.IdJuicioAcusado).HasName("PK__juicios___099870E2FB95B41C");
->>>>>>> develop
 
             entity.ToTable("juicios_acusados");
 
@@ -200,11 +172,7 @@ public partial class ProyectoContext : DbContext
 
         modelBuilder.Entity<PartesPoliciale>(entity =>
         {
-<<<<<<< HEAD
-            entity.HasKey(e => e.IdParte).HasName("PK__partes_p__3F12D584A30F86EF");
-=======
             entity.HasKey(e => e.IdParte).HasName("PK__partes_p__3F12D5842FADFC0E");
->>>>>>> develop
 
             entity.ToTable("partes_policiales");
 
@@ -230,11 +198,7 @@ public partial class ProyectoContext : DbContext
 
         modelBuilder.Entity<Persona>(entity =>
         {
-<<<<<<< HEAD
-            entity.HasKey(e => e.IdPersona).HasName("PK__personas__228148B0465F3917");
-=======
             entity.HasKey(e => e.IdPersona).HasName("PK__personas__228148B0D9BBA585");
->>>>>>> develop
 
             entity.ToTable("personas");
 
@@ -280,11 +244,7 @@ public partial class ProyectoContext : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-<<<<<<< HEAD
-            entity.HasKey(e => e.IdRol).HasName("PK__roles__6ABCB5E0BA892A3D");
-=======
             entity.HasKey(e => e.IdRol).HasName("PK__roles__6ABCB5E0BE2F1518");
->>>>>>> develop
 
             entity.ToTable("roles");
 
@@ -299,11 +259,7 @@ public partial class ProyectoContext : DbContext
 
         modelBuilder.Entity<Sentencia>(entity =>
         {
-<<<<<<< HEAD
-            entity.HasKey(e => e.IdSentencia).HasName("PK__sentenci__63E1C48B98835BF7");
-=======
             entity.HasKey(e => e.IdSentencia).HasName("PK__sentenci__63E1C48B8B1E229F");
->>>>>>> develop
 
             entity.ToTable("sentencias");
 
@@ -332,11 +288,7 @@ public partial class ProyectoContext : DbContext
 
         modelBuilder.Entity<Usuario>(entity =>
         {
-<<<<<<< HEAD
-            entity.HasKey(e => e.IdUsuario).HasName("PK__usuarios__4E3E04AD0FACC01C");
-=======
             entity.HasKey(e => e.IdUsuario).HasName("PK__usuarios__4E3E04AD2A4B8E26");
->>>>>>> develop
 
             entity.ToTable("usuarios");
 

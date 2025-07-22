@@ -2,20 +2,26 @@
     ViewData["Title"] = "Crear Denuncia";
 }
 
+@model SistemaGestionJudicial.Models.ViewModels.CrearDenunciaViewModel
+
+
 @section Styles {
     <link rel="stylesheet" href="~/css/CrearDenuncia.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 }
+<!-- En el <head> o antes del cierre de </body> -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print fixed top-0 z-50" 
         style="left: 16rem; width: calc(100% - 16rem);">
     <h2 class="text-xl font-semibold text-gray-800" id="view-title">Ingresar denuncia</h2>
 </header>
 <div class="flex justify-center p-6 bg-gray-50 min-h-screen mt-[90px]">
-    <form method="post" class="bg-white rounded-lg shadow p-6 w-[80%] max-w-4xl space-y-8">
 
 
+    <form asp-controller="IngresarDenuncia" asp-action="EnviarDenuncia" method="post" class="bg-white rounded-lg shadow p-6 w-[80%] max-w-4xl space-y-8">
 
         <!-- Datos del Denunciante -->
         <section>
@@ -23,42 +29,42 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Cédula</label>
-                    <input type="text" name="cedula" value="0123456789" disabled
+                    <input type="text" name="DatosPersona.Cedula" value="@Model.DatosPersona.Cedula" readonly
                            class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nombres</label>
-                    <input type="text" name="nombres" value="Juan Carlos" disabled
+                    <input type="text" name="DatosPersona.Nombres" value="@Model.DatosPersona.Nombres" readonly
                            class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Apellidos</label>
-                    <input type="text" name="apellidos" value="Pérez López" disabled
+                    <input type="text" name="DatosPersona.Apellidos" value="@Model.DatosPersona.Apellidos" readonly
                            class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento</label>
-                    <input type="date" name="fechaNacimiento" value="1990-05-20" disabled
+                    <input type="text" name="DatosPersona.FechaNacimiento" value="@Model.DatosPersona.FechaNacimiento" readonly
                            class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Género</label>
-                    <input type="text" name="genero" value="Masculino" disabled
+                    <input type="text" name="DatosPersona.Genero" value="@(Model.DatosPersona.Genero == "M" ? "Masculino" : Model.DatosPersona.Genero == "F" ? "Femenino" : "otro")" readonly
                            class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
-                    <input type="text" name="direccion" value="Av. Siempre Viva 123" disabled
+                    <input type="text" name="DatosPersona.Direccion" value="@Model.DatosPersona.Direccion" readonly
                            class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                    <input type="tel" name="telefono" value="0998765432" disabled
+                    <input type="tel" name="DatosPersona.Telefono" value="@Model.DatosPersona.Telefono" readonly
                            class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
-                    <input type="email" name="correo" value="juan.perez@example.com" disabled
+                    <input type="email" name="DatosPersona.CorreoElectronico" value="@Model.DatosPersona.CorreoElectronico" readonly
                            class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
                 </div>
             </div>
@@ -70,29 +76,35 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Denuncia</label>
-                    <input type="date" name="fechaDenuncia" required
-                           class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <input asp-for="NuevaDenuncia.FechaDenuncia"
+                           type="date"
+                           class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           value="@(Model.NuevaDenuncia.FechaDenuncia == default ? DateTime.Today.ToString("yyyy-MM-dd") : Model.NuevaDenuncia.FechaDenuncia.ToString("yyyy-MM-dd"))" />
+                    <span asp-validation-for="NuevaDenuncia.FechaDenuncia" class="text-red-500 text-sm"></span>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Lugar del Hecho</label>
-                    <input type="text" name="lugarHecho" required
+                    <input asp-for="NuevaDenuncia.LugarHecho" type="text"
                            class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Descripción del Hecho</label>
-                    <textarea name="descripcionHecho" rows="4" required
+                    <textarea asp-for="NuevaDenuncia.Descripcion" rows="4" required
                               class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    <span asp-validation-for="NuevaDenuncia.Descripcion" class="text-red-500 text-sm"></span>
                 </div>
+
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Delito Cometido</label>
-                    <select name="delito" required
+                    <select asp-for="NuevaDenuncia.IdDelito" required
                             class="w-full border border-gray-300 rounded px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="" disabled selected>Seleccione un delito</option>
-                        <option value="1">Robo</option>
-                        <option value="2">Agresión</option>
-                        <option value="3">Acoso</option>
-                        <option value="4">Violencia Intrafamiliar</option>
+                        <option value="">Seleccione un delito</option>
+                        @foreach (var delito in Model.TiposDelito)
+                        {
+                            <option value="@delito.IdDelito">@delito.Nombre</option>
+                        }
                     </select>
+                    <span asp-validation-for="NuevaDenuncia.IdDelito" class="text-red-500 text-sm"></span>
                 </div>
             </div>
         </section>
@@ -107,3 +119,37 @@
     </form>
 
 </div>
+
+@if (TempData["Success"] != null)
+{
+    <div id="modalExito" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg p-6 shadow-lg text-center">
+            <h2 class="text-xl font-bold text-green-600 mb-4">¡Éxito!</h2>
+            <p>@TempData["Success"]</p>
+            <button onclick="cerrarModal()" class="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                Aceptar
+            </button>
+        </div>
+    </div>
+}
+
+<!-- Modal de error -->
+@if (TempData["Error"] != null)
+{
+    <div id="modalError" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg p-6 shadow-lg text-center">
+            <h2 class="text-xl font-bold text-red-600 mb-4">¡Error!</h2>
+            <p>@TempData["Error"]</p>
+            <button onclick="cerrarModal()" class="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                Cerrar
+            </button>
+        </div>
+    </div>
+}
+
+<script>
+    function cerrarModal() {
+        const modales = document.querySelectorAll("#modalExito, #modalError");
+        modales.forEach(m => m.remove());
+    }
+</script>
