@@ -1,4 +1,15 @@
-﻿@model IEnumerable<SistemaGestionJudicial.Models.Fiscale>
+﻿@*
+    QUIEN SEA QUE VEA ESTO, POR FAVOR PRESTE ATENCIÓN
+    ANTES DE INCIAR LA APLICACIÓN, REVISA EL ARCHIVO _Layout.cshtml --> Views/Shared/_Layout.cshtml
+    
+    (Línea 75 aprox) REVISAR QUE EL href LLEVE a '/Fiscales/Fiscales'
+    CASO CONTRARIO, NO SE PODRÁN VER LOS DATOS DE LOS FISCALES
+
+    OTRA OPCIÓN PARA VER LOS FISCALES ES IR AL HomeController --> Controller HomeController.cs
+    Quitar los tags comentador y comentar 'La línea original'
+*@
+
+@model IEnumerable<SistemaGestionJudicial.Models.Fiscale>
 
 @{
     ViewData["Title"] = "Gestión de Fiscales";
@@ -16,10 +27,6 @@
         <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print">
             <h2 class="text-xl font-semibold text-gray-800" id="view-title">Listado de fiscales</h2>
             <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <input type="text" placeholder="Search prosecutors..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                </div>
                 <div class="flex items-center space-x-2">
                     <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
                         <i class="fas fa-user"></i>
@@ -31,66 +38,23 @@
 
         <div class="p-6">
             <!-- Prosecutor Management Controls -->
+            @*if (ViewBag.denuncias == null)
+            {
+                <div class="bg-red-100 p-2">ViewBag.denuncias es null</div>
+            }
+            else
+            {
+                <div class="bg-green-100 p-2">ViewBag.denuncias tiene @ViewBag.denuncias.Count elementos</div>
+            }*@
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold">Gestionar fiscales</h2>
                 <div class="flex space-x-4">
-                    <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center">
-                        <i class="fas fa-filter mr-2"></i> Filter
-                    </button>
                     <button onclick="openModal('modalAdd')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
                         <i class="fas fa-plus mr-2"></i> Añadir Fiscal
                     </button>
 
                 </div>
             </div>
-
-            @*<!-- Prosecutor Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                <div class="card bg-white rounded-lg p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Total Prosecutors</p>
-                            <h3 class="text-2xl font-bold mt-1">28</h3>
-                        </div>
-                        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-                            <i class="fas fa-user-ninja"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="card bg-white rounded-lg p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Active Prosecutors</p>
-                            <h3 class="text-2xl font-bold mt-1">22</h3>
-                        </div>
-                        <div class="p-3 rounded-full bg-green-100 text-green-600">
-                            <i class="fas fa-gavel"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="card bg-white rounded-lg p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Inactive Prosecutors</p>
-                            <h3 class="text-2xl font-bold mt-1">6</h3>
-                        </div>
-                        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                            <i class="fas fa-user-clock"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="card bg-white rounded-lg p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Avg. Cases per Prosecutor</p>
-                            <h3 class="text-2xl font-bold mt-1">18</h3>
-                        </div>
-                        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>*@
 
             <!-- Prosecutors Table -->
             <div class="card bg-white rounded-lg p-6">
@@ -104,7 +68,7 @@
                                 <th>Fiscal a cargo</th>
                                 <th>Teléfono</th>
                                 <th>Correo Electrónico</th>
-                                <th>Descripción</th>
+                                <th>Descripción de la denuncia</th>
                                 <th>Lugar de los hechos</th>
                                 <th>Gravedad</th>
                                 <th>Acciones</th>
@@ -114,7 +78,7 @@
                             @foreach (var f in Model)
                             {
                                 <tr>
-                                    <td>@f.IdPersonaFiscal</td>
+                                    <td>@f.IdFiscal</td>
                                     <td>@f.IdPersonaFiscalNavigation.Cedula</td>
                                     <td>@f.FechaAsignacion</td>
                                     <td>@f.IdPersonaFiscalNavigation.Nombres @f.IdPersonaFiscalNavigation.Apellidos</td>
@@ -124,34 +88,35 @@
                                     <td>@f.IdDenunciaNavigation.LugarHecho</td>
                                     <td>@f.IdDenunciaNavigation.IdDelitoNavigation.GravedadDelito</td>
                                     <td>
-                                        <button onclick="openDetailModal('@f.IdPersonaFiscal', '@f.IdPersonaFiscalNavigation.Cedula',
-                                                '@f.IdPersonaFiscalNavigation.Nombres','@f.IdPersonaFiscalNavigation.Apellidos',
-                                                '@f.IdPersonaFiscalNavigation.FechaNacimiento', '@f.IdPersonaFiscalNavigation.Genero',
-                                                '@f.IdPersonaFiscalNavigation.Direccion', '@f.IdPersonaFiscalNavigation.Telefono',
-                                                '@f.IdPersonaFiscalNavigation.CorreoElectronico', '@f.IdDenunciaNavigation.IdDenuncia',
-                                                '@f.FechaAsignacion')" class="text-blue-600 hover:text-blue-800 mr-2">
+                                        <button onclick="openDetailModal('@f.IdFiscal', '@f.IdPersonaFiscal', '@f.IdPersonaFiscalNavigation.Cedula',
+                                                    '@f.IdPersonaFiscalNavigation.Nombres','@f.IdPersonaFiscalNavigation.Apellidos',
+                                                    '@f.IdPersonaFiscalNavigation.FechaNacimiento', '@f.IdPersonaFiscalNavigation.Genero',
+                                                    '@f.IdPersonaFiscalNavigation.Direccion', '@f.IdPersonaFiscalNavigation.Telefono',
+                                                    '@f.IdPersonaFiscalNavigation.CorreoElectronico', '@f.IdDenuncia', '@f.IdDenunciaNavigation.Descripcion',
+                                                    '@f.FechaAsignacion')" class="text-blue-600 hover:text-blue-800 mr-2">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                         <button onclick="openEditModal(
-                                                        '@f.IdPersonaFiscal',
-                                                        '@f.IdPersonaFiscalNavigation.IdPersona',
-                                                        '@f.IdPersonaFiscalNavigation.Cedula' ,
-                                                        '@f.IdPersonaFiscalNavigation.Nombres' ,
-                                                        '@f.IdPersonaFiscalNavigation.Apellidos' ,
-                                                        '@(f.IdPersonaFiscalNavigation.FechaNacimiento?.ToString("yyyy-MM-dd") ?? "")',
-                                                        '@f.IdPersonaFiscalNavigation.Genero' ,
-                                                        '@f.IdPersonaFiscalNavigation.Direccion' ,
-                                                        '@f.IdPersonaFiscalNavigation.Telefono' ,
-                                                        '@f.IdPersonaFiscalNavigation.CorreoElectronico' ,
-                                                        '@f.IdDenunciaNavigation.IdDenuncia',
-                                                        '@(f.FechaAsignacion?.ToString("yyyy-MM-dd") ?? "")')" class="text-green-600 hover:text-green-800 mr-2">
+                                                            '@f.IdFiscal',
+                                                            '@f.IdPersonaFiscalNavigation.IdPersona',
+                                                            '@f.IdPersonaFiscalNavigation.Cedula' ,
+                                                            '@f.IdPersonaFiscalNavigation.Nombres' ,
+                                                            '@f.IdPersonaFiscalNavigation.Apellidos' ,
+                                                            '@(f.IdPersonaFiscalNavigation.FechaNacimiento?.ToString("yyyy-MM-dd") ?? "")',
+                                                            '@f.IdPersonaFiscalNavigation.Genero' ,
+                                                            '@f.IdPersonaFiscalNavigation.Direccion' ,
+                                                            '@f.IdPersonaFiscalNavigation.Telefono' ,
+                                                            '@f.IdPersonaFiscalNavigation.CorreoElectronico' ,
+                                                            '@f.IdDenuncia',
+                                                            '@(f.FechaAsignacion?.ToString("yyyy-MM-dd") ?? "")')" class="text-green-600 hover:text-green-800 mr-2">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button onclick="openDeleteModal(
-                                                            '@f.IdPersonaFiscal',
-                                                            '@f.IdPersonaFiscalNavigation.IdPersona',
-                                                            '@f.IdPersonaFiscalNavigation.Nombres' ,
-                                                            '@f.IdPersonaFiscalNavigation.Apellidos')" class="text-red-600 hover:text-red-800">
+                                                                '@f.IdPersonaFiscal',
+                                                                '@f.IdPersonaFiscalNavigation.IdPersona',
+                                                                '@f.IdPersonaFiscalNavigation.Nombres' ,
+                                                                '@f.IdPersonaFiscalNavigation.Apellidos',
+                                                                '@f.IdDenuncia', '@f.IdDenunciaNavigation.Descripcion')" class="text-red-600 hover:text-red-800">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                 </tr>
@@ -164,74 +129,87 @@
     </div>
 </div>
 
-<!-- Add Prosecutor Modal -->
-<div id="modalAdd" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-4">Añadir Fiscal</h3>
-        <form asp-action="CreateFiscal" asp-controller="Fiscales" method="post">
+<!-- Add Prosecutor Modal  (Script Añadir un fiscal)-->
+<<div id="modalAdd" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+    <div class="modal-content bg-white rounded-lg p-6 w-full max-w-lg">
+        <h3 class="text-lg font-bold mb-2">Añadir Fiscal</h3>
+        <form asp-action="CreateFiscal" asp-controller="Fiscales" method="post" class="grid grid-cols-2 gap-2">
             @Html.AntiForgeryToken()
-            <div class="mb-4">
+            <!-- Columna 1 -->
+            <div>
                 <label for="addcedula" class="block text-sm font-medium text-gray-700">Cédula</label>
-                <input type="text" name="addcedula" id="addcedula" class="form-input" required>
+                <input type="text" name="addcedula" id="addcedula" class="form-input w-full" required>
             </div>
-            <div class="mb-4">
+            <div>
                 <label for="addnombres" class="block text-sm font-medium text-gray-700">Nombres</label>
-                <input type="text" name="addnombres" id="addnombres" class="form-input" required>
+                <input type="text" name="addnombres" id="addnombres" class="form-input w-full" required>
             </div>
-            <div class="mb-4">
+            <div>
                 <label for="addapellidos" class="block text-sm font-medium text-gray-700">Apellidos</label>
-                <input type="text" name="addapellidos" id="addapellidos" class="form-input" required>
+                <input type="text" name="addapellidos" id="addapellidos" class="form-input w-full" required>
             </div>
-            <div class="mb-4">
-                <label for="addnacimiento" class="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
-                <input type="date" name="addnacimiento" id="addnacimiento" class="form-input">
+            <div>
+                <label for="addnacimiento" class="block text-sm font-medium text-gray-700">Fecha Nacimiento</label>
+                <input type="date" name="addnacimiento" id="addnacimiento" class="form-input w-full">
             </div>
-            <div class="mb-4">
+            <div>
                 <label for="addgenero" class="block text-sm font-medium text-gray-700">Género</label>
-                <select name="addgenero" id="addgenero" class="form-input">
+                <select name="addgenero" id="addgenero" class="form-input w-full">
                     <option value="">Seleccionar</option>
                     <option value="M">Hombre</option>
                     <option value="F">Mujer</option>
                 </select>
             </div>
-            <div class="mb-4">
+            <!-- Columna 2 -->
+            <div>
                 <label for="adddireccion" class="block text-sm font-medium text-gray-700">Dirección</label>
-                <input type="text" name="adddireccion" id="adddireccion" class="form-input">
+                <input type="text" name="adddireccion" id="adddireccion" class="form-input w-full">
             </div>
-            <div class="mb-4">
+            <div>
                 <label for="addtelefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
-                <input type="text" name="addtelefono" id="addtelefono" class="form-input">
+                <input type="text" name="addtelefono" id="addtelefono" class="form-input w-full">
             </div>
-            <div class="mb-4">
-                <label for="addcorreoelectronico" class="block text-sm font-medium text-gray-700">Correo electrónico</label>
-                <input type="text" name="addcorreoelectronico" id="addcorreoelectronico" class="form-input">
+            <div>
+                <label for="addcorreoelectronico" class="block text-sm font-medium text-gray-700">Correo</label>
+                <input type="text" name="addcorreoelectronico" id="addcorreoelectronico" class="form-input w-full" required>
             </div>
-            <div class="mb-4">
-                <label for="IdDenuncia" class="block text-sm font-medium text-gray-700">Denuncia a cargo</label>
-                <input type="number" name="IdDenuncia" id="IdDenuncia" class="form-input" required>
+            <div>
+                <label for="IdDenuncia" class="block text-sm font-medium text-gray-700">Denuncia</label>
+                <select name="IdDenuncia" id="IdDenuncia" class="form-input w-full" required>
+                    <option value="">Seleccionar Denuncia</option>
+                    @if (ViewBag.denuncias != null)
+                    {
+                        @foreach (var denuncia in ViewBag.denuncias)
+                        {
+                            <option value="@denuncia.iddenuncia">@denuncia.DenunciaInfo</option>
+                        }
+                    }
+                    else
+                    {
+                        <option value="" disabled>No hay denuncias disponibles</option>
+                    }
+                </select>
             </div>
-            <div class="mb-4">
-                <label for="addfechadenuncia" class="block text-sm font-medium text-gray-700">Fecha a Asignar</label>
-                <input type="date" name="addfechadenuncia" id="addfechadenuncia" class="form-input">
+             <div>
+                <label for="addfechadenuncia" class="block text-sm font-medium text-gray-700">Fecha Asignar</label>
+                <input type="date" name="addfechadenuncia" id="addfechadenuncia" class="form-input w-full">
             </div>
-            <div class="flex justify-end">
-                <button type="button" onclick="closeModal('modalAdd')" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2">Cancelar</button>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Añadir Fiscal</button>
+            <div class="col-span-2 flex justify-end mt-2">
+                <button type="button" onclick="closeModal('modalAdd')" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2 text-sm">Cancelar</button>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">Añadir Fiscal</button>
             </div>
         </form>
     </div>
 </div>
 
-
-
 @*<!-- Offender Detail Modal (Script Detalles del fiscal) -->*@
-<div id="modalDetalles"
-     class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+<div id="modalDetalles" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
     <div class="modal-content bg-white rounded-lg p-6 w-full max-w-lg">
         <h3 class="text-lg font-bold mb-4">Detalles del Fiscal</h3>
         <div class="flex flex-col md:flex-row gap-6">
             <div class="w-full md:w-2/3" id="Detalles del Fiscal">
-                <p><strong>ID:</strong> <span id="detailid"></span></p>
+                <p><strong>ID de fiscal:</strong> <span id="detailidF"></span></p>
+                <p><strong>ID de persona:</strong> <span id="detailidP"></span></p>
                 <p><strong>Cédula:</strong> <span id="detailcedula"></span></p>
                 <p><strong>Nombres:</strong> <span id="detailnombres"></span></p>
                 <p><strong>Apellidos:</strong> <span id="detailapellidos"></span></p>
@@ -240,84 +218,92 @@
                 <p><strong>Dirección:</strong> <span id="detaildireccion"></span></p>
                 <p><strong>Teléfono:</strong> <span id="detailtelefono"></span></p>
                 <p><strong>Correo Electrónico:</strong> <span id="detailcorreo"></span></p>
-                <p><strong>Denuncia a cargo:</strong> <span id="detailiddenuncia"></span></p>
+                <p><strong>Denuncia a cargo:</strong> Denuncia #<span id="detailiddenuncia"></span> - <span id="detaildenunciainfo"></span></p>
                 <p><strong>Asignado el:</strong> <span id="detailfechadenuncia"></span></p>
             </div>
         </div>
         <div class="flex justify-end mt-4">
-            <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg"
-                    onclick="closeModal('modalDetalles')">
-                Cerrar
-            </button>
+            <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg" onclick="closeModal('modalDetalles')"> Cerrar </button>
         </div>
     </div>
 </div>
 
-<!-- Edit Offender Modal -->
+<!-- Edit Offender Modal (Script Editar un fiscal) -->
 <div id="modalEditar" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-4">Editar Fiscal</h3>
-        <form asp-action="EditFiscal" asp-controller="Fiscales" method="post" id="editOffenderForm">
+    <div class="modal-content bg-white rounded-lg p-6 w-full max-w-lg">
+        <h3 class="text-lg font-bold mb-2">Editar Fiscal</h3>
+        <form id="editOffenderForm" method="post" asp-action="EditarFiscal" asp-controller="Fiscales" class="grid grid-cols-2 gap-2">
             @Html.AntiForgeryToken()
-            <input type="hidden" name="editidF" id="editidF">
-            <input type="hidden" name="editidP" id="editidP">
-            <div class="mb-4">
+            <input type="hidden" name="editidF" id="editidF" />
+            <input type="hidden" name="editidP" id="editidP" />
+            <!-- Columna 1 -->
+            <div>
                 <label for="editcedula" class="block text-sm font-medium text-gray-700">Cédula</label>
-                <input type="text" name="editcedula" id="editcedula" class="form-input" required>
+                <input type="text" name="editcedula" id="editcedula" class="form-input w-full" required />
             </div>
-            <div class="mb-4">
+            <div>
                 <label for="editnombres" class="block text-sm font-medium text-gray-700">Nombres</label>
-                <input type="text" name="editnombres" id="editnombres" class="form-input" required>
+                <input type="text" name="editnombres" id="editnombres" class="form-input w-full" required />
             </div>
-            <div class="mb-4">
+            <div>
                 <label for="editapellidos" class="block text-sm font-medium text-gray-700">Apellidos</label>
-                <input type="text" name="editapellidos" id="editapellidos" class="form-input" required>
+                <input type="text" name="editapellidos" id="editapellidos" class="form-input w-full" required />
             </div>
-            <div class="mb-4">
-                <label for="editnacimiento" class="block text-sm font-medium text-gray-700">Fecha de nacimiento</label>
-                <input type="date" name="editnacimiento" id="editnacimiento" class="form-input" required>
+            <div>
+                <label for="editnacimiento" class="block text-sm font-medium text-gray-700">Fecha Nacimiento</label>
+                <input type="date" name="editnacimiento" id="editnacimiento" class="form-input w-full" required />
             </div>
-            <div class="mb-4">
+            <div>
                 <label for="editgenero" class="block text-sm font-medium text-gray-700">Género</label>
-                <select name="editgenero" id="editgenero" class="form-input" required>
+                <select name="editgenero" id="editgenero" class="form-input w-full" required>
                     <option value="">Seleccionar</option>
                     <option value="M">Hombre</option>
                     <option value="F">Mujer</option>
                 </select>
             </div>
-            <div class="mb-4">
+            <!-- Columna 2 -->
+            <div>
                 <label for="editdireccion" class="block text-sm font-medium text-gray-700">Dirección</label>
-                <input type="text" name="editdireccion" id="editdireccion" class="form-input" required>
+                <input type="text" name="editdireccion" id="editdireccion" class="form-input w-full" required />
             </div>
-            <div class="mb-4">
+            <div>
                 <label for="edittelefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
-                <input type="text" name="edittelefono" id="edittelefono" class="form-input" required>
+                <input type="text" name="edittelefono" id="edittelefono" class="form-input w-full" required />
             </div>
-            <div class="mb-4">
+            <div>
                 <label for="editcorreo" class="block text-sm font-medium text-gray-700">Correo</label>
-                <input type="text" name="editcorreo" id="editcorreo" class="form-input" required>
+                <input type="text" name="editcorreo" id="editcorreo" class="form-input w-full" required />
             </div>
-            <div class="mb-4">
-                <label for="editiddenuncia" class="block text-sm font-medium text-gray-700">Denuncia a cargo</label>
-                <input type="number" name="editiddenuncia" id="editiddenuncia" class="form-input" required>
+            <div>
+                <label for="editiddenuncia" class="block text-sm font-medium text-gray-700">Denuncia</label>
+                <select name="editiddenuncia" id="editiddenuncia" class="form-input w-full" required>
+                    <option value="">Seleccionar Denuncia</option>
+                    @if (ViewBag.denuncias != null)
+                    {
+                        @foreach (var denuncia in ViewBag.denuncias)
+                        {
+                            <option value="@denuncia.iddenuncia">@denuncia.DenunciaInfo</option>
+                        }
+                    }
+                    else
+                    {
+                        <option value="" disabled>No hay denuncias disponibles</option>
+                    }
+                </select>
             </div>
-            <div class="mb-4">
-                <label for="editfechadenuncia" class="block text-sm font-medium text-gray-700">Asignado el</label>
-                <input type="date" name="editfechadenuncia" id="editfechadenuncia" class="form-input" required>
+            <div>
+                <label for="editfechadenuncia" class="block text-sm font-medium text-gray-700">Fecha Asignar</label>
+                <input type="date" name="editfechadenuncia" id="editfechadenuncia" class="form-input w-full" required />
             </div>
-            <div class="flex justify-end">
-                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
-                        onclick="closeModal('modalEditar')">
-                    Cancelar
-                </button>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Guardar cambios</button>
+            <div class="col-span-2 flex justify-end mt-2">
+                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2 text-sm" onclick="closeModal('modalEditar')">Cancelar</button>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">Guardar Cambios</button>
             </div>
         </form>
     </div>
 </div>
 
-
-<!-- Delete Confirmation Modal -->
+<!-- Delete Confirmation Modal (Script Eliminar un fiscal) -->
 <div id="modalBorrar" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
     <div class="modal-content bg-white rounded-lg p-6 w-96">
         <h3 class="text-lg font-bold mb-4">Eliminar Fiscal</h3>
@@ -325,7 +311,10 @@
             @Html.AntiForgeryToken()
             <input type="hidden" name="deleteidF" id="deleteidfiscal" />
             <input type="hidden" name="deleteidP" id="deleteidpersona" />
-            <p class="mb-6">¿Estas seguro que deseas eliminar al fiscal <span id="deletenombres" class="font-bold"></span> <span id="deleteapellidos" class="font-bold"></span>?</p>
+            <p class="mb-6">
+                ¿Estas seguro que deseas eliminar al fiscal <span id="deletenombres" class="font-bold"></span> <span id="deleteapellidos" class="font-bold"></span>
+                con la denuncia asignada: Denuncia #<span id="deletiddenuncia" class="font-bold"></span> - <span id="deletedenunciainfo"></span>
+            </p>
             <div class="flex justify-end">
                 <button type="button" onclick="closeModal('modalBorrar')" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2">Cancelar</button>
                 <button type="submit" onclick="submitdeleteForm()" class="bg-red-600 text-white px-4 py-2 rounded-lg">Eliminar</button>
@@ -345,8 +334,9 @@
 
     let currentOffenderId = null;
 
-    function openDetailModal(id, cedula, nombres, apellidos, nacimiento, genero, direccion, telefono, correo, iddenuncia, fechadenuncia) {
-        document.getElementById('detailid').innerText = id;
+    function openDetailModal(idF, idP, cedula, nombres, apellidos, nacimiento, genero, direccion, telefono, correo, iddenuncia, denunciainfo, fechadenuncia) {
+        document.getElementById('detailidF').innerText = idF;
+        document.getElementById('detailidP').innerText = idP;
         document.getElementById('detailcedula').innerText = cedula;
         document.getElementById('detailnombres').innerText = nombres;
         document.getElementById('detailapellidos').innerText = apellidos;
@@ -356,6 +346,7 @@
         document.getElementById('detailtelefono').innerText = telefono;
         document.getElementById('detailcorreo').innerText = correo;
         document.getElementById('detailiddenuncia').innerText = iddenuncia;
+        document.getElementById('detaildenunciainfo').innerText = denunciainfo;
         document.getElementById('detailfechadenuncia').innerText = fechadenuncia;
         openModal('modalDetalles');
     }
@@ -376,11 +367,13 @@
         openModal('modalEditar');
     }
 
-    function openDeleteModal(idF, idP, nombres, apellidos) {
+    function openDeleteModal(idF, idP, nombres, apellidos, iddenuncia, denunciainfo) {
         document.getElementById('deleteidfiscal').value = idF;
         document.getElementById('deleteidpersona').value = idP;
         document.getElementById('deletenombres').innerText = nombres;
         document.getElementById('deleteapellidos').innerText = apellidos;
+        document.getElementById('deletiddenuncia').innerText = iddenuncia;
+        document.getElementById('deletedenunciainfo').innerText = denunciainfo;
         openModal('modalBorrar');
     }
 

@@ -148,15 +148,23 @@ namespace SistemaGestionJudicial.Controllers
         //Editar los datos del fiscal de la tabla Fiscal y Persona
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditFiscal(long editidF, long editidP, string editcedula, string editnombres, string editapellidos,
+        [Route("Fiscales/EditarFiscal")]
+        public async Task<IActionResult> EditarFiscal(long editidF, long editidP, string editcedula, string editnombres, string editapellidos,
             DateTime? editnacimiento, string editgenero, string editdireccion, string edittelefono, string editcorreo, long editiddenuncia,
             DateTime? editfechadenuncia)
         {
+            if (editidF <= 0 || editidP <= 0)
+            {
+                return NotFound();
+            }
+
             var fiscal = await _context.Fiscales.FindAsync(editidF);
             var persona = await _context.Personas.FindAsync(editidP);
 
-            if (persona == null || fiscal == null)
+            if (fiscal == null || persona == null)
+            {
                 return NotFound();
+            }
 
             persona.Cedula = editcedula;
             persona.Nombres = editnombres;
@@ -168,15 +176,10 @@ namespace SistemaGestionJudicial.Controllers
             persona.CorreoElectronico = editcorreo;
 
             fiscal.IdDenuncia = editiddenuncia;
-            if (editfechadenuncia.HasValue)
-                fiscal.FechaAsignacion = DateOnly.FromDateTime(editfechadenuncia.Value);
+            fiscal.FechaAsignacion = editfechadenuncia.HasValue ? DateOnly.FromDateTime(editfechadenuncia.Value) : null;
+
 
             await _context.SaveChangesAsync();
-
-            var denuncias = _context.Denuncias
-                .Select(d => new { iddenuncia = d.IdDenuncia, DenunciaInfo = "Denuncia #" + d.IdDenuncia + " - " + d.Descripcion })
-                .ToList();
-            ViewBag.denuncias = denuncias;
 
             return RedirectToAction(nameof(Fiscales));
         }
@@ -201,27 +204,59 @@ namespace SistemaGestionJudicial.Controllers
             return View(fiscales);
         }
 
+
         //POST: Fiscales/Delete/5
         //Borrar el Fiscal de la tabla Fiscal y Persona
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long deleteidF, long deleteidP)
         {
-            var fiscales = await _context.Fiscales.FindAsync(deleteidF);
-            if (fiscales != null)
+            try
             {
-                _context.Fiscales.Remove(fiscales);
-                await _context.SaveChangesAsync();
-            }
+                // Buscar el registro en fiscales
+                var fiscal = await _context.Fiscales
+                    .FirstOrDefaultAsync(f => f.IdPersonaFiscal == deleteidF);
 
-            var personas = await _context.Personas.FindAsync(deleteidP);
-            if (personas != null)
+                if (fiscal == null)
+                {
+                    TempData["ErrorMessage"] = "El fiscal no fue encontrado.";
+                    return RedirectToAction(nameof(Fiscales));
+                }
+
+                // Eliminar el registro en fiscales
+                _context.Fiscales.Remove(fiscal);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "El fiscal fue eliminado exitosamente.";
+
+                // Verificar si id_persona está siendo usado por otros registros en fiscales
+                var otherFiscalExists = await _context.Fiscales
+                    .AnyAsync(f => f.IdPersonaFiscal == deleteidP && f.IdPersonaFiscal != deleteidF);
+
+                if (otherFiscalExists)
+                {
+                    // Si hay otros fiscales asociados a esta persona, no eliminar la persona
+                    TempData["WarningMessage"] = "No se eliminó la persona porque está asociada a otros fiscales.";
+                    return RedirectToAction(nameof(Fiscales));
+                }
+
+                // Si no hay otros fiscales asociados, eliminar la persona
+                var persona = await _context.Personas
+                    .FirstOrDefaultAsync(p => p.IdPersona == deleteidP);
+
+                if (persona != null)
+                {
+                    _context.Personas.Remove(persona);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "El fiscal y la persona fueron eliminados exitosamente.";
+                }
+
+                return RedirectToAction(nameof(Fiscales));
+            }
+            catch (Exception ex)
             {
-                _context.Personas.Remove(personas);
-                await _context.SaveChangesAsync();
+                TempData["ErrorMessage"] = "Ocurrió un error al intentar eliminar el fiscal o la persona. Por favor, intenta de nuevo.";
+                return RedirectToAction(nameof(Fiscales));
             }
-
-            return RedirectToAction(nameof(Fiscales));
         }
     }
 }

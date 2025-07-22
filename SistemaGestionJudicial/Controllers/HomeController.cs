@@ -9,12 +9,13 @@ namespace SistemaGestionJudicial.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         //Lo intenté. Si puedes arreglarlo, te debo el mundo entero.
-        private readonly ProyectoContext _context;
+        //22/7/2025: SIIIII LO LOGRÉ. Todo comentario puede ser eliminado.
+        //private readonly ProyectoContext _context;
 
-        public HomeController(ILogger<HomeController> logger, ProyectoContext context)
+        public HomeController(ILogger<HomeController> logger/*, ProyectoContext context*/)
         {
             _logger = logger;
-            _context = context;
+            //_context = context;
         }
 
 
@@ -29,8 +30,6 @@ namespace SistemaGestionJudicial.Controllers
             return View();
         }
 
-
-        
         public IActionResult RecuperacionCuenta()
         {
             return View();
@@ -64,7 +63,7 @@ namespace SistemaGestionJudicial.Controllers
             return View();
         }
 
-        public IActionResult Fiscales()
+        /*public IActionResult Fiscales()
         {
             var fiscales = _context.Fiscales
                 .Include(f => f.IdPersonaFiscalNavigation) // Datos de la tabla 'Persona'
@@ -72,13 +71,13 @@ namespace SistemaGestionJudicial.Controllers
                 .Include(f => f.IdDenunciaNavigation.IdDelitoNavigation)
                 .ToList();
             return View(fiscales);
-        }
+        }*/
 
         //Línea original
-        /*public IActionResult Fiscales()
+        public IActionResult Fiscales()
         {
             return View();
-        }*/
+        }
 
         public IActionResult CrimeReports()
         {
