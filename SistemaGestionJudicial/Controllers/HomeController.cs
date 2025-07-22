@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SistemaGestionJudicial.Models;
 
 namespace SistemaGestionJudicial.Controllers
@@ -72,7 +73,13 @@ namespace SistemaGestionJudicial.Controllers
 
         public IActionResult Fiscales()
         {
-            return View();
+            
+            var fiscales = _context.Fiscales
+                .Include(f => f.IdPersonaFiscalNavigation) // Datos de la tabla 'Persona'
+                .Include(f => f.IdDenunciaNavigation) // Datos de la tabla 'Denuncia'
+                .Include(f => f.IdDenunciaNavigation.IdDelitoNavigation)
+                .ToList();
+            return View(fiscales);
         }
 
         public IActionResult CrimeReports()
