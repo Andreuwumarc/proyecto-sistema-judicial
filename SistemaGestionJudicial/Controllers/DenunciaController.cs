@@ -45,7 +45,9 @@ namespace SistemaGestionJudicial.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            denuncia.FechaDenuncia = DateOnly.FromDateTime(DateTime.Today);
+            // Validación básica por si no se manda la fecha
+            if (denuncia.FechaDenuncia == default)
+                denuncia.FechaDenuncia = DateOnly.FromDateTime(DateTime.Today);
 
             // Obtener el máximo IdDenuncia actual
             var maxId = await dbContext.Denuncias.MaxAsync(d => (long?)d.IdDenuncia) ?? 0;
@@ -79,7 +81,15 @@ namespace SistemaGestionJudicial.Controllers
                 lugarHecho = denuncia.LugarHecho,
                 descripcion = denuncia.Descripcion,
                 idPersona = denuncia.IdPersonaDenuncia,
-                idDelito = denuncia.IdDelito
+                idDelito = denuncia.IdDelito,
+                fechaDenuncia = denuncia.FechaDenuncia,
+
+                // Campos para la vista Detalle. 
+                denuncianteNombre = denuncia.IdPersonaDenunciaNavigation != null
+            ? $"{denuncia.IdPersonaDenunciaNavigation.Nombres} {denuncia.IdPersonaDenunciaNavigation.Apellidos}"
+            : null,
+
+                delitoNombre = denuncia.IdDelitoNavigation?.Nombre
             });
         }
 
@@ -105,6 +115,7 @@ namespace SistemaGestionJudicial.Controllers
             existingDenuncia.LugarHecho = updatedDenuncia.LugarHecho;
             existingDenuncia.IdPersonaDenuncia = updatedDenuncia.IdPersonaDenuncia;
             existingDenuncia.IdDelito = updatedDenuncia.IdDelito;
+            existingDenuncia.FechaDenuncia = updatedDenuncia.FechaDenuncia;
 
             try
             {

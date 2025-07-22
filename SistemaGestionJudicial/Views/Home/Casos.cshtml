@@ -16,14 +16,16 @@
     <!-- Main Content Area -->
     <div class="flex-1 overflow-auto">
         <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print">
-            <h2 class="text-xl font-semibold text-gray-800" id="view-title">Case Management</h2>
-            <div class="flex items-center space-x-4">
+            <!--h2 class="text-xl font-semibold text-gray-800" id="view-title">Case Management</h2-->
+            <div class="flex items-center justify-end w-full">
+                <!--
                 <div class="relative">
                     <input type="text" placeholder="Search cases..."
                            class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                 </div>
-                <div class="flex items-center space-x-2">
+                -->
+                <div class="flex items-center space-x-2 ml-auto">
                     <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
                         <i class="fas fa-user"></i>
                     </div>
@@ -39,15 +41,18 @@
                 <div class="flex space-x-4">
                     <button onclick="openModal('add-case-modal')"
                             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                        <i class="fas fa-plus mr-2"></i> Create Case
+                        <i class="fas fa-plus mr-2"></i> Nuevo Caso
                     </button>
+                    <!--
                     <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center">
                         <i class="fas fa-filter mr-2"></i> Filter
                     </button>
+                    -->
                 </div>
             </div>
 
             <!-- Cases Statistics Cards -->
+            <!-- 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 <div class="card bg-white rounded-lg p-6">
                     <div class="flex justify-between items-start">
@@ -94,6 +99,7 @@
                     </div>
                 </div>
             </div>
+            -->
 
             <!-- Cases Table -->
             <div class="card bg-white rounded-lg p-6">
@@ -107,7 +113,9 @@
                                 <th>Lugar</th>
                                 <th>Denunciante</th>
                                 <th>Delito</th>
+                                <!--
                                 <th>Status</th>
+                                -->
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -123,21 +131,22 @@
                                 : "Sin delito";
 
                                 <tr>
-                                    <td>#@d.IdDenuncia</td>
+                                    <td>@d.IdDenuncia</td>
                                     <td>@d.FechaDenuncia.ToString("dd/MM/yyyy")</td>
                                     <td>@d.Descripcion</td>
                                     <td>@d.LugarHecho</td>
                                     <td>@denunciante</td>
                                     <td>@nombreDelito</td>
+                                    <!-- 
                                     <td>
                                         <span class="badge badge-active">Active</span> 
                                     </td>
+                                    -->
                                     <td>
-                                        @*
-                                        <button class="text-blue-600 hover:text-blue-800 mr-2" onclick="openDetailModal('@d.IdDenuncia', '@denunciante', '', '', '', '')">
+                                        <button class="text-blue-600 hover:text-blue-800 mr-2"
+                                                onclick="openDetailModal('@d.IdDenuncia')">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        *@
                                         <button class="text-green-600 hover:text-green-800 mr-2" onclick="openEditModal(@d.IdDenuncia)">
                                             <i class="fas fa-edit"></i>
                                         </button>
@@ -171,6 +180,10 @@
                         <option value="@persona.IdPersona">@($"{persona.Apellidos} {persona.Nombres}")</option>
                     }
                 </select>
+            </div>
+            <div class="mb-4">
+                <label for="fechaDenuncia" class="block text-sm font-medium text-gray-700">Fecha de la Denuncia</label>
+                <input type="date" id="fechaDenuncia" class="form-input" required />
             </div>
             <div class="mb-4">
                 <label for="delitoId" class="block text-sm font-medium text-gray-700">Delito</label>
@@ -225,7 +238,10 @@
                     }
                 </select>
             </div>
-
+            <div class="mb-4">
+                <label for="editFechaDenuncia" class="block text-sm font-medium text-gray-700">Fecha de la Denuncia</label>
+                <input type="date" id="editFechaDenuncia" class="form-input" required />
+            </div>
             <div class="mb-4">
                 <label for="editDelitoId" class="block text-sm font-medium text-gray-700">Delito</label>
                 <select id="editDelitoId" class="form-input" required>
@@ -257,6 +273,38 @@
                 </button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Detalles Denuncia -->
+<div id="denuncia-detail-modal"
+     class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="modal-content bg-white rounded-lg p-6 w-full max-w-xl shadow-lg">
+        <h3 class="text-xl font-bold mb-6 text-center">Detalles de la Denuncia</h3>
+
+        <div class="grid grid-cols-[25%_75%] gap-4 text-base text-gray-800" id="denuncia-details">
+            <div class="text-right font-semibold">Denunciante:</div>
+            <div id="detail-denunciante"></div>
+
+            <div class="text-right font-semibold">Fecha Denuncia:</div>
+            <div id="detail-fecha"></div>
+
+            <div class="text-right font-semibold">Delito:</div>
+            <div id="detail-delito"></div>
+
+            <div class="text-right font-semibold">Lugar del Hecho:</div>
+            <div id="detail-lugar"></div>
+
+            <div class="text-right font-semibold">Descripción:</div>
+            <div id="detail-descripcion" class="whitespace-pre-line"></div>
+        </div>
+
+        <div class="flex justify-end mt-6">
+            <button type="button" class="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                    onclick="closeModal('denuncia-detail-modal')">
+                Cerrar
+            </button>
+        </div>
     </div>
 </div>
 
@@ -329,24 +377,6 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
-<div id="delete-confirm-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-4">Confirm Deletion</h3>
-        <p class="mb-6">Are you sure you want to delete this offender record? This action cannot be undone.</p>
-        <div class="flex justify-end">
-            <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
-                    onclick="closeModal('delete-confirm-modal')">
-                Cancel
-            </button>
-            <button type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg"
-                    onclick="deleteOffender()">
-                Delete
-            </button>
-        </div>
-    </div>
-</div>
-
 <script>
     function openModal(modalId) {
         document.getElementById(modalId).classList.remove('hidden');
@@ -356,13 +386,6 @@
         document.getElementById(modalId).classList.add('hidden');
     }
 
-    // document.getElementById('addCaseForm').addEventListener('submit', function (e) {
-    //     e.preventDefault();
-    //     // Logic to add crime goes here
-    //     closeModal('add-case-modal');
-    //     alert('Crime added successfully!');
-    // });
-
     document.getElementById('addCaseForm').addEventListener('submit', async function (e) {
         e.preventDefault();
 
@@ -370,7 +393,8 @@
             Descripcion: document.getElementById('descripcion').value,
             LugarHecho: document.getElementById('lugarHecho').value,
             IdPersonaDenuncia: parseInt(document.getElementById('personaId').value),
-            IdDelito: parseInt(document.getElementById('delitoId').value)
+            IdDelito: parseInt(document.getElementById('delitoId').value),
+            FechaDenuncia: document.getElementById("fechaDenuncia").value // Formato YYYY-MM-DD
         };
 
         const response = await fetch('/Denuncia/Create', {
@@ -410,16 +434,7 @@
 
     let currentOffenderId = null;
 
-    // function openEditModal(id, name, dob, gender, crimes) {
-    //     currentOffenderId = id;
-    //     document.getElementById('editName').value = name;
-    //     document.getElementById('editDOB').value = dob.split('/').reverse().join('-');
-    //     document.getElementById('editGender').value = gender.toLowerCase();
-    //     document.getElementById('editCrimes').value = crimes;
-    //     openModal('edit-offender-modal');
-    // }
-
-    // Permite consultar los datos de la denuncia y mostrarlos en un modal.
+    // Permite consultar los datos de la denuncia y editarlos.
     async function openEditModal(id) {
         try {
             const response = await fetch(`/Denuncia/GetById/${id}`);
@@ -431,6 +446,7 @@
             // Cargar los datos en los campos del modal
             document.getElementById("editIdDenuncia").value = data.id;
             document.getElementById("editPersonaId").value = data.idPersona;
+            document.getElementById("editFechaDenuncia").value = data.fechaDenuncia;
             document.getElementById("editDelitoId").value = data.idDelito;
             document.getElementById("editLugarHecho").value = data.lugarHecho || "";
             document.getElementById("editDescripcion").value = data.descripcion || "";
@@ -463,7 +479,8 @@
                 IdPersonaDenuncia: document.getElementById("editPersonaId").value,
                 IdDelito: document.getElementById("editDelitoId").value,
                 LugarHecho: document.getElementById("editLugarHecho").value,
-                Descripcion: document.getElementById("editDescripcion").value
+                Descripcion: document.getElementById("editDescripcion").value,
+                FechaDenuncia: document.getElementById("editFechaDenuncia").value
             };
 
             try {
@@ -528,6 +545,38 @@
         });
     }
 
+    // Permite visualizar modal con detalles de la denuncia.
+    async function openDetailModal(idDenuncia) {
+        try {
+            const response = await fetch(`/Denuncia/GetById/${idDenuncia}`);
+            if (!response.ok) throw new Error("No se pudo obtener la denuncia");
+
+            const data = await response.json();
+
+            // Llenar los campos
+            document.getElementById("detail-denunciante").textContent = data.denuncianteNombre ?? 'N/D';
+            document.getElementById("detail-fecha").textContent = formatearFechaEcuador(data.fechaDenuncia);
+            document.getElementById("detail-delito").textContent = data.delitoNombre ?? 'N/D';
+            document.getElementById("detail-lugar").textContent = data.lugarHecho ?? 'N/D';
+            document.getElementById("detail-descripcion").textContent = data.descripcion ?? 'N/D';
+
+            // Mostrar modal
+            document.getElementById("denuncia-detail-modal").classList.remove("hidden");
+        } catch (err) {
+            console.error(err);
+            Swal.fire("Error", "Ocurrió un error al mostrar los detalles", "error");
+        }
+    }
+
+    // Permite formatear la fecha a dd--MM--yyyy
+     function formatearFechaEcuador(fechaStr) {
+        if (!fechaStr) return 'N/D';
+
+        // Descomponer la cadena "YYYY-MM-DD"
+        const [anio, mes, dia] = fechaStr.split('-');
+        return `${dia}/${mes}/${anio}`;
+    }
+
     function deleteOffender() {
         // Delete logic would go here
         alert(`Offender ${currentOffenderId} deleted`);
@@ -541,7 +590,7 @@
         closeModal('edit-offender-modal');
     });
 
-    function openDetailModal(id, name, dob, gender, crimes, status) {
+    function openDetailModal_Old(id, name, dob, gender, crimes, status) {
         document.getElementById('detail-id').innerText = id;
         document.getElementById('detail-name').innerText = name;
         document.getElementById('detail-dob').innerText = dob;
