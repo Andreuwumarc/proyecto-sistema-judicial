@@ -1,8 +1,17 @@
+<<<<<<< HEAD
 ﻿using AspNetCoreGeneratedDocument;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaGestionJudicial.Models;
 using SistemaGestionJudicial.Models.ViewModels;
+=======
+﻿using Microsoft.AspNetCore.Mvc;
+using SistemaGestionJudicial.Models;
+
+using AspNetCoreGeneratedDocument;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+>>>>>>> develop
 
 
 namespace SistemaGestionJudicial.Controllers
@@ -32,15 +41,25 @@ namespace SistemaGestionJudicial.Controllers
 
                 return RedirectToAction("Login");
             }
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> develop
             //buscar usuario en la bdd
             var usuario = await _context.Usuarios
                 .Include(u => u.IdPersonaNavigation) //trae los datos de la persona
                 .FirstOrDefaultAsync(u => u.Usuario1 == username);
 
+<<<<<<< HEAD
             if (usuario == null || usuario.IdPersonaNavigation == null) 
             { 
                return RedirectToAction("Login");
+=======
+            if (usuario == null || usuario.IdPersonaNavigation == null)
+            {
+                return RedirectToAction("Login");
+>>>>>>> develop
             }
 
             //obtener los tipos de delitos
@@ -54,7 +73,11 @@ namespace SistemaGestionJudicial.Controllers
             };
 
             return View("~/Views/Home/CrearDenuncia.cshtml", modelo);
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> develop
         }
 
         [HttpPost]
@@ -128,4 +151,8 @@ namespace SistemaGestionJudicial.Controllers
 
 
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> develop
