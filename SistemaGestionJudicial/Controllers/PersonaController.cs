@@ -115,36 +115,36 @@ public class PersonaController : Controller
 
 
 
-    // GET: Persona/Delete/5
-    public async Task<IActionResult> Delete(long? id)
-    {
-        if (id == null)
-            return NotFound();
+    //// GET: Persona/Delete/5
+    //public async Task<IActionResult> Delete(long? id)
+    //{
+    //    if (id == null)
+    //        return NotFound();
 
-        var persona = await _context.Personas
-            .Include(p => p.IdRolNavigation)
-            .FirstOrDefaultAsync(p => p.IdPersona == id);
+    //    var persona = await _context.Personas
+    //        .Include(p => p.IdRolNavigation)
+    //        .FirstOrDefaultAsync(p => p.IdPersona == id);
 
-        if (persona == null)
-            return NotFound();
+    //    if (persona == null)
+    //        return NotFound();
 
-        return View(persona);
-    }
+    //    return View(persona);
+    //}
 
-    // POST: Persona/DeleteConfirmed
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(long id)
-    {
-        var persona = await _context.Personas.FindAsync(id);
-        if (persona == null)
-            return NotFound();
+    //// POST: Persona/DeleteConfirmed
+    //[HttpPost]
+    //[ValidateAntiForgeryToken]
+    //public async Task<IActionResult> DeleteConfirmed(long id)
+    //{
+    //    var persona = await _context.Personas.FindAsync(id);
+    //    if (persona == null)
+    //        return NotFound();
 
-        _context.Personas.Remove(persona);
-        await _context.SaveChangesAsync();
+    //    _context.Personas.Remove(persona);
+    //    await _context.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Index));
-    }
+    //    return RedirectToAction(nameof(Index));
+    //}
 
     private async Task<List<SelectListItem>> ObtenerRolesSelect()
     {
