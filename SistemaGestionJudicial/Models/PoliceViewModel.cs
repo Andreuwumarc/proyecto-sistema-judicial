@@ -15,7 +15,7 @@
 
         // Denuncia
         public long Id_Denuncia { get; set; } // FK
-        public string? DescripcionDenuncia { get; set; }
+//        public string? DescripcionDenuncia { get; set; }
         public List<PartesPoliciale> Partes { get; set; } = new List<PartesPoliciale>();
 
     }
