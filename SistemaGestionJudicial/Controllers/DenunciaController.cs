@@ -3,6 +3,9 @@ Creado por MCP Alex Cordova
 Fecha: 20-07-2025
 */
 
+using Microsoft.AspNetCore.Mvc;
+using SistemaGestionJudicial.Models;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -45,7 +48,9 @@ namespace SistemaGestionJudicial.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            denuncia.FechaDenuncia = DateOnly.FromDateTime(DateTime.Today);
+            // Validación básica por si no se manda la fecha
+            if (denuncia.FechaDenuncia == default)
+                denuncia.FechaDenuncia = DateOnly.FromDateTime(DateTime.Today);
 
             // Obtener el máximo IdDenuncia actual
             var maxId = await dbContext.Denuncias.MaxAsync(d => (long?)d.IdDenuncia) ?? 0;
@@ -79,7 +84,15 @@ namespace SistemaGestionJudicial.Controllers
                 lugarHecho = denuncia.LugarHecho,
                 descripcion = denuncia.Descripcion,
                 idPersona = denuncia.IdPersonaDenuncia,
-                idDelito = denuncia.IdDelito
+                idDelito = denuncia.IdDelito,
+                fechaDenuncia = denuncia.FechaDenuncia,
+
+                // Campos para la vista Detalle. 
+                denuncianteNombre = denuncia.IdPersonaDenunciaNavigation != null
+            ? $"{denuncia.IdPersonaDenunciaNavigation.Nombres} {denuncia.IdPersonaDenunciaNavigation.Apellidos}"
+            : null,
+
+                delitoNombre = denuncia.IdDelitoNavigation?.Nombre
             });
         }
 
@@ -105,6 +118,7 @@ namespace SistemaGestionJudicial.Controllers
             existingDenuncia.LugarHecho = updatedDenuncia.LugarHecho;
             existingDenuncia.IdPersonaDenuncia = updatedDenuncia.IdPersonaDenuncia;
             existingDenuncia.IdDelito = updatedDenuncia.IdDelito;
+            existingDenuncia.FechaDenuncia = updatedDenuncia.FechaDenuncia;
 
             try
             {
@@ -145,5 +159,47 @@ namespace SistemaGestionJudicial.Controllers
         {
             return View();
         }
+
+        // GET: DenunciaController/Edit/5
+        //public ActionResult Edit(int id)
+        //{
+        //    return View();
+        //}
+
+        // POST: DenunciaController/Edit/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Edit(int id, IFormCollection collection)
+        //{
+        //    try
+        //    {
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
+
+        // GET: DenunciaController/Delete/5
+        //public ActionResult Delete(int id)
+        //{
+        //    return View();
+        //}
+
+        // POST: DenunciaController/Delete/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Delete(int id, IFormCollection collection)
+        //{
+        //    try
+        //    {
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
     }
 }

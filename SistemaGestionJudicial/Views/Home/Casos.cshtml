@@ -1,575 +1,622 @@
 ﻿@model IEnumerable<SistemaGestionJudicial.Models.Denuncia>
+    @{
+        ViewData["Title"] = "Casos";
+        var personas = ViewBag.Personas as List<dynamic>;
+        var delitos = ViewBag.Delitos as List<dynamic>;
+    }
 
-@{
-    ViewData["Title"] = "Casos";
-    var personas = ViewBag.Personas as List<dynamic>;
-    var delitos = ViewBag.Delitos as List<dynamic>;
-}
+    @section Styles {
+        <link rel="stylesheet" href="~/css/casos.css" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/casos.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-}
+    <div class="flex h-screen overflow-hidden">
 
-<div class="flex h-screen overflow-hidden">
-
-    <!-- Main Content Area -->
-    <div class="flex-1 overflow-auto">
-        <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print">
-            <h2 class="text-xl font-semibold text-gray-800" id="view-title">Case Management</h2>
-            <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <input type="text" placeholder="Search cases..."
-                            class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
-                        <i class="fas fa-user"></i>
+        <!-- Main Content Area -->
+        <div class="flex-1 overflow-auto">
+            <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print">
+                <!--h2 class="text-xl font-semibold text-gray-800" id="view-title">Case Management</h2-->
+                <div class="flex items-center justify-end w-full">
+                    <!--
+                    <div class="relative">
+                        <input type="text" placeholder="Search cases..."
+                               class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                     </div>
-                    <span class="text-sm font-medium">Admin</span>
+                    -->
+                    <div class="flex items-center space-x-2 ml-auto">
+                        <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="text-sm font-medium">Admin</span>
+                    </div>
                 </div>
-            </div>
-        </header>
+            </header>
 
-        <div class="p-6">
-            <!-- Case Management Controls -->
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Case Management</h2>
-                <div class="flex space-x-4">
-                    <button onclick="openModal('add-case-modal')"
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                        <i class="fas fa-plus mr-2"></i> Create Case
-                    </button>
-                    <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center">
-                        <i class="fas fa-filter mr-2"></i> Filter
-                    </button>
+            <div class="p-6">
+                <!-- Case Management Controls -->
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Case Management</h2>
+                    <div class="flex space-x-4">
+                        <button onclick="openModal('add-case-modal')"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Nuevo Caso
+                        </button>
+                        <!--
+                        <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-filter mr-2"></i> Filter
+                        </button>
+                        -->
+                    </div>
                 </div>
-            </div>
 
-            <!-- Cases Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <!-- Cases Statistics Cards -->
+                <!--
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="card bg-white rounded-lg p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Total Cases</p>
+                                <h3 class="text-2xl font-bold mt-1">1,248</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                <i class="fas fa-folder-open"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card bg-white rounded-lg p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Active Cases</p>
+                                <h3 class="text-2xl font-bold mt-1">387</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                <i class="fas fa-gavel"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card bg-white rounded-lg p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Pending Review</p>
+                                <h3 class="text-2xl font-bold mt-1">156</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card bg-white rounded-lg p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Completed Cases</p>
+                                <h3 class="text-2xl font-bold mt-1">705</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                -->
+                <!-- Cases Table -->
                 <div class="card bg-white rounded-lg p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Total Cases</p>
-                            <h3 class="text-2xl font-bold mt-1">1,248</h3>
-                        </div>
-                        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-                            <i class="fas fa-folder-open"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="card bg-white rounded-lg p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Active Cases</p>
-                            <h3 class="text-2xl font-bold mt-1">387</h3>
-                        </div>
-                        <div class="p-3 rounded-full bg-green-100 text-green-600">
-                            <i class="fas fa-gavel"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="card bg-white rounded-lg p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Pending Review</p>
-                            <h3 class="text-2xl font-bold mt-1">156</h3>
-                        </div>
-                        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="card bg-white rounded-lg p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Completed Cases</p>
-                            <h3 class="text-2xl font-bold mt-1">705</h3>
-                        </div>
-                        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cases Table -->
-            <div class="card bg-white rounded-lg p-6">
-                <div class="overflow-x-auto">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Fecha</th>
-                                <th>Descripcion</th>
-                                <th>Lugar</th>
-                                <th>Denunciante</th>
-                                <th>Delito</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var d in Model)
-                            {
-                                var denunciante = d.IdPersonaDenunciaNavigation != null
-                                ? $"{d.IdPersonaDenunciaNavigation.Nombres} {d.IdPersonaDenunciaNavigation.Apellidos}"
-                                : "N/D";
-
-                                var nombreDelito = d.IdDelitoNavigation != null
-                                ? d.IdDelitoNavigation.Nombre // o .Descripcion, según tu modelo
-                                : "Sin delito";
-
+                    <div class="overflow-x-auto">
+                        <table class="data-table">
+                            <thead>
                                 <tr>
-                                    <td>#@d.IdDenuncia</td>
-                                    <td>@d.FechaDenuncia.ToString("dd/MM/yyyy")</td>
-                                    <td>@d.Descripcion</td>
-                                    <td>@d.LugarHecho</td>
-                                    <td>@denunciante</td>
-                                    <td>@nombreDelito</td>
-                                    <td>
-                                        <span class="badge badge-active">Active</span>
-                                    </td>
-                                    <td>
-                                        @*
-                                    <button class="text-blue-600 hover:text-blue-800 mr-2" onclick="openDetailModal('@d.IdDenuncia', '@denunciante', '', '', '', '')">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    *@
-                                        <button class="text-green-600 hover:text-green-800 mr-2" onclick="openEditModal(@d.IdDenuncia)">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-
-                                        <button class="text-red-600 hover:text-red-800" onclick="confirmDelete('@d.IdDenuncia')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </td>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Descripcion</th>
+                                    <th>Lugar</th>
+                                    <th>Denunciante</th>
+                                    <th>Delito</th>
+                                    <!--
+                                    <th>Status</th>
+                                    -->
+                                    <th>Actions</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var d in Model)
+                                {
+                                    var denunciante = d.IdPersonaDenunciaNavigation != null
+                                    ? $"{d.IdPersonaDenunciaNavigation.Nombres} {d.IdPersonaDenunciaNavigation.Apellidos}"
+                                    : "N/D";
+
+                                    var nombreDelito = d.IdDelitoNavigation != null
+                                    ? d.IdDelitoNavigation.Nombre // o .Descripcion, según tu modelo
+                                    : "Sin delito";
+
+                                    <tr>
+                                        <td>@d.IdDenuncia</td>
+                                        <td>@d.FechaDenuncia.ToString("dd/MM/yyyy")</td>
+                                        <td>@d.Descripcion</td>
+                                        <td>@d.LugarHecho</td>
+                                        <td>@denunciante</td>
+                                        <td>@nombreDelito</td>
+                                        <!--
+                                        <td>
+                                            <span class="badge badge-active">Active</span>
+                                        </td>
+                                        -->
+                                        <td>
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2"
+                                                    onclick="openDetailModal('@d.IdDenuncia')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-green-600 hover:text-green-800 mr-2" onclick="openEditModal(@d.IdDenuncia)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+
+                                            <button class="text-red-600 hover:text-red-800" onclick="confirmDelete('@d.IdDenuncia')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Agregar Denuncia -->
-<div id="add-case-modal"
-        class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-4">Agregar Denuncia</h3>
-        <form id="addCaseForm">
-            <div class="mb-4">
-                <label for="personaId" class="block text-sm font-medium text-gray-700">Denunciante</label>
-                <select id="personaId" class="form-input" required>
-                    <option value="">Seleccionar</option>
-                    @foreach (var persona in ViewBag.Personas)
-                    {
-                        <option value="@persona.IdPersona">@($"{persona.Apellidos} {persona.Nombres}")</option>
-                    }
-                </select>
-            </div>
-            <div class="mb-4">
-                <label for="delitoId" class="block text-sm font-medium text-gray-700">Delito</label>
-                <select id="delitoId" class="form-input" required>
-                    <option value="">Seleccionar</option>
-                    @foreach (var delito in ViewBag.Delitos)
-                    {
-                        <option value="@delito.IdDelito">@delito.Nombre</option>
-                    }
-                </select>
-            </div>
-            <div class="mb-4">
-                <label for="lugarHecho" class="block text-sm font-medium text-gray-700">Lugar del Hecho</label>
-                <input type="text" id="lugarHecho" class="form-input" required />
-            </div>
+    <!-- Agregar Denuncia -->
+    <div id="add-case-modal"
+         class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-bold mb-4">Agregar Denuncia</h3>
+            <form id="addCaseForm">
+                <div class="mb-4">
+                    <label for="personaId" class="block text-sm font-medium text-gray-700">Denunciante</label>
+                    <select id="personaId" class="form-input" required>
+                        <option value="">Seleccionar</option>
+                        @foreach (var persona in ViewBag.Personas)
+                        {
+                            <option value="@persona.IdPersona">@($"{persona.Apellidos} {persona.Nombres}")</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="fechaDenuncia" class="block text-sm font-medium text-gray-700">Fecha de la Denuncia</label>
+                    <input type="date" id="fechaDenuncia" class="form-input" required />
+                </div>
+                <div class="mb-4">
+                    <label for="delitoId" class="block text-sm font-medium text-gray-700">Delito</label>
+                    <select id="delitoId" class="form-input" required>
+                        <option value="">Seleccionar</option>
+                        @foreach (var delito in ViewBag.Delitos)
+                        {
+                            <option value="@delito.IdDelito">@delito.Nombre</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="lugarHecho" class="block text-sm font-medium text-gray-700">Lugar del Hecho</label>
+                    <input type="text" id="lugarHecho" class="form-input" required />
+                </div>
 
-            <div class="mb-4">
-                <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
-                <textarea id="descripcion" class="form-input" required rows="4"></textarea>
-            </div>
+                <div class="mb-4">
+                    <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+                    <textarea id="descripcion" class="form-input" required rows="4"></textarea>
+                </div>
 
 
-            <div class="flex justify-end">
-                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
-                        onclick="closeModal('add-case-modal')">
-                    Cancelar
-                </button>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">
-                    Guardar
-                </button>
-            </div>
-        </form>
+                <div class="flex justify-end">
+                    <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
+                            onclick="closeModal('add-case-modal')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<!-- Edit Denuncia -->
-<div id="edit-case-modal"
-        class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-4">Editar Denuncia</h3>
-        <form id="editCaseForm">
-            <!-- ID oculto para saber qué denuncia editar -->
-            <input type="hidden" id="editIdDenuncia" />
+    <!-- Edit Denuncia -->
+    <div id="edit-case-modal"
+         class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-bold mb-4">Editar Denuncia</h3>
+            <form id="editCaseForm">
+                <!-- ID oculto para saber qué denuncia editar -->
+                <input type="hidden" id="editIdDenuncia" />
 
-            <div class="mb-4">
-                <label for="editPersonaId" class="block text-sm font-medium text-gray-700">Denunciante</label>
-                <select id="editPersonaId" class="form-input" required>
-                    <option value="">Seleccionar</option>
-                    @foreach (var persona in ViewBag.Personas)
-                    {
-                        <option value="@persona.IdPersona">@($"{persona.Apellidos} {persona.Nombres}")</option>
-                    }
-                </select>
-            </div>
+                <div class="mb-4">
+                    <label for="editPersonaId" class="block text-sm font-medium text-gray-700">Denunciante</label>
+                    <select id="editPersonaId" class="form-input" required>
+                        <option value="">Seleccionar</option>
+                        @foreach (var persona in ViewBag.Personas)
+                        {
+                            <option value="@persona.IdPersona">@($"{persona.Apellidos} {persona.Nombres}")</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="editFechaDenuncia" class="block text-sm font-medium text-gray-700">Fecha de la Denuncia</label>
+                    <input type="date" id="editFechaDenuncia" class="form-input" required />
+                </div>
+                <div class="mb-4">
+                    <label for="editDelitoId" class="block text-sm font-medium text-gray-700">Delito</label>
+                    <select id="editDelitoId" class="form-input" required>
+                        <option value="">Seleccionar</option>
+                        @foreach (var delito in ViewBag.Delitos)
+                        {
+                            <option value="@delito.IdDelito">@delito.Nombre</option>
+                        }
+                    </select>
+                </div>
 
-            <div class="mb-4">
-                <label for="editDelitoId" class="block text-sm font-medium text-gray-700">Delito</label>
-                <select id="editDelitoId" class="form-input" required>
-                    <option value="">Seleccionar</option>
-                    @foreach (var delito in ViewBag.Delitos)
-                    {
-                        <option value="@delito.IdDelito">@delito.Nombre</option>
-                    }
-                </select>
-            </div>
+                <div class="mb-4">
+                    <label for="editLugarHecho" class="block text-sm font-medium text-gray-700">Lugar del Hecho</label>
+                    <input type="text" id="editLugarHecho" class="form-input" required />
+                </div>
 
-            <div class="mb-4">
-                <label for="editLugarHecho" class="block text-sm font-medium text-gray-700">Lugar del Hecho</label>
-                <input type="text" id="editLugarHecho" class="form-input" required />
-            </div>
+                <div class="mb-4">
+                    <label for="editDescripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+                    <textarea id="editDescripcion" class="form-input" required rows="4"></textarea>
+                </div>
 
-            <div class="mb-4">
-                <label for="editDescripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
-                <textarea id="editDescripcion" class="form-input" required rows="4"></textarea>
-            </div>
-
-            <div class="flex justify-end">
-                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
-                        onclick="closeModal('edit-case-modal')">
-                    Cancelar
-                </button>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">
-                    Guardar Cambios
-                </button>
-            </div>
-        </form>
+                <div class="flex justify-end">
+                    <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
+                            onclick="closeModal('edit-case-modal')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
+
+    <!-- Detalles Denuncia -->
+    <div id="denuncia-detail-modal"
+         class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="modal-content bg-white rounded-lg p-6 w-full max-w-xl shadow-lg">
+            <h3 class="text-xl font-bold mb-6 text-center">Detalles de la Denuncia</h3>
+
+            <div class="grid grid-cols-[25%_75%] gap-4 text-base text-gray-800" id="denuncia-details">
+                <div class="text-right font-semibold">Denunciante:</div>
+                <div id="detail-denunciante"></div>
+
+                <div class="text-right font-semibold">Fecha Denuncia:</div>
+                <div id="detail-fecha"></div>
+
+                <div class="text-right font-semibold">Delito:</div>
+                <div id="detail-delito"></div>
+
+                <div class="text-right font-semibold">Lugar del Hecho:</div>
+                <div id="detail-lugar"></div>
+
+                <div class="text-right font-semibold">Descripción:</div>
+                <div id="detail-descripcion" class="whitespace-pre-line"></div>
+            </div>
+
+            <div class="flex justify-end mt-6">
+                <button type="button" class="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                        onclick="closeModal('denuncia-detail-modal')">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
 
 
-<!-- Offender Detail Modal -->
-<div id="offender-detail-modal"
-        class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-full max-w-lg">
-        <h3 class="text-lg font-bold mb-4">Offender Details</h3>
-        <div class="flex flex-col md:flex-row gap-6">
-            <div class="w-full md:w-1/3">
-                <div class="bg-gray-100 rounded-lg overflow-hidden mb-2">
-                    <img id="detail-image" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3cbb0810-b517-4b39-bed3-3487e544f5a1.png"
-                            class="w-full h-auto object-cover">
+    <!-- Offender Detail Modal -->
+    <div id="offender-detail-modal"
+         class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 w-full max-w-lg">
+            <h3 class="text-lg font-bold mb-4">Offender Details</h3>
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="w-full md:w-1/3">
+                    <div class="bg-gray-100 rounded-lg overflow-hidden mb-2">
+                        <img id="detail-image" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3cbb0810-b517-4b39-bed3-3487e544f5a1.png"
+                             class="w-full h-auto object-cover">
+                    </div>
+                </div>
+                <div class="w-full md:w-2/3" id="offender-details">
+                    <p><strong>ID:</strong> <span id="detail-id"></span></p>
+                    <p><strong>Name:</strong> <span id="detail-name"></span></p>
+                    <p><strong>DOB:</strong> <span id="detail-dob"></span></p>
+                    <p><strong>Gender:</strong> <span id="detail-gender"></span></p>
+                    <p><strong>Associated Case:</strong> <span id="detail-case">Case #2023-1245 (State vs. Johnson)</span></p>
+                    <p><strong>Crimes:</strong> <span id="detail-crimes"></span></p>
+                    <p><strong>Status:</strong> <span id="detail-status"></span></p>
                 </div>
             </div>
-            <div class="w-full md:w-2/3" id="offender-details">
-                <p><strong>ID:</strong> <span id="detail-id"></span></p>
-                <p><strong>Name:</strong> <span id="detail-name"></span></p>
-                <p><strong>DOB:</strong> <span id="detail-dob"></span></p>
-                <p><strong>Gender:</strong> <span id="detail-gender"></span></p>
-                <p><strong>Associated Case:</strong> <span id="detail-case">Case #2023-1245 (State vs. Johnson)</span></p>
-                <p><strong>Crimes:</strong> <span id="detail-crimes"></span></p>
-                <p><strong>Status:</strong> <span id="detail-status"></span></p>
-            </div>
-        </div>
-        <div class="flex justify-end mt-4">
-            <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg"
-                    onclick="closeModal('offender-detail-modal')">
-                Close
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Edit Offender Modal -->
-<div id="edit-offender-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-4">Edit Offender</h3>
-        <form id="editOffenderForm">
-            <div class="mb-4">
-                <label for="editName" class="block text-sm font-medium text-gray-700">Full Name</label>
-                <input type="text" id="editName" class="form-input" required>
-            </div>
-            <div class="mb-4">
-                <label for="editDOB" class="block text-sm font-medium text-gray-700">Date of Birth</label>
-                <input type="date" id="editDOB" class="form-input" required>
-            </div>
-            <div class="mb-4">
-                <label for="editGender" class="block text-sm font-medium text-gray-700">Gender</label>
-                <select id="editGender" class="form-input" required>
-                    <option value="">Select</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label for="editCrimes" class="block text-sm font-medium text-gray-700">Crimes Committed</label>
-                <input type="text" id="editCrimes" class="form-input" placeholder="Separate with commas" required>
-            </div>
-            <div class="flex justify-end">
-                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
-                        onclick="closeModal('edit-offender-modal')">
-                    Cancel
+            <div class="flex justify-end mt-4">
+                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg"
+                        onclick="closeModal('offender-detail-modal')">
+                    Close
                 </button>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Save Changes</button>
             </div>
-        </form>
-    </div>
-</div>
-
-<!-- Delete Confirmation Modal -->
-<div id="delete-confirm-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-4">Confirm Deletion</h3>
-        <p class="mb-6">Are you sure you want to delete this offender record? This action cannot be undone.</p>
-        <div class="flex justify-end">
-            <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
-                    onclick="closeModal('delete-confirm-modal')">
-                Cancel
-            </button>
-            <button type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg"
-                    onclick="deleteOffender()">
-                Delete
-            </button>
         </div>
     </div>
-</div>
 
-<script>
-    function openModal(modalId) {
-        document.getElementById(modalId).classList.remove('hidden');
-    }
+    <!-- Edit Offender Modal -->
+    <div id="edit-offender-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-bold mb-4">Edit Offender</h3>
+            <form id="editOffenderForm">
+                <div class="mb-4">
+                    <label for="editName" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="editName" class="form-input" required>
+                </div>
+                <div class="mb-4">
+                    <label for="editDOB" class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                    <input type="date" id="editDOB" class="form-input" required>
+                </div>
+                <div class="mb-4">
+                    <label for="editGender" class="block text-sm font-medium text-gray-700">Gender</label>
+                    <select id="editGender" class="form-input" required>
+                        <option value="">Select</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="editCrimes" class="block text-sm font-medium text-gray-700">Crimes Committed</label>
+                    <input type="text" id="editCrimes" class="form-input" placeholder="Separate with commas" required>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
+                            onclick="closeModal('edit-offender-modal')">
+                        Cancel
+                    </button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.add('hidden');
-    }
-
-    // document.getElementById('addCaseForm').addEventListener('submit', function (e) {
-    //     e.preventDefault();
-    //     // Logic to add crime goes here
-    //     closeModal('add-case-modal');
-    //     alert('Crime added successfully!');
-    // });
-
-    document.getElementById('addCaseForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        const data = {
-            Descripcion: document.getElementById('descripcion').value,
-            LugarHecho: document.getElementById('lugarHecho').value,
-            IdPersonaDenuncia: parseInt(document.getElementById('personaId').value),
-            IdDelito: parseInt(document.getElementById('delitoId').value)
-        };
-
-        const response = await fetch('/Denuncia/Create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            await Swal.fire({
-                title: '¡Denuncia creada!',
-                text: `ID asignado: #${result.id}`,
-                icon: 'success',
-                confirmButtonText: 'Aceptar',
-                customClass: {
-                    confirmButton: 'btn btn-primary'
-                },
-            });
-
-            // Opcional: cerrar modal, limpiar y recargar
-            closeModal('add-case-modal');
-            document.getElementById('addCaseForm').reset();
-            location.reload();
-        } else {
-            const error = await response.text();
-            Swal.fire({
-                title: 'Error al guardar',
-                text: error || 'Ocurrió un error inesperado.',
-                icon: 'error',
-                confirmButtonText: 'Entendido'
-            });
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
         }
-    });
 
-    let currentOffenderId = null;
-
-    // function openEditModal(id, name, dob, gender, crimes) {
-    //     currentOffenderId = id;
-    //     document.getElementById('editName').value = name;
-    //     document.getElementById('editDOB').value = dob.split('/').reverse().join('-');
-    //     document.getElementById('editGender').value = gender.toLowerCase();
-    //     document.getElementById('editCrimes').value = crimes;
-    //     openModal('edit-offender-modal');
-    // }
-
-    // Permite consultar los datos de la denuncia y mostrarlos en un modal.
-    async function openEditModal(id) {
-        try {
-            const response = await fetch(`/Denuncia/GetById/${id}`);
-
-            if (!response.ok) throw new Error("Error al obtener los datos");
-
-            const data = await response.json();
-
-            // Cargar los datos en los campos del modal
-            document.getElementById("editIdDenuncia").value = data.id;
-            document.getElementById("editPersonaId").value = data.idPersona;
-            document.getElementById("editDelitoId").value = data.idDelito;
-            document.getElementById("editLugarHecho").value = data.lugarHecho || "";
-            document.getElementById("editDescripcion").value = data.descripcion || "";
-
-            // Mostrar el modal
-            document.getElementById("edit-case-modal").classList.remove("hidden");
-
-        } catch (err) {
-            console.error(err);
-            Swal.fire({
-                title: 'Error',
-                text: 'No se pudo cargar la denuncia para edición.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar',
-                customClass: { confirmButton: 'btn btn-primary' },
-                buttonsStyling: false
-            });
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
         }
-    }
 
-    // Permite enviar al controlador los cambios.
-    document.addEventListener("DOMContentLoaded", () => {
-        const editForm = document.getElementById("editCaseForm");
-
-        editForm.addEventListener("submit", async function (e) {
-            e.preventDefault(); // evita recargar la página
+        document.getElementById('addCaseForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
 
             const data = {
-                IdDenuncia: document.getElementById("editIdDenuncia").value,
-                IdPersonaDenuncia: document.getElementById("editPersonaId").value,
-                IdDelito: document.getElementById("editDelitoId").value,
-                LugarHecho: document.getElementById("editLugarHecho").value,
-                Descripcion: document.getElementById("editDescripcion").value
+                Descripcion: document.getElementById('descripcion').value,
+                LugarHecho: document.getElementById('lugarHecho').value,
+                IdPersonaDenuncia: parseInt(document.getElementById('personaId').value),
+                IdDelito: parseInt(document.getElementById('delitoId').value),
+                FechaDenuncia: document.getElementById("fechaDenuncia").value // Formato YYYY-MM-DD
             };
 
-            try {
-                const response = await fetch('/Denuncia/Edit', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
+            const response = await fetch('/Denuncia/Create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                await Swal.fire({
+                    title: '¡Denuncia creada!',
+                    text: `ID asignado: #${result.id}`,
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar',
+                    customClass: {
+                        confirmButton: 'btn btn-primary'
                     },
-                    body: JSON.stringify(data)
                 });
 
-                if (response.ok) {
-                    Swal.fire({
-                        title: "Éxito",
-                        text: "La denuncia fue actualizada correctamente.",
-                        icon: "success",
-                        confirmButtonColor: "#0d6efd" // Bootstrap primary
-                    }).then(() => location.reload());
-                } else {
-                    const err = await response.text();
-                    throw new Error(err);
-                }
-            } catch (err) {
-                Swal.fire("Error", "No se pudo actualizar la denuncia.\n" + err.message, "error");
+                // Opcional: cerrar modal, limpiar y recargar
+                closeModal('add-case-modal');
+                document.getElementById('addCaseForm').reset();
+                location.reload();
+            } else {
+                const error = await response.text();
+                Swal.fire({
+                    title: 'Error al guardar',
+                    text: error || 'Ocurrió un error inesperado.',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
             }
         });
-    });
 
-    // Permite consultar al usuario antes de realizar una eliminacion.
-    function confirmDelete(id) {
-        Swal.fire({
-            title: "¿Desea eliminar la denuncia?",
-            text: "Esta acción no se puede deshacer",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#0d6efd", // Bootstrap primary
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Sí",
-            cancelButtonText: "No"
-        }).then(async (result) => {
-            if (result.isConfirmed) {
+        let currentOffenderId = null;
+
+        // Permite consultar los datos de la denuncia y editarlos.
+        async function openEditModal(id) {
+            try {
+                const response = await fetch(`/Denuncia/GetById/${id}`);
+
+                if (!response.ok) throw new Error("Error al obtener los datos");
+
+                const data = await response.json();
+
+                // Cargar los datos en los campos del modal
+                document.getElementById("editIdDenuncia").value = data.id;
+                document.getElementById("editPersonaId").value = data.idPersona;
+                document.getElementById("editFechaDenuncia").value = data.fechaDenuncia;
+                document.getElementById("editDelitoId").value = data.idDelito;
+                document.getElementById("editLugarHecho").value = data.lugarHecho || "";
+                document.getElementById("editDescripcion").value = data.descripcion || "";
+
+                // Mostrar el modal
+                document.getElementById("edit-case-modal").classList.remove("hidden");
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo cargar la denuncia para edición.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                    customClass: { confirmButton: 'btn btn-primary' },
+                    buttonsStyling: false
+                });
+            }
+        }
+
+        // Permite enviar al controlador los cambios.
+        document.addEventListener("DOMContentLoaded", () => {
+            const editForm = document.getElementById("editCaseForm");
+
+            editForm.addEventListener("submit", async function (e) {
+                e.preventDefault(); // evita recargar la página
+
+                const data = {
+                    IdDenuncia: document.getElementById("editIdDenuncia").value,
+                    IdPersonaDenuncia: document.getElementById("editPersonaId").value,
+                    IdDelito: document.getElementById("editDelitoId").value,
+                    LugarHecho: document.getElementById("editLugarHecho").value,
+                    Descripcion: document.getElementById("editDescripcion").value,
+                    FechaDenuncia: document.getElementById("editFechaDenuncia").value
+                };
+
                 try {
-                    const response = await fetch(`/Denuncia/Delete/${id}`, {
-                        method: 'DELETE'
+                    const response = await fetch('/Denuncia/Edit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
                     });
 
                     if (response.ok) {
                         Swal.fire({
-                            title: "Operación exitosa",
-                            text: "La denuncia fue eliminada correctamente.",
+                            title: "Éxito",
+                            text: "La denuncia fue actualizada correctamente.",
                             icon: "success",
-                            confirmButtonColor: "#0d6efd"
+                            confirmButtonColor: "#0d6efd" // Bootstrap primary
                         }).then(() => location.reload());
                     } else {
                         const err = await response.text();
                         throw new Error(err);
                     }
                 } catch (err) {
-                    Swal.fire("Error", "No se pudo eliminar la denuncia.\n" + err.message, "error");
+                    Swal.fire("Error", "No se pudo actualizar la denuncia.\n" + err.message, "error");
                 }
-            }
+            });
         });
-    }
 
-    function deleteOffender() {
-        // Delete logic would go here
-        alert(`Offender ${currentOffenderId} deleted`);
-        closeModal('delete-confirm-modal');
-    }
+        // Permite consultar al usuario antes de realizar una eliminacion.
+        function confirmDelete(id) {
+            Swal.fire({
+                title: "¿Desea eliminar la denuncia?",
+                text: "Esta acción no se puede deshacer",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#0d6efd", // Bootstrap primary
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sí",
+                cancelButtonText: "No"
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch(`/Denuncia/Delete/${id}`, {
+                            method: 'DELETE'
+                        });
 
-    document.getElementById('editOffenderForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Save logic would go here
-        alert(`Changes saved for offender ${currentOffenderId}`);
-        closeModal('edit-offender-modal');
-    });
+                        if (response.ok) {
+                            Swal.fire({
+                                title: "Operación exitosa",
+                                text: "La denuncia fue eliminada correctamente.",
+                                icon: "success",
+                                confirmButtonColor: "#0d6efd"
+                            }).then(() => location.reload());
+                        } else {
+                            const err = await response.text();
+                            throw new Error(err);
+                        }
+                    } catch (err) {
+                        Swal.fire("Error", "No se pudo eliminar la denuncia.\n" + err.message, "error");
+                    }
+                }
+            });
+        }
 
-    function openDetailModal(id, name, dob, gender, crimes, status) {
-        document.getElementById('detail-id').innerText = id;
-        document.getElementById('detail-name').innerText = name;
-        document.getElementById('detail-dob').innerText = dob;
-        document.getElementById('detail-gender').innerText = gender;
-        document.getElementById('detail-crimes').innerText = crimes;
-        document.getElementById('detail-status').innerText = status;
+        // Permite visualizar modal con detalles de la denuncia.
+        async function openDetailModal(idDenuncia) {
+            try {
+                const response = await fetch(`/Denuncia/GetById/${idDenuncia}`);
+                if (!response.ok) throw new Error("No se pudo obtener la denuncia");
 
-        // Set sample case data (in a real app this would come from your data)
-        const caseMap = {
-            'OF-1001': 'Case #2023-1245 (State vs. Johnson)',
-            'OF-1002': 'Case #2023-1246 (State vs. Smith)',
-            'OF-1003': 'Case #2023-1247 (State vs. Johnson)'
-        };
-        document.getElementById('detail-case').innerText = caseMap[id] || 'No case assigned';
+                const data = await response.json();
 
-        // Set sample image (in a real app this would come from your uploaded file)
-        const imageMap = {
-            'OF-1001': 'https://randomuser.me/api/portraits/men/32.jpg',
-            'OF-1002': 'https://randomuser.me/api/portraits/women/44.jpg',
-            'OF-1003': 'https://randomuser.me/api/portraits/men/65.jpg'
-        };
-        document.getElementById('detail-image').src = imageMap[id] || 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/30c8e3f5-bf7a-49c4-a1e7-07a179d2ee51.png';
+                // Llenar los campos
+                document.getElementById("detail-denunciante").textContent = data.denuncianteNombre ?? 'N/D';
+                document.getElementById("detail-fecha").textContent = formatearFechaEcuador(data.fechaDenuncia);
+                document.getElementById("detail-delito").textContent = data.delitoNombre ?? 'N/D';
+                document.getElementById("detail-lugar").textContent = data.lugarHecho ?? 'N/D';
+                document.getElementById("detail-descripcion").textContent = data.descripcion ?? 'N/D';
 
-        openModal('offender-detail-modal');
-    }
+                // Mostrar modal
+                document.getElementById("denuncia-detail-modal").classList.remove("hidden");
+            } catch (err) {
+                console.error(err);
+                Swal.fire("Error", "Ocurrió un error al mostrar los detalles", "error");
+            }
+        }
+
+        // Permite formatear la fecha a dd--MM--yyyy
+         function formatearFechaEcuador(fechaStr) {
+            if (!fechaStr) return 'N/D';
+
+            // Descomponer la cadena "YYYY-MM-DD"
+            const [anio, mes, dia] = fechaStr.split('-');
+            return `${dia}/${mes}/${anio}`;
+        }
+
+        function deleteOffender() {
+            // Delete logic would go here
+            alert(`Offender ${currentOffenderId} deleted`);
+            closeModal('delete-confirm-modal');
+        }
+
+        document.getElementById('editOffenderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Save logic would go here
+            alert(`Changes saved for offender ${currentOffenderId}`);
+            closeModal('edit-offender-modal');
+        });
+
+        function openDetailModal_Old(id, name, dob, gender, crimes, status) {
+            document.getElementById('detail-id').innerText = id;
+            document.getElementById('detail-name').innerText = name;
+            document.getElementById('detail-dob').innerText = dob;
+            document.getElementById('detail-gender').innerText = gender;
+            document.getElementById('detail-crimes').innerText = crimes;
+            document.getElementById('detail-status').innerText = status;
+
+            // Set sample case data (in a real app this would come from your data)
+            const caseMap = {
+                'OF-1001': 'Case #2023-1245 (State vs. Johnson)',
+                'OF-1002': 'Case #2023-1246 (State vs. Smith)',
+                'OF-1003': 'Case #2023-1247 (State vs. Johnson)'
+            };
+            document.getElementById('detail-case').innerText = caseMap[id] || 'No case assigned';
+
+            // Set sample image (in a real app this would come from your uploaded file)
+            const imageMap = {
+                'OF-1001': 'https://randomuser.me/api/portraits/men/32.jpg',
+                'OF-1002': 'https://randomuser.me/api/portraits/women/44.jpg',
+                'OF-1003': 'https://randomuser.me/api/portraits/men/65.jpg'
+            };
+            document.getElementById('detail-image').src = imageMap[id] || 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/30c8e3f5-bf7a-49c4-a1e7-07a179d2ee51.png';
+
+            openModal('offender-detail-modal');
+        }
 
 
-</script>
+    </script>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

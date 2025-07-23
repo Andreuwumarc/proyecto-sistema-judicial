@@ -71,7 +71,7 @@ namespace SistemaGestionJudicial.Controllers
             return View();
         }
 
-        public IActionResult Fiscales()
+        /*public IActionResult Fiscales()
         {
             
             var fiscales = _context.Fiscales
@@ -80,17 +80,17 @@ namespace SistemaGestionJudicial.Controllers
                 .Include(f => f.IdDenunciaNavigation.IdDelitoNavigation)
                 .ToList();
             return View(fiscales);
-        }
+        }*/
 
         public IActionResult CrimeReports()
         {
             return View();
         }
 
-        public IActionResult CaseReports()
+        /*public IActionResult CaseReports()
         {
             return View();
-        }
+        }*/
 
         public IActionResult Privacy()
         {
