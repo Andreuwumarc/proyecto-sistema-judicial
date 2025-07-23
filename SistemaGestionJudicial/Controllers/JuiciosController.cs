@@ -171,8 +171,6 @@ namespace SistemaGestionJudicial.Controllers
 
 
         // POST: Juicios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
@@ -181,6 +179,11 @@ namespace SistemaGestionJudicial.Controllers
             long IdPersonaAcusado
         )
         {
+            if (juicio.Estado == "Concluido" && juicio.FechaFin == null)
+            {
+                ModelState.AddModelError("FechaFin", "La fecha de fin es obligatoria si el juicio está concluido.");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(juicio);
@@ -316,9 +319,16 @@ namespace SistemaGestionJudicial.Controllers
             long IdDelito,
             long IdPersonaDenunciante,
             string TipoSentencia,
+            string Pena,
             string Observaciones)
         {
             if (id != juicio.IdJuicio) return NotFound();
+
+            if (Pena.Length > 200)
+                ModelState.AddModelError("Pena", "La pena no debe superar los 200 caracteres.");
+
+            if (Observaciones.Length > 300)
+                ModelState.AddModelError("Observaciones", "Las observaciones no deben superar los 300 caracteres.");
 
             if (ModelState.IsValid)
             {
