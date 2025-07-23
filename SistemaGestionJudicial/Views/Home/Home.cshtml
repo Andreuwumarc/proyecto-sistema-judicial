@@ -1,0 +1,80 @@
+﻿@{
+Layout = "~/Views/Shared/_HomePageLayout.cshtml";
+    ViewData["Title"] = "Inicio";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" />
+}
+
+
+<!-- Hero principal -->
+<div class="hero-section text-white text-center d-flex align-items-center justify-content-center">
+    <div class="overlay"></div>
+    <div class="content py-5">
+        <h1 class="display-4 fw-bold">Sistema Judicial Grecorromano</h1>
+        <p class="lead">Administra denuncias, juicios, fiscales y sentencias de forma moderna, inspirada en la justicia de los antiguos imperios.</p>
+        <a asp-controller="Account" asp-action="Login" class="btn btn-transparente mt-3">Registrar una Denuncia</a>
+    </div>
+</div>
+
+
+<!-- Sección de funcionalidades -->
+<section class="py-5 text-center seccion-funcionalidades">
+    <div class="container">
+        <h2 class="fw-bold mb-4 titulo-seccion">¿Qué puede hacer nuestro sistema?</h2>
+        <div class="row">
+            <div class="col-md-4 item-funcionalidad">
+                <img src="/images/2ef1696f0ca526b5cb0b267e54dc5a30.jpg" class="icono-funcion" />
+                <h5 class="titulo-funcion">Registrar Denuncias</h5>
+                <p class="texto-funcion">Permite ingresar casos legales con toda la información detallada del denunciante, acusado y el delito.</p>
+            </div>
+            <div class="col-md-4 item-funcionalidad">
+                <img src="/images/dcdd47348d4fef32d1b2fa28e5102673.jpg" class="icono-funcion" />
+                <h5 class="titulo-funcion">Asignar Fiscales y Jueces</h5>
+                <p class="texto-funcion">Administra la asignación de fiscales y jueces para cada proceso judicial, mejorando la transparencia.</p>
+            </div>
+            <div class="col-md-4 item-funcionalidad">
+                <img src="/images/3f12f4ca5e1f11b18e535ec5a60e4351.jpg" class="icono-funcion" />
+                <h5 class="titulo-funcion">Generar Reportes</h5>
+                <p class="texto-funcion">Consulta reportes por fecha, tipo de delito o estado del proceso, todo desde una interfaz amigable.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Sección de servicios -->
+<section class="servicios-section">
+    <div class="overlay"></div>
+    <div class="container content text-center">
+        <h2 class="fw-bold mb-4">Servicios Judiciales</h2>
+
+        <div class="mb-4 text-start integrantes-box">
+            <p>
+                Nuestro sistema judicial acompaña todo el proceso desde la ocurrencia del hecho hasta el cierre del caso. Permite registrar y dar seguimiento a denuncias formales presentadas por víctimas o testigos, facilita la gestión de la investigación policial y la evaluación fiscal, y apoya la realización de audiencias y juicios. Además, administra las sentencias dictadas y garantiza el registro completo y transparente de cada etapa del ciclo judicial.
+            </p>
+
+            <p class="mb-2">
+                Somos estudiantes de la carrera de Desarrollo de Software, cursando la materia de Programación usando Framework.<br />
+            </p>
+            <ul class="list-unstyled ps-3 mb-0" style="padding-left: 0;">
+                <li style="text-align: left;"><strong>Integrantes del equipo:</strong></li>
+                <li style="text-align: center;">Ávila Moreno David Alexander</li>
+                <li style="text-align: center;">Bedón Pacheco Billy Joshua</li>
+                <li style="text-align: center;">Córdova Fernández Alex Daniel</li>
+                <li style="text-align: center;">Ayapata Mendoza Joel Gustavo</li>
+                <li style="text-align: center;">García Sánchez Medardo Ángel</li>
+                <li style="text-align: center;">Huiracocha Alvarado Fernando Jesús</li>
+                <li style="text-align: center;">Intriago Mora Carlos Stuart</li>
+                <li style="text-align: center;">Jijon Garcia Jimmy Alejandro</li>
+                <li style="text-align: center;">Mercado Villamar Ricardo Andrés</li>
+                <li style="text-align: center;">Mora Vite Aarón Eliezer</li>
+                <li style="text-align: center;">Romero Chávez Marcos Andrés</li>
+                <li style="text-align: center;">Villacís Arteaga Juan Andrés</li>
+            </ul>
+
+
+        </div>
+    </div>
+</section>

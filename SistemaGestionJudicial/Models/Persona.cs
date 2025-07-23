@@ -1,19 +1,41 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
-namespace SistemaGestionJudicial.Models
+namespace SistemaGestionJudicial.Models;
+
+public partial class Persona
 {
-    [Table("personas")]
-    public class Persona
-    {
-        public long Id_Persona { get; set; }
-        public string? Cedula { get; set; }
-        public string? Nombres { get; set; }
-        public string? Apellidos { get; set; }
+    public long IdPersona { get; set; }
 
-        [ForeignKey("Rol")]
-        public long Id_Rol { get; set; }
-        public Rol? Rol { get; set; }
+    public string Cedula { get; set; } = null!;
 
-    }
+    public string? Nombres { get; set; }
+
+    public string? Apellidos { get; set; }
+
+    public DateOnly? FechaNacimiento { get; set; }
+
+    public long? IdRol { get; set; }
+
+    public string? Genero { get; set; }
+
+    public string? Direccion { get; set; }
+
+    public string? Telefono { get; set; }
+
+    public string? CorreoElectronico { get; set; }
+
+    public virtual ICollection<Denuncia> Denuncia { get; set; } = new List<Denuncia>();
+
+    public virtual ICollection<Fiscale> Fiscales { get; set; } = new List<Fiscale>();
+
+    public virtual Role? IdRolNavigation { get; set; }
+
+    public virtual ICollection<Juicio> Juicios { get; set; } = new List<Juicio>();
+
+    public virtual ICollection<JuiciosAcusado> JuiciosAcusados { get; set; } = new List<JuiciosAcusado>();
+
+    public virtual ICollection<PartesPoliciale> PartesPoliciales { get; set; } = new List<PartesPoliciale>();
+
+    public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }

@@ -11,6 +11,11 @@
     @RenderSection("Styles", required: false)
 </head>
 <body class="min-h-screen flex flex-col">
+    @{
+        // ⚙️ Obtén el rol desde sesión
+        var rolUsuario = Context.Session.GetInt32("RolUsuario");
+    }
+
     <div class="flex flex-1 overflow-hidden">
         <div class="sidebar bg-blue-900 text-white w-64 flex-shrink-0 no-print">
             <div class="p-4 border-b border-blue-800">
@@ -20,58 +25,120 @@
                 </h1>
                 <p class="text-blue-200 text-sm mt-1">Management Portal</p>
             </div>
+
             <nav class="mt-4">
-                <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Main</div>
-                <a href="/Home/Index"
-                   class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
-                    <i class="fas fa-tachometer-alt mr-3"></i>
-                    Dashboard
-                </a>
-                <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">
-                    Case Management
-                </div>
-                <a href="/Home/Delincuentes"
-                   class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                    <i class="fas fa-user-shield mr-3"></i>
-                    Offenders
-                </a>
-                <a href="/Home/Crimenes"
-                   class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                    <i class="fas fa-gavel mr-3"></i>
-                    Crimes
-                </a>
-                <a href="/Police/Polices"
-                   class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                    <i class="fas fa-shield-alt mr-3"></i>
-                    Policial
-                </a>
-                <a href="/Home/Casos"
-                   class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                    <i class="fas fa-folder-open mr-3"></i>
-                    Cases
-                </a>
-                <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Personnel</div>
-                <a href="/Home/Jueces"
-                   class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                    <i class="fas fa-user-tie mr-3"></i>
-                    Judges
-                </a>
-                <a href="/Home/Fiscales"
-                   class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                    <i class="fas fa-user-ninja mr-3"></i>
-                    Prosecutors
-                </a>
-                <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Reports</div>
-                <a href="/Home/CrimeReports"
-                   class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                    <i class="fas fa-chart-bar mr-3"></i>
-                    Crime Reports
-                </a>
-                <a href="/Home/CaseReports"
-                   class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                    <i class="fas fa-chart-pie mr-3"></i>
-                    Case Reports
-                </a>
+                @* ✅ JUEZ: menú completo + reports *@
+                @if (rolUsuario == 1)
+                {
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Main</div>
+                    <a href="/Home/Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
+                        <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+                    </a>
+
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Case Management</div>
+                    <a href="/Home/Delincuentes" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-user-shield mr-3"></i> Offenders
+                    </a>
+                    <a href="/Home/Crimenes" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-gavel mr-3"></i> Crimes
+                    </a>
+                    <a href="/Police/Polices" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-shield-alt mr-3"></i> Partes Policiales
+                    </a>
+                    <a href="/Juicios/Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-folder-open mr-3"></i> Juicios
+                    </a>
+                    <a href="/Home/Casos" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-folder-open mr-3"></i> Denuncia
+                    </a>
+
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Personnel</div>
+                    <a href="/Home/Jueces" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-user-tie mr-3"></i> Judges
+                    </a>
+                    <a href="/Fiscales/Fiscales" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-user-ninja mr-3"></i> Prosecutors
+                    </a>
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Reports</div>
+                    <a href="/Home/CrimeReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-chart-bar mr-3"></i> Crime Reports
+                    </a>
+                    <a href="/Home/CaseReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-chart-pie mr-3"></i> Case Reports
+                    </a>
+                }
+
+                @* ✅ DENUNCIANTE: solo Reports *@
+                @if (rolUsuario == 4)
+                {
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Case Management</div>
+                    <a class="flex items-center px-4 py-3 text-white hover:bg-blue-800"
+                       asp-controller="IngresarDenuncia" asp-action="CrearDenuncia">
+                        <i class="fas fa-user-shield mr-3"></i>
+                        Realizar Denuncia
+                    </a>
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Reports</div>
+                    <a href="/Home/CrimeReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-chart-bar mr-3"></i> Crime Reports
+                    </a>
+                    <a href="/Home/CaseReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-chart-pie mr-3"></i> Case Reports
+                    </a>
+                }
+
+                @* ✅ POLICÍA: Polices + Cases + Reports *@
+                @if (rolUsuario == 5)
+                {
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Main</div>
+                    <a href="/Home/Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
+                        <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+                    </a>
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Case Management</div>
+                    <a href="/Police/Polices" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-shield-alt mr-3"></i> Partes Policiales
+                    </a>
+                    <a href="/Home/Casos" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-folder-open mr-3"></i> Cases
+                    </a>
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Reports</div>
+                    <a href="/Home/CrimeReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-chart-bar mr-3"></i> Crime Reports
+                    </a>
+                    <a href="/Home/CaseReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-chart-pie mr-3"></i> Case Reports
+                    </a>
+                }
+
+                @* ✅ FISCAL: Polices + Juicios + Cases + Fiscal + Reports *@
+                @if (rolUsuario == 2)
+                {
+                    <a href="/Police/Polices" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-shield-alt mr-3"></i> Partes Policiales
+                    </a>
+                    <a href="/Juicios/Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-folder-open mr-3"></i> Juicios
+                    </a>
+                    <a href="/Home/Casos" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-folder-open mr-3"></i> Cases
+                    </a>
+                    <a href="/Fiscales/Fiscales" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-user-ninja mr-3"></i> Prosecutors
+                    </a>
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Reports</div>
+                    <a href="/Home/CrimeReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-chart-bar mr-3"></i> Crime Reports
+                    </a>
+                    <a href="/Home/CaseReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-chart-pie mr-3"></i> Case Reports
+                    </a>
+                }
+
+                @* ✅ Si no coincide ningún rol: mensaje genérico *@
+                @if (rolUsuario != 1 && rolUsuario != 2 && rolUsuario != 4 && rolUsuario != 5)
+                {
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Bienvenido</div>
+                    <p class="px-4 py-3 text-white">Selecciona una opción disponible</p>
+                }
             </nav>
         </div>
 
@@ -81,13 +148,6 @@
             </main>
         </div>
     </div>
-
-    <footer class="border-top footer text-muted py-3 bg-gray-100 w-full">
-        <div class="container">
-            &copy; 2025 - SistemaGestionJudicial -
-            <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacidad</a>
-        </div>
-    </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

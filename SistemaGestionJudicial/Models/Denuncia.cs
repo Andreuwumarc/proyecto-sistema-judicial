@@ -1,17 +1,29 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
-namespace SistemaGestionJudicial.Models
+namespace SistemaGestionJudicial.Models;
+
+public partial class Denuncia
 {
-    [Table("denuncias")]
-    public class Denuncia
-    {
+    public long IdDenuncia { get; set; }
 
-        public long Id_Denuncia { get; set; }  // Clave primaria
+    public DateOnly FechaDenuncia { get; set; }
 
-        // Otras propiedades que tenga tu modelo
-        public string? Descripcion { get; set; }
+    public string? LugarHecho { get; set; }
 
-        // Puedes agregar más campos si los tienes
-    }
+    public string? Descripcion { get; set; }
+
+    public long? IdPersonaDenuncia { get; set; }
+
+    public long? IdDelito { get; set; }
+
+    public virtual ICollection<Fiscale> Fiscales { get; set; } = new List<Fiscale>();
+
+    public virtual Delito? IdDelitoNavigation { get; set; }
+
+    public virtual Persona? IdPersonaDenunciaNavigation { get; set; }
+
+    public virtual ICollection<Juicio> Juicios { get; set; } = new List<Juicio>();
+
+    public virtual ICollection<PartesPoliciale> PartesPoliciales { get; set; } = new List<PartesPoliciale>();
 }

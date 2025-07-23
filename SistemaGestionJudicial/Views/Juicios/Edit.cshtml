@@ -1,0 +1,67 @@
+﻿@model SistemaGestionJudicial.Models.Juicio
+
+@{
+    ViewData["Title"] = "Editar Juicio";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/casos.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+
+<div class="p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Editar Juicio</h2>
+        <a asp-action="Index" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
+            <i class="fas fa-arrow-left mr-2"></i> Volver
+        </a>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-xl mx-auto">
+        <form asp-action="Edit" class="space-y-4">
+            <input type="hidden" asp-for="IdJuicio" />
+            <div>
+                <label asp-for="FechaInicio" class="block text-sm font-medium text-gray-700">Fecha de Inicio</label>
+                <input asp-for="FechaInicio" type="date" class="form-input" />
+                <span asp-validation-for="FechaInicio" class="text-red-600 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="FechaFin" class="block text-sm font-medium text-gray-700">Fecha de Fin</label>
+                <input asp-for="FechaFin" type="date" class="form-input" />
+                <span asp-validation-for="FechaFin" class="text-red-600 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="IdDenuncia" class="block text-sm font-medium text-gray-700">Denuncia</label>
+                <select asp-for="IdDenuncia" class="form-input" asp-items="ViewBag.IdDenuncia"></select>
+                <span asp-validation-for="IdDenuncia" class="text-red-600 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="IdPersonaJuez" class="block text-sm font-medium text-gray-700">Juez</label>
+                <select asp-for="IdPersonaJuez" class="form-input" asp-items="ViewBag.IdPersonaJuez"></select>
+                <span asp-validation-for="IdPersonaJuez" class="text-red-600 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="Estado" class="block text-sm font-medium text-gray-700">Estado</label>
+                <input asp-for="Estado" class="form-input" />
+                <span asp-validation-for="Estado" class="text-red-600 text-sm"></span>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                    <i class="fas fa-save mr-2"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

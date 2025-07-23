@@ -4,7 +4,7 @@
     {
         // Parte Policial
         public long Id_Parte { get; set; }
-        public DateTime Fecha_Parte { get; set; }
+        public DateOnly? Fecha_Parte { get; set; }
         public string? Descripcion { get; set; }
 
         // Policia
@@ -16,7 +16,7 @@
         // Denuncia
         public long Id_Denuncia { get; set; } // FK
         public string? DescripcionDenuncia { get; set; }
-        public List<PartePolicial> Partes { get; set; } = new List<PartePolicial>();
+        public List<PartesPoliciale> Partes { get; set; } = new List<PartesPoliciale>();
 
     }
 }

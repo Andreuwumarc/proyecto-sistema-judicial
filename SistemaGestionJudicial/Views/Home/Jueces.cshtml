@@ -1,402 +1,375 @@
-﻿
+﻿@model IEnumerable<SistemaGestionJudicial.Models.Persona>
 @{
-    ViewData["Title"] = "Jueces";
+    ViewData["Title"] = "Gestión de Jueces";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/jueces.css" />
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewData["Title"]</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-}
+    <style>
+        .modal {
+            z-index: 50;
+        }
 
-<div class="flex h-screen overflow-hidden">
-        
-    <!-- Main Content Area -->
-    <div class="flex-1 overflow-auto">
-        <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print">
-            <h2 class="text-xl font-semibold text-gray-800" id="view-title">Judge Management</h2>
-            <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <input type="text" placeholder="Search judges..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <span class="text-sm font-medium">Admin</span>
-                </div>
-            </div>
-        </header>
+            .modal.hidden {
+                display: none;
+            }
 
-        <div class="p-6">
-            <!-- Judge Management Controls -->
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Judge Management</h2>
-                <div class="flex space-x-4">
-                    <button onclick="openModal('add-judge-modal')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                        <i class="fas fa-plus mr-2"></i> Add Judge
-                    </button>
-                    <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center">
-                        <i class="fas fa-filter mr-2"></i> Filter
-                    </button>
-                </div>
-            </div>
-                
-            <!-- Judges Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                <div class="card bg-white rounded-lg p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Total Judges</p>
-                            <h3 class="text-2xl font-bold mt-1">42</h3>
-                        </div>
-                        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-                            <i class="fas fa-user-tie"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="card bg-white rounded-lg p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Active Judges</p>
-                            <h3 class="text-2xl font-bold mt-1">36</h3>
-                        </div>
-                        <div class="p-3 rounded-full bg-green-100 text-green-600">
-                            <i class="fas fa-gavel"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="card bg-white rounded-lg p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Inactive Judges</p>
-                            <h3 class="text-2xl font-bold mt-1">6</h3>
-                        </div>
-                        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                            <i class="fas fa-user-clock"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="card bg-white rounded-lg p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500 text-sm">Avg. Cases per Judge</p>
-                            <h3 class="text-2xl font-bold mt-1">12</h3>
-                        </div>
-                        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
 
-            <!-- Judges Table -->
-            <div class="card bg-white rounded-lg p-6">
-                <div class="overflow-x-auto">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Judge ID</th>
-                                <th>Judge</th>
-                                <th>Court</th>
-                                <th>Specialization</th>
-                                <th>Years</th>
-                                <th>Active Cases</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>J-1001</td>
-                                <td>
-                                    <div class="flex items-center">
-                                        <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Judge" class="judge-avatar">
-                                        <span>Hon. Sarah Williams</span>
-                                    </div>
-                                </td>
-                                <td>District Court</td>
-                                <td>Criminal Law</td>
-                                <td>15</td>
-                                <td>8</td>
-                                <td><span class="badge badge-active">Active</span></td>
-                                <td>
-                                    <button class="text-blue-600 hover:text-blue-800 mr-2" onclick="openDetailModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft', 'Incarcerated')">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="text-green-600 hover:text-green-800 mr-2" onclick="openEditModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft')">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-800" onclick="confirmDelete('OF-1001')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>J-1002</td>
-                                <td>
-                                    <div class="flex items-center">
-                                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Judge" class="judge-avatar">
-                                        <span>Hon. Robert Johnson</span>
-                                    </div>
-                                </td>
-                                <td>Superior Court</td>
-                                <td>Civil Law</td>
-                                <td>22</td>
-                                <td>5</td>
-                                <td><span class="badge badge-on-leave">On Leave</span></td>
-                                <td>
-                                    <button class="text-blue-600 hover:text-blue-800 mr-2" onclick="openDetailModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft', 'Incarcerated')">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="text-green-600 hover:text-green-800 mr-2" onclick="openEditModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft')">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-800" onclick="confirmDelete('OF-1001')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>J-1003</td>
-                                <td>
-                                    <div class="flex items-center">
-                                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Judge" class="judge-avatar">
-                                        <span>Hon. Emily Davis</span>
-                                    </div>
-                                </td>
-                                <td>Supreme Court</td>
-                                <td>Constitutional Law</td>
-                                <td>28</td>
-                                <td>2</td>
-                                <td><span class="badge badge-retired">Retired</span></td>
-                                <td>
-                                    <button class="text-blue-600 hover:text-blue-800 mr-2" onclick="openDetailModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft', 'Incarcerated')">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="text-green-600 hover:text-green-800 mr-2" onclick="openEditModal('OF-1001', 'John Doe', '15/05/1985', 'Male', 'Murder, Theft')">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-800" onclick="confirmDelete('OF-1001')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+        .data-table th {
+            background-color: #1e40af;
+            color: white;
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .form-input {
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            width: 100%;
+        }
+
+        .scroll-btn {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            z-index: 100;
+            display: none;
+            background: #1e40af;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 9999px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    @* MODAL DE ERROR (TempData) *@
+    @if (TempData["ErrorMensaje"] != null)
+    {
+        <div id="error-modal" class="modal fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+            <div class="modal-content bg-white rounded-lg p-6 w-96">
+                <h3 class="text-lg font-bold mb-4 text-red-700">Error</h3>
+                <p class="mb-4 text-gray-700">@TempData["ErrorMensaje"]</p>
+                <div class="flex justify-end">
+                    <button onclick="closeModal('error-modal')" class="bg-red-600 text-white px-4 py-2 rounded-lg">Cerrar</button>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+        <script>
+            setTimeout(function () { closeModal('error-modal'); }, 5000);
+        </script>
+    }
+    @if (!ViewData.ModelState.IsValid || ViewBag.OpenCreateModal == true)
+    {
+        <script>
+            window.onload = function() {
+                openModal('add-judge-modal');
+            }
+        </script>
+    }
 
-<!-- Add Judge Modal -->
-<div id="add-judge-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-4">Add New Judge</h3>
-        <form id="addJudgeForm">
-            <div class="mb-4">
-                <label for="judgeName" class="block text-sm font-medium text-gray-700">Full Name</label>
-                <input type="text" id="judgeName" class="form-input" placeholder="Hon. First Last" required>
-            </div>
-            <div class="mb-4">
-                <label for="judgeCourt" class="block text-sm font-medium text-gray-700">Court</label>
-                <select id="judgeCourt" class="form-input" required>
-                    <option value="">Select Court</option>
-                    <option value="district">District Court</option>
-                    <option value="superior">Superior Court</option>
-                    <option value="supreme">Supreme Court</option>
-                    <option value="federal">Federal</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label for="offenderImage" class="block text-sm font-medium text-gray-700">Especializacion</label>
-                <input type="text" id="judgeName" class="form-input" placeholder="Specialization" required>
-            </div>
-            <div class="mb-4">
-                <label for="offenderImage" class="block text-sm font-medium text-gray-700">Years of experience</label>
-                <input type="text" id="judgeName" class="form-input" placeholder="Years of Experience" required>
-            </div>
-            <div class="mb-4">
-                <label for="offenderImage" class="block text-sm font-medium text-gray-700">Active Caeses</label>
-                <input type="text" id="judgeName" class="form-input" placeholder="Active Caeses" required>
-            </div>
-            <div class="mb-4">
-                <label for="offenderImage" class="block text-sm font-medium text-gray-700">Estado</label>
-                <select id="offenderGender" class="form-input" required>
-                    <option value="">Select</option>
-                    <option value="male">Disponible</option>
-                    <option value="female">No disponible</option>
-                </select>
-            </div>
-            <div class="flex justify-end">
-                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
-                        onclick="closeModal('add-judge-modal')">
-                    Cancel
-                </button>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Add Offender</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Offender Detail Modal -->
-<div id="offender-detail-modal"
-     class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-full max-w-lg">
-        <h3 class="text-lg font-bold mb-4">Offender Details</h3>
-        <div class="flex flex-col md:flex-row gap-6">
-            <div class="w-full md:w-1/3">
-                <div class="bg-gray-100 rounded-lg overflow-hidden mb-2">
-                    <img id="detail-image" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3cbb0810-b517-4b39-bed3-3487e544f5a1.png"
-                         class="w-full h-auto object-cover">
-                </div>
-            </div>
-            <div class="w-full md:w-2/3" id="offender-details">
-                <p><strong>ID:</strong> <span id="detail-id"></span></p>
-                <p><strong>Name:</strong> <span id="detail-name"></span></p>
-                <p><strong>DOB:</strong> <span id="detail-dob"></span></p>
-                <p><strong>Gender:</strong> <span id="detail-gender"></span></p>
-                <p><strong>Associated Case:</strong> <span id="detail-case">Case #2023-1245 (State vs. Johnson)</span></p>
-                <p><strong>Crimes:</strong> <span id="detail-crimes"></span></p>
-                <p><strong>Status:</strong> <span id="detail-status"></span></p>
-            </div>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="bg-red-100 text-red-800 border border-red-400 rounded px-4 py-3 mb-4">
+            <b>Errores:</b>
+            <ul>
+                @foreach (var e in ViewData.ModelState)
+                {
+                    foreach (var err in e.Value.Errors)
+                    {
+                        <li>@e.Key: @err.ErrorMessage</li>
+                    }
+                }
+            </ul>
         </div>
-        <div class="flex justify-end mt-4">
-            <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg"
-                    onclick="closeModal('offender-detail-modal')">
-                Close
+    }
+
+
+    <div class="p-6">
+        <h2 class="text-2xl font-bold mb-4">Gestión de Jueces</h2>
+        <div class="mb-6 flex flex-wrap justify-between items-center">
+            <div>
+                <label for="rowsPerPage" class="text-sm font-medium mr-2">Mostrar</label>
+                <select id="rowsPerPage" class="form-input w-24 inline" onchange="changeRowsPerPage()">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
+                    <option value="all">Todos</option>
+                </select>
+                <span class="ml-2 text-sm">por página</span>
+            </div>
+            <button onclick="openModal('add-judge-modal')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-plus mr-2"></i> Añadir Juez
             </button>
         </div>
-    </div>
-</div>
-
-<!-- Edit Offender Modal -->
-<div id="edit-offender-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-4">Edit Offender</h3>
-        <form id="editOffenderForm">
-            <div class="mb-4">
-                <label for="editName" class="block text-sm font-medium text-gray-700">Full Name</label>
-                <input type="text" id="editName" class="form-input" required>
+        <div class="card bg-white rounded-lg p-6">
+            <div class="overflow-x-auto">
+                <table class="data-table w-full" id="judgesTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre Completo</th>
+                            <th>Cédula</th>
+                            <th>Correo</th>
+                            <th>Teléfono</th>
+                            <th>Género</th>
+                            <th>Dirección</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        @if (Model != null && Model.Any())
+                        {
+                            int row = 0;
+                            foreach (var judge in Model)
+                            {
+                                <tr data-row="@row">
+                                    <td>@judge.IdPersona</td>
+                                    <td>@judge.Nombres @judge.Apellidos</td>
+                                    <td>@judge.Cedula</td>
+                                    <td>@judge.CorreoElectronico</td>
+                                    <td>@judge.Telefono</td>
+                                    <td>@judge.Genero</td>
+                                    <td>@judge.Direccion</td>
+                                    <td>
+                                        <button type="button" class="text-green-600 hover:text-green-800 mr-2"
+                                                onclick="openEditModal('@judge.IdPersona', '@judge.Cedula', '@judge.Nombres', '@judge.Apellidos', '@(judge.FechaNacimiento?.ToString("yyyy-MM-dd") ?? "")', '@judge.Genero', '@judge.Direccion', '@judge.Telefono', '@judge.CorreoElectronico')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="text-red-600 hover:text-red-800"
+                                                onclick="openDeleteModal('@judge.IdPersona', '@judge.Nombres @judge.Apellidos')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                row++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center text-gray-500 py-4">No existen jueces registrados.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="flex justify-between items-center mt-4" id="paginationControls">
+                    <button onclick="changePage(-1)" id="prevBtn" class="bg-gray-200 text-gray-700 px-3 py-1 rounded mr-2" disabled>Anterior</button>
+                    <span id="pageInfo"></span>
+                    <button onclick="changePage(1)" id="nextBtn" class="bg-gray-200 text-gray-700 px-3 py-1 rounded ml-2">Siguiente</button>
+                </div>
             </div>
-            <div class="mb-4">
-                <label for="editDOB" class="block text-sm font-medium text-gray-700">Date of Birth</label>
-                <input type="date" id="editDOB" class="form-input" required>
-            </div>
-            <div class="mb-4">
-                <label for="editGender" class="block text-sm font-medium text-gray-700">Gender</label>
-                <select id="editGender" class="form-input" required>
-                    <option value="">Select</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label for="editCrimes" class="block text-sm font-medium text-gray-700">Crimes Committed</label>
-                <input type="text" id="editCrimes" class="form-input" placeholder="Separate with commas" required>
-            </div>
-            <div class="flex justify-end">
-                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
-                        onclick="closeModal('edit-offender-modal')">
-                    Cancel
-                </button>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Save Changes</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Delete Confirmation Modal -->
-<div id="delete-confirm-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="modal-content bg-white rounded-lg p-6 w-96">
-        <h3 class="text-lg font-bold mb-4">Confirm Deletion</h3>
-        <p class="mb-6">Are you sure you want to delete this offender record? This action cannot be undone.</p>
-        <div class="flex justify-end">
-            <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2"
-                    onclick="closeModal('delete-confirm-modal')">
-                Cancel
-            </button>
-            <button type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg"
-                    onclick="deleteOffender()">
-                Delete
-            </button>
         </div>
     </div>
-</div>
 
-<script>
-    function openModal(modalId) {
-        document.getElementById(modalId).classList.remove('hidden');
-    }
+    <!-- MODAL CREAR JUEZ -->
+    <div id="add-judge-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-bold mb-4">Añadir Juez</h3>
+            <form asp-action="CreateJuez" asp-controller="Jueces" method="post">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Cédula</label>
+                    <input type="text" name="Cedula" class="form-input" maxlength="10" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Nombres</label>
+                    <input type="text" name="Nombres" class="form-input" maxlength="100" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Apellidos</label>
+                    <input type="text" name="Apellidos" class="form-input" maxlength="100" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Fecha de nacimiento</label>
+                    <input type="date" name="FechaNacimiento" class="form-input">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Género</label>
+                    <select name="Genero" class="form-input">
+                        <option value="">Seleccionar</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                        <option value="O">Otro</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Dirección</label>
+                    <input type="text" name="Direccion" class="form-input" maxlength="200">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Teléfono</label>
+                    <input type="text" name="Telefono" class="form-input" maxlength="20">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Correo electrónico</label>
+                    <input type="email" name="CorreoElectronico" class="form-input" maxlength="200">
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" onclick="closeModal('add-judge-modal')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg mr-2">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- MODAL EDITAR JUEZ -->
+    <div id="edit-judge-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-bold mb-4">Editar Juez</h3>
+            <form id="editJudgeForm" method="post">
+                <input type="hidden" name="IdPersona" id="editIdPersona" />
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Cédula</label>
+                    <input type="text" name="Cedula" id="editCedula" class="form-input" maxlength="10" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Nombres</label>
+                    <input type="text" name="Nombres" id="editNombres" class="form-input" maxlength="100" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Apellidos</label>
+                    <input type="text" name="Apellidos" id="editApellidos" class="form-input" maxlength="100" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Fecha de nacimiento</label>
+                    <input type="date" name="FechaNacimiento" id="editFechaNacimiento" class="form-input">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Género</label>
+                    <select name="Genero" id="editGenero" class="form-input">
+                        <option value="">Seleccionar</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                        <option value="O">Otro</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Dirección</label>
+                    <input type="text" name="Direccion" id="editDireccion" class="form-input" maxlength="200">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Teléfono</label>
+                    <input type="text" name="Telefono" id="editTelefono" class="form-input" maxlength="20">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Correo electrónico</label>
+                    <input type="email" name="CorreoElectronico" id="editCorreoElectronico" class="form-input" maxlength="200">
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" onclick="closeModal('edit-judge-modal')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg mr-2">Cancelar</button>
+                    <button type="button" onclick="submitEditForm()" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- MODAL ELIMINAR JUEZ -->
+    <div id="delete-judge-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-bold mb-4">Eliminar Juez</h3>
+            <form id="deleteJudgeForm" method="post">
+                <input type="hidden" name="IdPersona" id="deleteIdPersona" />
+                <p class="mb-4">¿Estás seguro de que deseas eliminar al juez <span id="deleteJudgeName" class="font-bold"></span>?</p>
+                <div class="flex justify-end">
+                    <button type="button" onclick="closeModal('delete-judge-modal')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg mr-2">Cancelar</button>
+                    <button type="button" onclick="submitDeleteForm()" class="bg-red-600 text-white px-4 py-2 rounded-lg">Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.add('hidden');
-    }
+    <button id="scrollTopBtn" class="scroll-btn" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
-    document.getElementById('addJudgeForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        // Logic to add crime goes here
-        closeModal('add-judge-modal');
-        alert('Crime added successfully!');
-    });
-    
-    let currentOffenderId = null;
+    <script>
+        // PAGINACIÓN
+        let currentPage = 1;
+        let rowsPerPage = 10;
+        let judgesRows = [];
+        let totalRows = 0;
+        let tableBody = document.getElementById('tableBody');
+        document.addEventListener("DOMContentLoaded", function () {
+            judgesRows = Array.from(tableBody.querySelectorAll('tr[data-row]'));
+            totalRows = judgesRows.length;
+            paginate();
+        });
+        function paginate() {
+            let value = document.getElementById('rowsPerPage').value;
+            rowsPerPage = value === "all" ? totalRows : parseInt(value);
+            let totalPages = Math.ceil(totalRows / rowsPerPage);
+            if (currentPage > totalPages) currentPage = totalPages || 1;
+            let start = (currentPage - 1) * rowsPerPage;
+            let end = (value === "all") ? totalRows : start + rowsPerPage;
+            judgesRows.forEach((row, i) => {
+                row.style.display = (i >= start && i < end) ? "" : "none";
+            });
+            document.getElementById('pageInfo').innerText = `Página ${currentPage} de ${totalPages || 1}`;
+            document.getElementById('prevBtn').disabled = currentPage <= 1;
+            document.getElementById('nextBtn').disabled = currentPage >= totalPages || value === "all";
+        }
+        function changeRowsPerPage() { currentPage = 1; paginate(); }
+        function changePage(dir) { currentPage += dir; paginate(); }
 
-    function openEditModal(id, name, dob, gender, crimes) {
-        currentOffenderId = id;
-        document.getElementById('editName').value = name;
-        document.getElementById('editDOB').value = dob.split('/').reverse().join('-');
-        document.getElementById('editGender').value = gender.toLowerCase();
-        document.getElementById('editCrimes').value = crimes;
-        openModal('edit-offender-modal');
-    }
-
-    function confirmDelete(id) {
-        currentOffenderId = id;
-        openModal('delete-confirm-modal');
-    }
-
-    function deleteOffender() {
-        // Delete logic would go here
-        alert(`Offender ${currentOffenderId} deleted`);
-        closeModal('delete-confirm-modal');
-    }
-
-    document.getElementById('editOffenderForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Save logic would go here
-        alert(`Changes saved for offender ${currentOffenderId}`);
-        closeModal('edit-offender-modal');
-    });
-
-    function openDetailModal(id, name, dob, gender, crimes, status) {
-        document.getElementById('detail-id').innerText = id;
-        document.getElementById('detail-name').innerText = name;
-        document.getElementById('detail-dob').innerText = dob;
-        document.getElementById('detail-gender').innerText = gender;
-        document.getElementById('detail-crimes').innerText = crimes;
-        document.getElementById('detail-status').innerText = status;
-
-        // Set sample case data (in a real app this would come from your data)
-        const caseMap = {
-            'OF-1001': 'Case #2023-1245 (State vs. Johnson)',
-            'OF-1002': 'Case #2023-1246 (State vs. Smith)',
-            'OF-1003': 'Case #2023-1247 (State vs. Johnson)'
+        // BOTÓN FLOTANTE PARA SCROLL TOP
+        window.onscroll = function () {
+            document.getElementById('scrollTopBtn').style.display =
+                (window.scrollY > 200) ? 'block' : 'none';
         };
-        document.getElementById('detail-case').innerText = caseMap[id] || 'No case assigned';
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
-        // Set sample image (in a real app this would come from your uploaded file)
-        const imageMap = {
-            'OF-1001': 'https://randomuser.me/api/portraits/men/32.jpg',
-            'OF-1002': 'https://randomuser.me/api/portraits/women/44.jpg',
-            'OF-1003': 'https://randomuser.me/api/portraits/men/65.jpg'
-        };
-        document.getElementById('detail-image').src = imageMap[id] || 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/30c8e3f5-bf7a-49c4-a1e7-07a179d2ee51.png';
-
-        openModal('offender-detail-modal');
-    }
-</script>
-
+        // MODALES CRUD
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+        function openEditModal(id, cedula, nombres, apellidos, fechaNacimiento, genero, direccion, telefono, correo) {
+            document.getElementById('editIdPersona').value = id;
+            document.getElementById('editCedula').value = cedula;
+            document.getElementById('editNombres').value = nombres;
+            document.getElementById('editApellidos').value = apellidos;
+            document.getElementById('editFechaNacimiento').value = fechaNacimiento;
+            document.getElementById('editGenero').value = genero;
+            document.getElementById('editDireccion').value = direccion;
+            document.getElementById('editTelefono').value = telefono;
+            document.getElementById('editCorreoElectronico').value = correo;
+            openModal('edit-judge-modal');
+        }
+        function openDeleteModal(id, nombre) {
+            document.getElementById('deleteIdPersona').value = id;
+            document.getElementById('deleteJudgeName').textContent = nombre;
+            openModal('delete-judge-modal');
+        }
+        function submitEditForm() {
+            var form = document.getElementById('editJudgeForm');
+            form.action = '/Jueces/Edit/' + document.getElementById('editIdPersona').value;
+            form.method = 'post';
+            form.submit();
+        }
+        function submitDeleteForm() {
+            var form = document.getElementById('deleteJudgeForm');
+            form.action = '/Jueces/Delete/' + document.getElementById('deleteIdPersona').value;
+            form.method = 'post';
+            form.submit();
+        }
+    </script>
+</body>
+</html>
