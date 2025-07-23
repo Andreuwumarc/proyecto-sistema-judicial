@@ -1,7 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+using SistemaGestionJudicial.Models; // Add this using directive for UseNpgsql extension method
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<SistemaJudicialContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("MiConexion")));
 
 var app = builder.Build();
 
@@ -24,6 +30,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Login}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();
