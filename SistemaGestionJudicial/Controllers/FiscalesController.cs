@@ -1,7 +1,3 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc;
-using SistemaGestionJudicial.Models;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,6 +86,55 @@ namespace SistemaGestionJudicial.Controllers
         public async Task<IActionResult> CreateFiscal(string addcedula, string addnombres, string addapellidos, DateTime? addnacimiento,
             string addgenero, string adddireccion, string addtelefono, string addcorreoelectronico, long IdDenuncia, DateTime? addfechadenuncia)
         {
+            // Validaciones
+            if (string.IsNullOrWhiteSpace(addcedula) || !long.TryParse(addcedula, out _) || addcedula.Length != 10)
+            {
+                TempData["ErrorMessage"] = "La cédula debe contener 10 números.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
+            if (await _context.Personas.AnyAsync(p => p.Cedula == addcedula))
+            {
+                TempData["ErrorMessage"] = "La cédula ya está registrada.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
+            if (string.IsNullOrWhiteSpace(addnombres))
+            {
+                TempData["ErrorMessage"] = "El campo nombres es obligatorio.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
+            if (string.IsNullOrWhiteSpace(addapellidos))
+            {
+                TempData["ErrorMessage"] = "El campo apellidos es obligatorio.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
+            if (string.IsNullOrWhiteSpace(addcorreoelectronico))
+            {
+                TempData["ErrorMessage"] = "El campo del correo electrónico es obligatorio.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
+            if (addnacimiento.HasValue && addnacimiento.Value > DateTime.Now)
+            {
+                TempData["ErrorMessage"] = "La fecha de nacimiento no puede ser futura.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
+            if (!string.IsNullOrWhiteSpace(addtelefono) && (!long.TryParse(addtelefono, out _)))
+            {
+                TempData["ErrorMessage"] = "El teléfono debe contener solo números.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
+            if (addnacimiento.HasValue && addfechadenuncia.HasValue && addfechadenuncia.Value < addnacimiento.Value)
+            {
+                TempData["ErrorMessage"] = "La fecha de asignación no puede ser anterior a la fecha de nacimiento.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
             var persona = new Persona
             {
                 Cedula = addcedula,
@@ -168,6 +213,56 @@ namespace SistemaGestionJudicial.Controllers
             if (fiscal == null || persona == null)
             {
                 return NotFound();
+            }
+
+            // Validaciones
+            if (string.IsNullOrWhiteSpace(editcedula) || !long.TryParse(editcedula, out _) || editcedula.Length != 10)
+            {
+                TempData["ErrorMessage"] = "La cédula debe contener 10 números.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
+            var existingPersona = await _context.Personas.FirstOrDefaultAsync(p => p.Cedula == editcedula && p.IdPersona != editidP);
+            if (existingPersona != null)
+            {
+                TempData["ErrorMessage"] = "La cédula ya está registrada por otra persona.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
+            if (string.IsNullOrWhiteSpace(editnombres))
+            {
+                TempData["ErrorMessage"] = "El campo nombres es obligatorio.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
+            if (string.IsNullOrWhiteSpace(editapellidos))
+            {
+                TempData["ErrorMessage"] = "El campo apellidos es obligatorio.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
+            if (string.IsNullOrWhiteSpace(editcorreo))
+            {
+                TempData["ErrorMessage"] = "El campo del correo electrónico es obligatorio.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
+            if (editnacimiento.HasValue && editnacimiento.Value > DateTime.Now)
+            {
+                TempData["ErrorMessage"] = "La fecha de nacimiento no puede ser futura.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
+            if (!string.IsNullOrWhiteSpace(edittelefono) && (!long.TryParse(edittelefono, out _)))
+            {
+                TempData["ErrorMessage"] = "El teléfono debe contener solo números.";
+                return RedirectToAction(nameof(Fiscales));
+            }
+
+            if (editnacimiento.HasValue && editfechadenuncia.HasValue && editfechadenuncia.Value < editnacimiento.Value)
+            {
+                TempData["ErrorMessage"] = "La fecha de asignación no puede ser anterior a la fecha de nacimiento.";
+                return RedirectToAction(nameof(Fiscales));
             }
 
             persona.Cedula = editcedula;
