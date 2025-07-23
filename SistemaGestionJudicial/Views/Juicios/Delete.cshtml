@@ -5,14 +5,14 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/casos.css" />
+    <link rel="stylesheet" href="~/css/juicios.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 }
 
-<div class="p-6">
+<div class="fondo-juicios p-8">
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-800">¿Estás seguro que deseas eliminar este juicio?</h2>
+        <h2 class="text-2xl font-bold text-white">¿Estás seguro que deseas eliminar este juicio?</h2>
         <a asp-action="Index" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
             <i class="fas fa-arrow-left mr-2"></i> Volver
         </a>
@@ -34,11 +34,52 @@
             </div>
             <div>
                 <dt class="text-sm font-medium text-gray-600">Denuncia</dt>
-                <dd class="text-gray-900">@Model.IdDenunciaNavigation?.IdDenuncia</dd>
+                <dd class="text-gray-900">
+                    Denuncia #@Model.IdDenunciaNavigation?.IdDenuncia -
+                    @Model.IdDenunciaNavigation?.IdPersonaDenunciaNavigation?.Nombres
+                    @Model.IdDenunciaNavigation?.IdPersonaDenunciaNavigation?.Apellidos
+                </dd>
             </div>
             <div>
                 <dt class="text-sm font-medium text-gray-600">Juez</dt>
                 <dd class="text-gray-900">@Model.IdPersonaJuezNavigation?.Nombres @Model.IdPersonaJuezNavigation?.Apellidos</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-600">Fiscal</dt>
+                <dd class="text-gray-900">
+                    @Model.IdDenunciaNavigation?.Fiscales.FirstOrDefault()?.IdPersonaFiscalNavigation?.Nombres
+                    @Model.IdDenunciaNavigation?.Fiscales.FirstOrDefault()?.IdPersonaFiscalNavigation?.Apellidos
+                </dd>
+            </div>
+
+            <div>
+                <dt class="text-sm font-medium text-gray-600">Delito</dt>
+                <dd class="text-gray-900">
+                    @Model.IdDenunciaNavigation?.IdDelitoNavigation?.Nombre
+                </dd>
+            </div>
+
+            <div>
+                <dt class="text-sm font-medium text-gray-600">Denunciante</dt>
+                <dd class="text-gray-900">
+                    @Model.IdDenunciaNavigation?.IdPersonaDenunciaNavigation?.Nombres
+                    @Model.IdDenunciaNavigation?.IdPersonaDenunciaNavigation?.Apellidos
+                </dd>
+            </div>
+
+            <div>
+                <dt class="text-sm font-medium text-gray-600">Acusado</dt>
+                <dd class="text-gray-900">
+                    @Model.JuiciosAcusados.FirstOrDefault()?.IdPersonaNavigation?.Nombres
+                    @Model.JuiciosAcusados.FirstOrDefault()?.IdPersonaNavigation?.Apellidos
+                </dd>
+            </div>
+
+            <div>
+                <dt class="text-sm font-medium text-gray-600">Sentencia</dt>
+                <dd class="text-gray-900">
+                    @Model.Sentencia.FirstOrDefault()?.TipoSentencia
+                </dd>
             </div>
         </dl>
 
