@@ -10,13 +10,8 @@ namespace SistemaGestionJudicial.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ProyectoContext _context; // <<-- CORRECCIÓN CLAVE: Tipo correcto y readonly
 
-<<<<<<< HEAD
-
-        public HomeController(ILogger<HomeController> logger)
-=======
         // <<-- CORRECCIÓN CLAVE: Inyecta ProyectoContext aquí
         public HomeController(ILogger<HomeController> logger, ProyectoContext context)
->>>>>>> develop
         {
             _logger = logger;
             _context = context; // <<-- CORRECCIÓN CLAVE: Asigna el contexto inyectado
