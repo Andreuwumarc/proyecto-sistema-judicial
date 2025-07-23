@@ -4,22 +4,19 @@
 
 @model SistemaGestionJudicial.Models.CrearDenunciaViewModel
 
-
 @section Styles {
     <link rel="stylesheet" href="~/css/CrearDenuncia.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 }
-<!-- En el <head> o antes del cierre de </body> -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 
 <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print fixed top-0 z-50"
         style="left: 16rem; width: calc(100% - 16rem);">
     <h2 class="text-xl font-semibold text-gray-800" id="view-title">Ingresar denuncia</h2>
 </header>
-<div class="flex justify-center p-6 bg-gray-50 min-h-screen mt-[90px]">
 
+<div class="flex justify-center p-6 bg-gray-50 min-h-screen mt-[90px]">
 
     <form asp-controller="IngresarDenuncia" asp-action="EnviarDenuncia" method="post" class="bg-white rounded-lg shadow p-6 w-[80%] max-w-4xl space-y-8">
 
@@ -84,12 +81,13 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Lugar del Hecho</label>
-                    <input asp-for="NuevaDenuncia.LugarHecho" type="text"
+                    <input asp-for="NuevaDenuncia.LugarHecho" type="text" id="LugarHecho"
                            class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="NuevaDenuncia.LugarHecho" class="text-red-500 text-sm"></span>
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Descripción del Hecho</label>
-                    <textarea asp-for="NuevaDenuncia.Descripcion" rows="4" required
+                    <textarea asp-for="NuevaDenuncia.Descripcion" rows="4" id="Descripcion" required
                               class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                     <span asp-validation-for="NuevaDenuncia.Descripcion" class="text-red-500 text-sm"></span>
                 </div>
@@ -133,7 +131,6 @@
     </div>
 }
 
-<!-- Modal de error -->
 @if (TempData["Error"] != null)
 {
     <div id="modalError" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
@@ -152,4 +149,52 @@
         const modales = document.querySelectorAll("#modalExito, #modalError");
         modales.forEach(m => m.remove());
     }
+
+    // Validación extra de caracteres permitidos para LugarHecho y Descripcion
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const lugar = document.getElementById('LugarHecho').value.trim();
+        const descripcion = document.getElementById('Descripcion').value.trim();
+
+        // Regex: letras, números, espacios, comas, puntos, guiones y acentos
+        const regex = /^[a-zA-Z0-9\s,.áéíóúÁÉÍÓÚñÑüÜ\-]+$/;
+
+        let errorMsgLugar = document.getElementById('errorLugarHechoExtra');
+        let errorMsgDescripcion = document.getElementById('errorDescripcionExtra');
+
+        // Crear spans si no existen (para mostrar error adicional)
+        if(!errorMsgLugar){
+            errorMsgLugar = document.createElement('span');
+            errorMsgLugar.id = 'errorLugarHechoExtra';
+            errorMsgLugar.className = 'text-red-500 text-sm block mt-1';
+            errorMsgLugar.textContent = 'Sólo se permiten letras, números, espacios, comas, puntos, guiones y acentos.';
+            document.getElementById('LugarHecho').after(errorMsgLugar);
+        }
+        if(!errorMsgDescripcion){
+            errorMsgDescripcion = document.createElement('span');
+            errorMsgDescripcion.id = 'errorDescripcionExtra';
+            errorMsgDescripcion.className = 'text-red-500 text-sm block mt-1';
+            errorMsgDescripcion.textContent = 'Sólo se permiten letras, números, espacios, comas, puntos, guiones y acentos.';
+            document.getElementById('Descripcion').after(errorMsgDescripcion);
+        }
+
+        // Ocultar ambos mensajes inicialmente
+        errorMsgLugar.style.display = 'none';
+        errorMsgDescripcion.style.display = 'none';
+
+        let valid = true;
+
+        if(lugar !== '' && !regex.test(lugar)) {
+            errorMsgLugar.style.display = 'block';
+            valid = false;
+        }
+
+        if(descripcion !== '' && !regex.test(descripcion)) {
+            errorMsgDescripcion.style.display = 'block';
+            valid = false;
+        }
+
+        if(!valid) {
+            e.preventDefault();
+        }
+    });
 </script>

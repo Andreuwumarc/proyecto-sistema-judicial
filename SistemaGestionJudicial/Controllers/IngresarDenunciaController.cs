@@ -5,7 +5,7 @@ using AspNetCoreGeneratedDocument;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaGestionJudicial.Models;
-using SistemaGestionJudicial.Models.ViewModels;
+
 
 
 namespace SistemaGestionJudicial.Controllers
