@@ -8,7 +8,11 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f3f4f6;
+    background-image: url('/images/bgPersonas.png'); /* URL de la imagen que quieres usar */
+    background-size: cover; /* Para que la imagen cubra toda la pantalla */
+    background-position: center; /* Centra la imagen */
+    background-attachment: fixed; /* Hace que la imagen no se desplace al hacer scroll */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
 }
 
 .sidebar {
@@ -17,6 +21,7 @@ body {
 
 .card {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    opacity: 85%;
     transition: transform 0.2s ease;
 }
 
@@ -76,3 +81,12 @@ body {
     .modal.active .modal-content {
         transform: translateY(0);
     }
+
+
+#add-persona-modal {
+    background-image: url('/images/gbAddPersona.jpg'); /* URL de tu imagen */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    padding: 20px;
+    
+}
