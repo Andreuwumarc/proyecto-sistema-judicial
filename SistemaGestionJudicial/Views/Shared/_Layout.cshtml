@@ -18,6 +18,7 @@
     @{
         // ⚙️ Obtén el rol desde sesión
         var rolUsuario = Context.Session.GetInt32("RolUsuario");
+
     }
 
     <div class="flex flex-1 overflow-hidden">
@@ -86,7 +87,12 @@
                 @* ✅ DENUNCIANTE: solo Reports *@
                 @if (rolUsuario == 4)
                 {
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Main</div>
+                    <a asp-area="" asp-controller="Dashboard" asp-action="Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
+                        <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+                    </a>
                     <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Case Management</div>
+
                     <a class="flex items-center px-4 py-3 text-white hover:bg-blue-800"
                        asp-controller="IngresarDenuncia" asp-action="CrearDenuncia">
                         <i class="fas fa-user-shield mr-3"></i>
