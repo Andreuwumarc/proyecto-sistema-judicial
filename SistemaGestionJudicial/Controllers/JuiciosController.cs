@@ -401,6 +401,10 @@ namespace SistemaGestionJudicial.Controllers
             return View(juicio);
         }
 
+        private bool JuicioExists(long id)
+        {
+            return _context.Juicios.Any(e => e.IdJuicio == id);
+        }
 
 
 
