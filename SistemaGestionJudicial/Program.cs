@@ -36,6 +36,10 @@ app.MapControllerRoute(
 
     pattern: "{controller=Home}/{action=Home}/{id?}")
     .WithStaticAssets();
+app.MapControllerRoute(
+    name: "dashboard-clean",
+    pattern: "Dashboard",
+    defaults: new { controller = "Dashboard", action = "Index" });
 
 
 app.Run();

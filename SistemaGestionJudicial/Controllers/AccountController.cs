@@ -43,7 +43,7 @@ namespace SistemaGestionJudicial.Controllers
             HttpContext.Session.SetInt32("RolUsuario", (int)user.IdPersonaNavigation.IdRol);
 
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Dashboard");
         }
 
 

@@ -9,109 +9,120 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SistemaGestionJudicial.styles.css" asp-append-version="true" />
     @RenderSection("Styles", required: false)
+    <style>
+        .section-content {
+            display: none;
+            transition: max-height 0.3s ease;
+        }
+
+            .section-content.active {
+                display: block;
+            }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .rotate-180 {
+            transform: rotate(180deg);
+        }
+    </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="h-screen min-h-screen w-full flex flex-col overflow-hidden">
+
+    <!-- Encabezado móvil -->
+    <header class="bg-blue-900 text-white p-4 flex justify-between items-center lg:hidden">
+        <h1 class="text-lg font-bold">Sistema Judicial</h1>
+        <button id="toggleSidebar" class="focus:outline-none">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </header>
+
+    <!-- Capa de fondo oscuro para cerrar al hacer clic fuera -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
+
+
     @{
-        // ⚙️ Obtén el rol desde sesión
         var rolUsuario = Context.Session.GetInt32("RolUsuario");
     }
-
     <div class="flex flex-1 overflow-hidden">
-        <div class="sidebar bg-blue-900 text-white w-64 flex-shrink-0 no-print">
+        <div id="sidebar" class="sidebar bg-blue-900 text-white w-64 flex-shrink-0 no-print transform -translate-x-full lg:translate-x-0 transition-transform duration-300 fixed lg:relative z-40 h-full">
             <div class="p-4 border-b border-blue-800">
                 <h1 class="text-xl font-bold flex items-center">
-                    <i class="fas fa-balance-scale mr-2"></i>
-                    Judicial System
+                    <i class="fas fa-balance-scale mr-2"></i> Judicial System
                 </h1>
                 <p class="text-blue-200 text-sm mt-1">Management Portal</p>
             </div>
 
             <nav class="mt-4">
-                @* ✅ JUEZ: menú completo + reports *@
-                @if (rolUsuario == 1)
+                @if (rolUsuario == 1) // JUEZ
                 {
-                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Main</div>
-                    <a href="/Home/Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
-                        <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
-                    </a>
+                    @* Main *@
+                    <div class="px-4 py-2 flex justify-between items-center cursor-pointer section-toggle" data-target="main">
+                        <span class="text-blue-300 uppercase text-base font-bold tracking-wider">Main</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div id="main" class="section-content">
+                        <a asp-area="" asp-controller="Dashboard" asp-action="Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
+                            <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+                        </a>
+                    </div>
 
-                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Case Management</div>
-                    <a href="/Home/Delincuentes" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-user-shield mr-3"></i> Offenders
-                    </a>
-                    <a href="/Home/Crimenes" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-gavel mr-3"></i> Crimes
-                    </a>
-                    <a href="/Police/Polices" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-shield-alt mr-3"></i> Partes Policiales
-                    </a>
-                    <a href="/Juicios/Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-folder-open mr-3"></i> Juicios
-                    </a>
-                    <a href="/Home/Casos" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-folder-open mr-3"></i> Denuncia
-                    </a>
+                    @* Case Management *@
+                    <div class="px-4 py-2 flex justify-between items-center cursor-pointer section-toggle" data-target="case">
+                        <span class="text-blue-300 uppercase text-base font-bold tracking-wider">Case Management</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div id="case" class="section-content">
+                        <a href="/Home/Delincuentes" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                            <i class="fas fa-user-shield mr-3"></i> Offenders
+                        </a>
+                        <a href="/Home/Crimenes" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                            <i class="fas fa-gavel mr-3"></i> Crimes
+                        </a>
+                        <a href="/Police/Polices" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                            <i class="fas fa-shield-alt mr-3"></i> Partes Policiales
+                        </a>
+                        <a href="/Juicios/Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                            <i class="fas fa-folder-open mr-3"></i> Juicios
+                        </a>
+                        <a href="/Home/Casos" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                            <i class="fas fa-folder-open mr-3"></i> Denuncia
+                        </a>
+                    </div>
 
-                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Personnel</div>
-                    <a href="/Home/Jueces" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-user-tie mr-3"></i> Judges
-                    </a>
-                    <a href="/Fiscales/Fiscales" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-user-ninja mr-3"></i> Prosecutors
-                    </a>
-                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Reports</div>
-                    <a href="/Home/CrimeReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-chart-bar mr-3"></i> Crime Reports
-                    </a>
-                    <a href="/Home/CaseReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-chart-pie mr-3"></i> Case Reports
-                    </a>
+                    @* Personnel *@
+                    <div class="px-4 py-2 flex justify-between items-center cursor-pointer section-toggle" data-target="personnel">
+                        <span class="text-blue-300 uppercase text-base font-bold tracking-wider">Personnel</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div id="personnel" class="section-content">
+                        <a href="/Home/Jueces" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                            <i class="fas fa-user-tie mr-3"></i> Judges
+                        </a>
+                        <a href="/Fiscales/Fiscales" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                            <i class="fas fa-user-ninja mr-3"></i> Prosecutors
+                        </a>
+                    </div>
+
+                    @* Reports *@
+                    <div class="px-4 py-2 flex justify-between items-center cursor-pointer section-toggle" data-target="reports">
+                        <span class="text-blue-300 uppercase text-base font-bold tracking-wider">Reports</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <div id="reports" class="section-content">
+                        <a href="/Home/CrimeReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                            <i class="fas fa-chart-bar mr-3"></i> Crime Reports
+                        </a>
+                        <a href="/Home/CaseReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                            <i class="fas fa-chart-pie mr-3"></i> Case Reports
+                        </a>
+                    </div>
                 }
 
-                @* ✅ DENUNCIANTE: solo Reports *@
-                @if (rolUsuario == 4)
+                @if (rolUsuario == 2) // FISCAL
                 {
-                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Case Management</div>
-                    <a class="flex items-center px-4 py-3 text-white hover:bg-blue-800"
-                       asp-controller="IngresarDenuncia" asp-action="CrearDenuncia">
-                        <i class="fas fa-user-shield mr-3"></i>
-                        Realizar Denuncia
-                    </a>
-                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Reports</div>
-                    <a href="/Home/CrimeReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-chart-bar mr-3"></i> Crime Reports
-                    </a>
-                    <a href="/Home/CaseReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-chart-pie mr-3"></i> Case Reports
-                    </a>
-                }
-
-                @* ✅ POLICÍA: Polices + Cases + Reports *@
-                @if (rolUsuario == 5)
-                {
-                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Main</div>
-                    <a href="/Home/Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
-                        <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
-                    </a>
-                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Case Management</div>
-                    <a href="/Police/Polices" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-shield-alt mr-3"></i> Partes Policiales
-                    </a>
-                    <a href="/Home/Casos" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-folder-open mr-3"></i> Cases
-                    </a>
-                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Reports</div>
-                    <a href="/Home/CrimeReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-chart-bar mr-3"></i> Crime Reports
-                    </a>
-                    <a href="/Home/CaseReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
-                        <i class="fas fa-chart-pie mr-3"></i> Case Reports
-                    </a>
-                }
-
-                @* ✅ FISCAL: Polices + Juicios + Cases + Fiscal + Reports *@
-                @if (rolUsuario == 2)
-                {
+                    <div class="px-4 py-2 text-blue-300 uppercase text-base font-bold tracking-wider">Fiscalía</div>
                     <a href="/Police/Polices" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
                         <i class="fas fa-shield-alt mr-3"></i> Partes Policiales
                     </a>
@@ -124,7 +135,7 @@
                     <a href="/Fiscales/Fiscales" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
                         <i class="fas fa-user-ninja mr-3"></i> Prosecutors
                     </a>
-                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Reports</div>
+                    <div class="px-4 py-2 text-blue-300 uppercase text-base font-bold tracking-wider">Reports</div>
                     <a href="/Home/CrimeReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
                         <i class="fas fa-chart-bar mr-3"></i> Crime Reports
                     </a>
@@ -133,17 +144,54 @@
                     </a>
                 }
 
-                @* ✅ Si no coincide ningún rol: mensaje genérico *@
+                @if (rolUsuario == 4) // DENUNCIANTE
+                {
+                    <div class="px-4 py-2 text-blue-300 uppercase text-base font-bold tracking-wider">Case Management</div>
+                    <a asp-controller="IngresarDenuncia" asp-action="CrearDenuncia" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-user-shield mr-3"></i> Realizar Denuncia
+                    </a>
+                    <div class="px-4 py-2 text-blue-300 uppercase text-base font-bold tracking-wider">Reports</div>
+                    <a href="/Home/CrimeReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-chart-bar mr-3"></i> Crime Reports
+                    </a>
+                    <a href="/Home/CaseReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-chart-pie mr-3"></i> Case Reports
+                    </a>
+                }
+
+                @if (rolUsuario == 5) // POLICIA
+                {
+                    <div class="px-4 py-2 text-blue-300 uppercase text-base font-bold tracking-wider">Main</div>
+                    <a href="/Home/Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
+                        <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+                    </a>
+                    <div class="px-4 py-2 text-blue-300 uppercase text-base font-bold tracking-wider">Case Management</div>
+                    <a href="/Police/Polices" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-shield-alt mr-3"></i> Partes Policiales
+                    </a>
+                    <a href="/Home/Casos" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-folder-open mr-3"></i> Cases
+                    </a>
+                    <div class="px-4 py-2 text-blue-300 uppercase text-base font-bold tracking-wider">Reports</div>
+                    <a href="/Home/CrimeReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-chart-bar mr-3"></i> Crime Reports
+                    </a>
+                    <a href="/Home/CaseReports" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-chart-pie mr-3"></i> Case Reports
+                    </a>
+                }
+
+                @* Rol no reconocido *@
                 @if (rolUsuario != 1 && rolUsuario != 2 && rolUsuario != 4 && rolUsuario != 5)
                 {
-                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Bienvenido</div>
+                    <div class="px-4 py-2 text-blue-300 uppercase text-base font-bold tracking-wider">Bienvenido</div>
                     <p class="px-4 py-3 text-white">Selecciona una opción disponible</p>
                 }
             </nav>
         </div>
 
-        <div class="flex-1 overflow-auto flex flex-col">
-            <main role="main" class="flex-1 pb-3">
+        <div class="flex-1 overflow-auto flex flex-col lg:mt-0">
+            <main role="main" class="flex-1">
                 @RenderBody()
             </main>
         </div>
@@ -152,6 +200,78 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggles = document.querySelectorAll(".section-toggle");
+            const STORAGE_KEY = "sidebar-sections-state";
+            let sectionStates = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+
+            function saveStates() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(sectionStates));
+            }
+
+            function closeOtherSections(exceptId) {
+                document.querySelectorAll(".section-content").forEach(section => {
+                    if (section.id !== exceptId) {
+                        section.classList.remove("active");
+                        const icon = section.previousElementSibling.querySelector(".toggle-icon");
+                        icon && icon.classList.remove("rotate-180");
+                        sectionStates[section.id] = false;
+                    }
+                });
+            }
+
+            toggles.forEach((toggle, index) => {
+                const targetId = toggle.getAttribute("data-target");
+                const targetSection = document.getElementById(targetId);
+                const icon = toggle.querySelector(".toggle-icon");
+
+                const shouldOpen = sectionStates[targetId] ?? (index === 0);
+                if (shouldOpen) {
+                    targetSection.classList.add("active");
+                    icon.classList.add("rotate-180");
+                    sectionStates[targetId] = true;
+                }
+
+                toggle.addEventListener("click", () => {
+                    const isActive = targetSection.classList.contains("active");
+
+                    if (isActive) {
+                        targetSection.classList.remove("active");
+                        icon.classList.remove("rotate-180");
+                        sectionStates[targetId] = false;
+                    } else {
+                        targetSection.classList.add("active");
+                        icon.classList.add("rotate-180");
+                        sectionStates[targetId] = true;
+                        closeOtherSections(targetId);
+                    }
+                    saveStates();
+                });
+            });
+
+            saveStates();
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebar = document.getElementById("sidebar");
+            const toggleBtn = document.getElementById("toggleSidebar");
+            const overlay = document.getElementById("overlay");
+
+            toggleBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("-translate-x-full");
+                overlay.classList.toggle("hidden");
+            });
+
+            overlay.addEventListener("click", () => {
+                sidebar.classList.add("-translate-x-full");
+                overlay.classList.add("hidden");
+            });
+        });
+    </script>
+
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
