@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -11,9 +13,12 @@
     @RenderSection("Styles", required: false)
 </head>
 <body class="min-h-screen flex flex-col">
+
+
     @{
         // ⚙️ Obtén el rol desde sesión
         var rolUsuario = Context.Session.GetInt32("RolUsuario");
+
     }
 
     <div class="flex flex-1 overflow-hidden">
@@ -31,11 +36,22 @@
                 @if (rolUsuario == 1)
                 {
                     <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Main</div>
-                    <a href="/Home/Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
+                    <a asp-area="" asp-controller="Dashboard" asp-action="Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
                         <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
                     </a>
 
                     <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Case Management</div>
+                    <a href="/Persona/Index"
+                       class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-chart-pie mr-3"></i>
+                        Personas
+                    </a>
+                    <a href="/Role/Index"
+                       class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
+                        <i class="fas fa-chart-pie mr-3"></i>
+                        Roles
+                    </a>
+
                     <a href="/Home/Delincuentes" class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
                         <i class="fas fa-user-shield mr-3"></i> Offenders
                     </a>
@@ -71,7 +87,12 @@
                 @* ✅ DENUNCIANTE: solo Reports *@
                 @if (rolUsuario == 4)
                 {
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Main</div>
+                    <a asp-area="" asp-controller="Dashboard" asp-action="Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
+                        <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+                    </a>
                     <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Case Management</div>
+
                     <a class="flex items-center px-4 py-3 text-white hover:bg-blue-800"
                        asp-controller="IngresarDenuncia" asp-action="CrearDenuncia">
                         <i class="fas fa-user-shield mr-3"></i>
@@ -90,7 +111,7 @@
                 @if (rolUsuario == 5)
                 {
                     <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Main</div>
-                    <a href="/Home/Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
+                    <a asp-area="" asp-controller="Dashboard" asp-action="Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
                         <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
                     </a>
                     <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Case Management</div>

@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SistemaGestionJudicial.Models;
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SistemaGestionJudicial.Models;
@@ -22,6 +27,7 @@ namespace SistemaGestionJudicial.Controllers
             var partes = await _context.PartesPoliciales
                 .Include(p => p.IdPersonaPoliciaNavigation)
                 .Include(p => p.IdDenunciaNavigation)
+                .ThenInclude(d => d.IdDelitoNavigation)
                 .ToListAsync();
 
             var personas = await _context.Personas
@@ -34,11 +40,14 @@ namespace SistemaGestionJudicial.Controllers
                 .ToListAsync();
 
             var denuncias = await _context.Denuncias
+                .Include(d => d.IdDelitoNavigation)
                 .Select(d => new
                 {
                     d.IdDenuncia,
-                    Texto = d.Descripcion
+                    Texto = d.Descripcion + (d.IdDelitoNavigation != null ? $" ({d.IdDelitoNavigation.Nombre})" : "")
                 })
+                //    Texto = d.IdDelitoNavigation != null ? $" {d.IdDelitoNavigation.Nombre}" : ""
+                //})
                 .ToListAsync();
 
             ViewBag.Personas = new SelectList(personas, "IdPersona", "NombreCompleto");
@@ -78,7 +87,7 @@ namespace SistemaGestionJudicial.Controllers
                 TempData["SuccessMessage"] = "Parte policial creado exitosamente.";
                 return RedirectToAction(nameof(Polices));
             }
-
+            await LoadDenunciasAndPersonasForViewBag();
             TempData["ErrorMessage"] = "Error al crear el parte policial. Verifique los datos.";
             return RedirectToAction(nameof(Polices));
         }
@@ -121,6 +130,7 @@ namespace SistemaGestionJudicial.Controllers
                 return RedirectToAction(nameof(Polices));
             }
 
+            await LoadDenunciasAndPersonasForViewBag();
             TempData["ErrorMessage"] = "Error al actualizar el parte policial. Verifique los datos.";
             return RedirectToAction(nameof(Polices));
         }
@@ -142,6 +152,31 @@ namespace SistemaGestionJudicial.Controllers
                 TempData["ErrorMessage"] = "Parte policial no encontrado para eliminar.";
             }
             return RedirectToAction(nameof(Polices));
+        }
+
+        private async Task LoadDenunciasAndPersonasForViewBag()
+        {
+            var personas = await _context.Personas
+                .Where(p => p.IdRol == 5)
+                .Select(p => new
+                {
+                    p.IdPersona,
+                    NombreCompleto = p.Nombres + " " + p.Apellidos + " - " + p.Cedula
+                })
+                .ToListAsync();
+            ViewBag.Personas = new SelectList(personas, "IdPersona", "NombreCompleto");
+
+            var denuncias = await _context.Denuncias
+                .Include(d => d.IdDelitoNavigation) // Incluye el delito para poder mostrar su nombre
+                .Select(d => new
+                {
+                    d.IdDenuncia,
+                    Texto = d.Descripcion + (d.IdDelitoNavigation != null ? $" ({d.IdDelitoNavigation.Nombre})" : "")
+                })
+                //    Texto = d.IdDelitoNavigation != null ? $" {d.IdDelitoNavigation.Nombre}" : ""
+                //})
+                .ToListAsync();
+            ViewBag.Denuncias = new SelectList(denuncias, "IdDenuncia", "Texto");
         }
     }
 }

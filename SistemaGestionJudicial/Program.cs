@@ -11,6 +11,9 @@ builder.Services.AddSession();
 builder.Services.AddDbContext<ProyectoContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("MiConexion")));
 
+builder.Services.AddHttpContextAccessor();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -36,6 +39,10 @@ app.MapControllerRoute(
 
     pattern: "{controller=Home}/{action=Home}/{id?}")
     .WithStaticAssets();
+app.MapControllerRoute(
+    name: "dashboard-clean",
+    pattern: "Dashboard",
+    defaults: new { controller = "Dashboard", action = "Index" });
 
 
 app.Run();

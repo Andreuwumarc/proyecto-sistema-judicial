@@ -39,7 +39,7 @@
 
                 <div class="input-group">
                     <i class="fas fa-user input-icon"></i>
-                    <input type="text" id="username" name="username" placeholder="Ingrese su Nombre" required
+                    <input type="text" id="username" name="username" placeholder="Ingrese sus dos Nombres" required
                            class="form-input input-with-icon" autocomplete="username">
                 </div>
 
@@ -183,6 +183,202 @@
             }
         });
 
+        // Abrir y cerrar modal registro
+        document.getElementById('openRegisterModal').addEventListener('click', () => {
+            document.getElementById('registerModal').classList.remove('hidden');
+        });
+
+        // Cerrar modal con la X y limpiar formulario
+        document.getElementById('closeRegisterModal').addEventListener('click', closeRegisterModal);
+
+        // Cerrar modal haciendo clic fuera del contenido, sin limpiar formulario
+        document.getElementById('registerModal').addEventListener('click', function (e) {
+            if (e.target === this) closeRegisterModalWithoutClear();
+        });
+
+        function closeRegisterModal() {
+            document.getElementById('registerModal').classList.add('hidden');
+            clearRegisterForm();
+        }
+
+        // Cierra modal sin limpiar formulario
+        function closeRegisterModalWithoutClear() {
+            document.getElementById('registerModal').classList.add('hidden');
+            // NO limpiar formulario para mantener datos
+        }
+
+        function clearRegisterForm() {
+            const form = document.getElementById('registerForm');
+            form.reset();
+            document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+            const errorElement = document.getElementById('registerErrorMessage');
+            errorElement.classList.add('hidden');
+            errorElement.textContent = '';
+        }
+
+        // Obtener elementos inputs para validaciones y evitar redeclarar luego
+        const cedulaInput = document.getElementById('registerCedula');
+        cedulaInput.insertAdjacentHTML('afterend', '<span id="cedulaError" class="field-error text-red-500 text-xs"></span>');
+        cedulaInput.addEventListener('input', () => {
+            const val = cedulaInput.value.trim();
+            const error = document.getElementById('cedulaError');
+            if (!/^\d*$/.test(val)) {
+                error.textContent = 'Solo números.';
+            } else if (val.length !== 10) {
+                error.textContent = 'Debe tener 10 dígitos.';
+            } else {
+                error.textContent = '';
+            }
+        });
+
+        const nombresInput = document.getElementById('registerNombres');
+        nombresInput.insertAdjacentHTML('afterend', '<span id="nombresError" class="field-error text-red-500 text-xs"></span>');
+        nombresInput.addEventListener('input', () => {
+            const val = nombresInput.value.trim();
+            const error = document.getElementById('nombresError');
+            if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]*$/.test(val)) {
+                error.textContent = 'Solo letras y espacios.';
+            } else if (val.split(' ').filter(w => w).length > 2) {
+                error.textContent = 'Máximo dos nombres.';
+            } else if (val.length < 3) {
+                error.textContent = 'Muy corto.';
+            } else {
+                error.textContent = '';
+            }
+        });
+
+        const apellidosInput = document.getElementById('registerApellidos');
+        apellidosInput.insertAdjacentHTML('afterend', '<span id="apellidosError" class="field-error text-red-500 text-xs"></span>');
+        apellidosInput.addEventListener('input', () => {
+            const val = apellidosInput.value.trim();
+            const error = document.getElementById('apellidosError');
+            if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]*$/.test(val)) {
+                error.textContent = 'Solo letras y espacios.';
+            } else if (val.split(' ').filter(w => w).length > 2) {
+                error.textContent = 'Máximo dos apellidos.';
+            } else if (val.length < 3) {
+                error.textContent = 'Muy corto.';
+            } else {
+                error.textContent = '';
+            }
+        });
+
+        const direccionInput = document.getElementById('registerDireccion');
+        direccionInput.insertAdjacentHTML('afterend', '<span id="direccionError" class="field-error text-red-500 text-xs"></span>');
+        direccionInput.addEventListener('input', () => {
+            const val = direccionInput.value.trim();
+            const error = document.getElementById('direccionError');
+            if (!/^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ#.,\- ]*$/.test(val)) {
+                error.textContent = 'Caracteres inválidos.';
+            } else {
+                error.textContent = '';
+            }
+        });
+
+        const telefonoInput = document.getElementById('registerTelefono');
+        telefonoInput.insertAdjacentHTML('afterend', '<span id="telefonoError" class="field-error text-red-500 text-xs"></span>');
+        telefonoInput.addEventListener('input', () => {
+            const val = telefonoInput.value.trim();
+            const error = document.getElementById('telefonoError');
+            if (!/^\d*$/.test(val)) {
+                error.textContent = 'Solo números.';
+            } else if (val.length !== 10) {
+                error.textContent = 'Debe tener exactamente 10 dígitos.';
+            } else {
+                error.textContent = '';
+            }
+        });
+
+        const passwordInput = document.getElementById('registerPassword');
+        passwordInput.insertAdjacentHTML('afterend', '<span id="passwordError" class="field-error text-red-500 text-xs"></span>');
+        passwordInput.addEventListener('input', () => {
+            const val = passwordInput.value;
+            const error = document.getElementById('passwordError');
+            const hasUpper = /[A-Z]/.test(val);
+            const hasNum = /\d/.test(val);
+            const hasLength = val.length >= 8;
+            let msg = [];
+            if (!hasUpper) msg.push('1 mayúscula.');
+            if (!hasNum) msg.push('Número.');
+            if (!hasLength) msg.push('8+ caracteres.');
+            error.textContent = msg.join(' ');
+        });
+
+        // Submit del registro con validación
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            if ([...document.querySelectorAll('.field-error')].some(el => el.textContent !== '')) {
+                alert('❌ Corrija los errores antes de enviar.');
+                return;
+            }
+
+            const cedulaValue = cedulaInput.value.trim();
+            const nombresValue = nombresInput.value.trim();
+            const apellidosValue = apellidosInput.value.trim();
+            const fechaNacimientoValue = document.getElementById('registerFechaNacimiento').value;
+            const generoValue = document.getElementById('registerGenero').value;
+            const direccionValue = direccionInput.value.trim();
+            const telefonoValue = telefonoInput.value.trim();
+            const correoValue = document.getElementById('registerCorreoElectronico').value.trim();
+            const roleValue = document.getElementById('registerRole').value;
+            const passwordValue = passwordInput.value;
+
+            const errorElement = document.getElementById('registerErrorMessage');
+            errorElement.classList.add('hidden');
+            errorElement.textContent = '';
+
+            if (!cedulaValue || !nombresValue || !apellidosValue || !fechaNacimientoValue || !generoValue || !telefonoValue || !correoValue || !roleValue || !passwordValue) {
+                errorElement.textContent = 'Complete todos los campos.';
+                errorElement.classList.remove('hidden');
+                return;
+            }
+
+            fetch('/Account/Register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    cedula: cedulaValue,
+                    nombres: nombresValue,
+                    apellidos: apellidosValue,
+                    fechaNacimiento: fechaNacimientoValue,
+                    genero: generoValue,
+                    direccion: direccionValue,
+                    telefono: telefonoValue,
+                    correoElectronico: correoValue,
+                    idRol: roleValue,
+                    contrasena: passwordValue
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('✅ Cuenta creada con éxito.');
+                    closeRegisterModal();
+                } else {
+                    errorElement.textContent = '❌ Error al registrar.';
+                    errorElement.classList.remove('hidden');
+                }
+            })
+            .catch(() => {
+                errorElement.textContent = '❌ Error inesperado.';
+                errorElement.classList.remove('hidden');
+            });
+        });
+    </script>
+
+
+
+    @*
+    <script>
+        // Poner fecha máxima en input fecha al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const fechaInput = document.getElementById('registerFechaNacimiento');
+            if (fechaInput) {
+                const hoy = new Date().toISOString().split('T')[0];
+                fechaInput.setAttribute('max', hoy);
+            }
+        });
+
         // Mostrar error del login si viene del servidor
         document.addEventListener('DOMContentLoaded', function () {
             const errorFromServer = '@ViewBag.Error';
@@ -282,7 +478,7 @@
             });
 
         });
-    </script>
+    </script>*@
 
 
 </body>

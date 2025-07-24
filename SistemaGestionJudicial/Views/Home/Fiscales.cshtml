@@ -1,7 +1,8 @@
+
 @*
     QUIEN SEA QUE VEA ESTO, POR FAVOR PRESTE ATENCIÓN
     ANTES DE INCIAR LA APLICACIÓN, REVISA EL ARCHIVO _Layout.cshtml --> Views/Shared/_Layout.cshtml
-    
+
     (Línea 75 aprox) REVISAR QUE EL href LLEVE a '/Fiscales/Fiscales'
     CASO CONTRARIO, NO SE PODRÁN VER LOS DATOS DE LOS FISCALES
 
@@ -9,11 +10,14 @@
     Quitar los tags comentador y comentar 'La línea original'
 *@
 
+
 @model IEnumerable<SistemaGestionJudicial.Models.Fiscale>
 
 @{
     ViewData["Title"] = "Gestión de Fiscales";
 }
+
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @section Styles {
     <link rel="stylesheet" href="~/css/fiscales.css" />
@@ -24,17 +28,30 @@
 <div class="flex h-screen overflow-hidden">
     <!-- Main Content Area -->
     <div class="flex-1 overflow-auto">
-        <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print">
-            <h2 class="text-xl font-semibold text-gray-800" id="view-title">Listado de fiscales</h2>
-            <div class="flex items-center space-x-4">
-                <div class="flex items-center space-x-2">
+        <header class="bg-white/85 backdrop-blur-md shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-10 no-print">
+            <h2 class="text-xl font-semibold text-gray-800">Gestión de fiscales</h2>
+
+            <div class="relative flex items-center space-x-4">
+                <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
                     <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
                         <i class="fas fa-user"></i>
                     </div>
-                    <span class="text-sm font-medium">Admin</span>
+                    <span class="text-sm font-medium">
+                        @(HttpContextAccessor.HttpContext.Session.GetString("PrimerNombre") ?? "Usuario")
+                    </span>
+                    <i class="fas fa-chevron-down text-xs ml-1"></i>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div id="userDropdown" class="hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-20">
+                    <a href="/Account/Logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
+                    </a>
                 </div>
             </div>
         </header>
+
+
 
         <div class="p-6">
             <!-- Prosecutor Management Controls -->
@@ -399,3 +416,17 @@
         closeModal('edit-offender-modal');
     });
 </script>
+
+<script>
+    const button = document.getElementById("userMenuButton");
+    const dropdown = document.getElementById("userDropdown");
+
+    document.addEventListener("click", (e) => {
+        if (button.contains(e.target)) {
+            dropdown.classList.toggle("hidden");
+        } else {
+            dropdown.classList.add("hidden");
+        }
+    });
+</script>
+

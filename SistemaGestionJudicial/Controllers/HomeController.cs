@@ -43,14 +43,10 @@ namespace SistemaGestionJudicial.Controllers
 
         // <<-- AQUÍ ES DONDE ESTABA EL PROBLEMA ORIGINAL DEL "NO EXISTE DELINCUENTE"
         // Porque _context era null. Ahora, al inyectarlo, ya no será null.
+        // En HomeController.cs
         public IActionResult Delincuentes()
         {
-            // Obtener la lista de personas con id_rol = 3 (asumiendo que es el rol de delincuente)
-            // .ToList() ejecuta la consulta y trae los datos a la memoria.
-            var delincuentes = _context.Personas.Where(p => p.IdRol == 3).ToList();
-
-            // Pasa la lista de delincuentes a la vista
-            return View(delincuentes);
+            return RedirectToAction("Index", "Delincuente"); // Redirige al DelincuenteController
         }
 
         public IActionResult Crimenes()
