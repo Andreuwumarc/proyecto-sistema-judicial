@@ -1,4 +1,5 @@
-﻿@*
+
+@*
     QUIEN SEA QUE VEA ESTO, POR FAVOR PRESTE ATENCIÓN
     ANTES DE INCIAR LA APLICACIÓN, REVISA EL ARCHIVO _Layout.cshtml --> Views/Shared/_Layout.cshtml
 
@@ -9,11 +10,13 @@
     Quitar los tags comentador y comentar 'La línea original'
 *@
 
+
 @model IEnumerable<SistemaGestionJudicial.Models.Fiscale>
 
 @{
     ViewData["Title"] = "Gestión de Fiscales";
 }
+
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @section Styles {
@@ -47,6 +50,7 @@
                 </div>
             </div>
         </header>
+
 
 
         <div class="p-6">
@@ -412,6 +416,7 @@
         closeModal('edit-offender-modal');
     });
 </script>
+
 <script>
     const button = document.getElementById("userMenuButton");
     const dropdown = document.getElementById("userDropdown");
@@ -424,3 +429,4 @@
         }
     });
 </script>
+
