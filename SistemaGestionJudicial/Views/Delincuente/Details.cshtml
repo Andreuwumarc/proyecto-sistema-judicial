@@ -1,0 +1,194 @@
+﻿@model SistemaGestionJudicial.Models.Persona
+
+@{
+    ViewData["Title"] = "Detalles del Delincuente";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Asegúrate de usar tu layout principal
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+    /* Estilos para el acordeón de juicios (mantenidos de tu código anterior) */
+    .accordion-header {
+        background-color: #f3f4f6; /* bg-gray-100 */
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem; /* rounded-lg */
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600; /* font-semibold */
+        color: #4b5563; /* text-gray-700 */
+        transition: background-color 0.2s ease;
+    }
+
+        .accordion-header:hover {
+            background-color: #e5e7eb; /* hover:bg-gray-200 */
+        }
+
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+        padding: 0 1rem; /* Padding horizontal inicial */
+        border-left: 2px solid #d1d5db; /* border-gray-300 */
+        margin-left: 0.75rem; /* ml-3 */
+        background-color: #ffffff; /* bg-white */
+        border-radius: 0.5rem; /* rounded-lg */
+    }
+
+        .accordion-content.active {
+            max-height: 500px; /* Suficientemente grande para el contenido */
+            padding: 1rem; /* Padding cuando está activo */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+        }
+
+    .sentencia-item {
+        border-left: 2px solid #a7f3d0; /* border-green-300 */
+        padding-left: 0.75rem;
+        margin-bottom: 0.5rem;
+        background-color: #f7fee7; /* bg-green-50 */
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+    }
+</style>
+
+@* APLICAMOS ESTOS CAMBIOS AQUÍ para centrar y limitar el ancho *@
+<div class="container mx-auto p-6 max-w-5xl">
+    @* max-w-5xl para detalles es un buen tamaño *@
+    <div class="card bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800"><i class="fas fa-user-circle mr-2"></i> @ViewData["Title"]</h2>
+
+        <div class="flex flex-col md:flex-row gap-6 mb-6">
+            <div class="w-full md:w-1/3">
+                <div class="bg-gray-100 rounded-lg overflow-hidden mb-2">
+                    <img src="https://randomuser.me/api/portraits/lego/1.jpg"
+                         class="w-full h-auto object-cover" alt="Imagen del delincuente">
+                </div>
+            </div>
+            <div class="w-full md:w-2/3 space-y-2 text-gray-700">
+                <p><strong>ID:</strong> @Model.IdPersona</p>
+                <p><strong>Cédula:</strong> @Model.Cedula</p>
+                <p><strong>Nombre Completo:</strong> @($"{Model.Nombres} {Model.Apellidos}")</p>
+                <p><strong>Fecha Nacimiento:</strong> @(Model.FechaNacimiento?.ToString("yyyy-MM-dd") ?? "N/A")</p>
+                <p>
+                    <strong>Género:</strong>
+                    @{
+                        string generoDisplay = "N/A";
+                        if (Model.Genero == "M") { generoDisplay = "Masculino"; }
+                        else if (Model.Genero == "F") { generoDisplay = "Femenino"; }
+                        else if (Model.Genero == "O") { generoDisplay = "Otro"; }
+                    }
+                    @generoDisplay
+                </p>
+                <p><strong>Dirección:</strong> @(Model.Direccion ?? "No especificada")</p>
+                <p><strong>Teléfono:</strong> @(Model.Telefono ?? "No especificado")</p>
+                <p><strong>Correo Electrónico:</strong> @(Model.CorreoElectronico ?? "No especificado")</p>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <h3 class="text-xl font-bold mb-3 text-gray-800">Juicios Asociados:</h3>
+            @if (Model.JuiciosAcusados != null && Model.JuiciosAcusados.Any())
+            {
+                <div class="space-y-4">
+                    @foreach (var juicioAcusado in Model.JuiciosAcusados)
+                    {
+                        var juicio = juicioAcusado.IdJuicioNavigation;
+                        if (juicio != null)
+                        {
+                            <div class="accordion-item bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
+                                <div class="accordion-header px-4 py-3 cursor-pointer flex justify-between items-center font-semibold text-gray-700 hover:bg-gray-100"
+                                     onclick="toggleAccordion(this)">
+                                    <span>Juicio ID: @juicio.IdJuicio - Estado: @(juicio.Estado ?? "N/A")</span>
+                                    <i class="fas fa-chevron-down ml-2"></i>
+                                </div>
+                                <div class="accordion-content">
+                                    <p class="mb-2"><strong>Fechas del Juicio:</strong> @(juicio.FechaInicio?.ToString("yyyy-MM-dd") ?? "N/A") - @(juicio.FechaFin?.ToString("yyyy-MM-dd") ?? "N/A")</p>
+
+                                    @if (juicio.IdDenunciaNavigation != null && juicio.IdDenunciaNavigation.IdDelitoNavigation != null)
+                                    {
+                                        var delito = juicio.IdDenunciaNavigation.IdDelitoNavigation;
+                                        <h4 class="font-bold text-gray-800 mt-2">Delito Asociado:</h4>
+                                        <div class="ml-3 border-l-2 border-blue-300 pl-3">
+                                            <p><strong>Nombre:</strong> @(delito.Nombre ?? "N/A")</p>
+                                            <p><strong>Tipo:</strong> @(delito.TipoDelito ?? "N/A")</p>
+                                            <p><strong>Descripción:</strong> @(delito.Descripcion ?? "N/A")</p>
+                                            <p><strong>Gravedad:</strong> @(delito.GravedadDelito ?? "N/A")</p>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-gray-500 italic mt-2">No se encontró información de delito para este juicio.</p>
+                                    }
+
+                                    <h4 class="font-bold text-gray-800 mt-4">Sentencias:</h4>
+                                    @if (juicio.Sentencia != null && juicio.Sentencia.Any())
+                                    {
+                                        <div class="overflow-x-auto mt-2">
+                                            <table class="min-w-full divide-y divide-gray-200">
+                                                <thead class="bg-gray-50">
+                                                    <tr>
+                                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pena</th>
+                                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Observaciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white divide-y divide-gray-200">
+                                                    @foreach (var sentencia in juicio.Sentencia)
+                                                    {
+                                                        <tr class="sentencia-item">
+                                                            <td class="px-3 py-2 whitespace-nowrap">@(sentencia.TipoSentencia ?? "N/A")</td>
+                                                            <td class="px-3 py-2 whitespace-nowrap">@(sentencia.Pena ?? "N/A")</td>
+                                                            <td class="px-3 py-2 whitespace-nowrap">@(sentencia.FechaSentencia?.ToString("yyyy-MM-dd") ?? "N/A")</td>
+                                                            <td class="px-3 py-2 whitespace-nowrap">@(sentencia.Observaciones ?? "N/A")</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-gray-500 italic">No hay sentencias registradas para este juicio.</p>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-gray-500 italic">No hay juicios o delitos asociados para este delincuente.</p>
+            }
+        </div>
+
+        <div class="flex justify-start mt-6 space-x-4">
+            <a asp-action="Edit" asp-route-id="@Model.IdPersona" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-edit mr-2"></i> Editar
+            </a>
+            <a asp-action="Index" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Volver al listado
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleAccordion(header) {
+            const content = header.nextElementSibling;
+            if (content) {
+                content.classList.toggle('active');
+                const icon = header.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                }
+            }
+        }
+    </script>
+}
