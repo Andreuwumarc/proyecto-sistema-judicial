@@ -4,19 +4,20 @@ using SistemaGestionJudicial.Models; // Add this using directive for UseNpgsql e
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Configuración de DbContext para ProyectoContext
+builder.Services.AddDbContext<ProyectoContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MiConexion")));
 
-builder.Services.AddDbContext<SistemaJudicialContext>options =>
 
+// Configurar sesión
 builder.Services.AddSession();
 
-builder.Services.AddDbContext<ProyectoContext>(options =>
-
-        options.UseSqlServer(builder.Configuration.GetConnectionString("MiConexion")));
-
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -27,6 +28,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseRouting();
 
 app.UseSession();

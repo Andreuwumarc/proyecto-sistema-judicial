@@ -7,9 +7,9 @@ namespace SistemaGestionJudicial.Controllers
 {
     public class RoleController : Controller
     {
-        private readonly SistemaJudicialContext _context;
+        private readonly ProyectoContext _context;
 
-        public RoleController(SistemaJudicialContext context)
+        public RoleController(ProyectoContext context)
         {
             _context = context;
         }

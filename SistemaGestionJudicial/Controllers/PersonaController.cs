@@ -7,9 +7,9 @@ namespace SistemaGestionJudicial.Controllers;
 
 public class PersonaController : Controller
 {
-    private readonly SistemaJudicialContext _context;
+    private readonly ProyectoContext _context;
 
-    public PersonaController(SistemaJudicialContext context)
+    public PersonaController(ProyectoContext context)
     {
         _context = context;
     }

@@ -21,7 +21,9 @@ public partial class Persona
     public string? Direccion { get; set; }
     public string? Telefono { get; set; }
     public string? CorreoElectronico { get; set; }
-    
+
+    public long ? IdRol { get; set; }
+
     public virtual ICollection<Denuncia> Denuncia { get; set; } = new List<Denuncia>();
 
     public virtual ICollection<Fiscale> Fiscales { get; set; } = new List<Fiscale>();
