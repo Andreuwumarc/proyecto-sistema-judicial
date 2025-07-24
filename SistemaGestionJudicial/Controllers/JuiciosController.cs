@@ -186,6 +186,11 @@ namespace SistemaGestionJudicial.Controllers
 
             if (ModelState.IsValid)
             {
+                // Asignar un nuevo IdJuicio manualmente
+                juicio.IdJuicio = _context.Juicios.Any()
+                    ? _context.Juicios.Max(j => j.IdJuicio) + 1
+                    : 1;
+
                 _context.Add(juicio);
                 await _context.SaveChangesAsync();
 
@@ -433,19 +438,34 @@ namespace SistemaGestionJudicial.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var juicio = await _context.Juicios.FindAsync(id);
-            if (juicio != null)
+            var juicio = await _context.Juicios
+                .Include(j => j.JuiciosAcusados)
+                .Include(j => j.Sentencia)
+                .FirstOrDefaultAsync(m => m.IdJuicio == id);
+
+            if (juicio == null)
             {
-                _context.Juicios.Remove(juicio);
+                return NotFound();
             }
+
+            // 1. Eliminar sentencias relacionadas
+            if (juicio.Sentencia != null && juicio.Sentencia.Any())
+            {
+                _context.Sentencias.RemoveRange(juicio.Sentencia);
+            }
+
+            // 2. Eliminar juicios_acusados relacionados
+            if (juicio.JuiciosAcusados != null && juicio.JuiciosAcusados.Any())
+            {
+                _context.JuiciosAcusados.RemoveRange(juicio.JuiciosAcusados);
+            }
+
+            // 3. Eliminar el juicio
+            _context.Juicios.Remove(juicio);
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool JuicioExists(long id)
-        {
-            return _context.Juicios.Any(e => e.IdJuicio == id);
-        }
     }
 }
