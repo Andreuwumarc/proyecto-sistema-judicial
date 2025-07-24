@@ -133,4 +133,29 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const fechaInicio = document.querySelector("input[name='FechaInicio']");
+            const fechaFin = document.querySelector("input[name='FechaFin']");
+
+            function validarFecha(input) {
+                const valor = input.value;
+                const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+                if (!regex.test(valor)) {
+                    input.setCustomValidity("La fecha debe tener el formato correcto (yyyy-MM-dd).");
+                } else {
+                    input.setCustomValidity("");
+                }
+            }
+
+            fechaInicio?.addEventListener("input", function () {
+                validarFecha(this);
+            });
+
+            fechaFin?.addEventListener("input", function () {
+                validarFecha(this);
+            });
+        });
+    </script>
 }

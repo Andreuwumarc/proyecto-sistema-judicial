@@ -99,18 +99,51 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        document.querySelector('form').addEventListener('submit', function (e) {
-            const estado = document.querySelector('[name="Estado"]').value;
-            const fechaFin = document.querySelector('[name="FechaFin"]').value;
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector('form');
+            const estado = document.querySelector('[name="Estado"]');
+            const fechaInicio = document.querySelector("input[name='FechaInicio']");
+            const fechaFin = document.querySelector("input[name='FechaFin']");
+            const errorSpanFechaFin = document.querySelector('[data-valmsg-for="FechaFin"]');
 
-            if (estado === 'Concluido' && !fechaFin) {
-                e.preventDefault();
-                const errorSpan = document.querySelector('[data-valmsg-for="FechaFin"]');
-                if (errorSpan) {
-                    errorSpan.textContent = 'La fecha de fin es obligatoria si el juicio está concluido.';
-                    errorSpan.classList.add('text-red-500');
+            function validarFormatoFecha(input) {
+                const valor = input.value;
+                const regex = /^\d{4}-\d{2}-\d{2}$/;
+                if (!regex.test(valor)) {
+                    input.setCustomValidity("La fecha debe tener el formato correcto (yyyy-MM-dd).");
+                } else {
+                    input.setCustomValidity("");
                 }
             }
+
+            fechaInicio?.addEventListener("input", function () {
+                validarFormatoFecha(this);
+            });
+
+            fechaFin?.addEventListener("input", function () {
+                validarFormatoFecha(this);
+            });
+
+            form?.addEventListener('submit', function (e) {
+                // Validación condicional de FechaFin si Estado es Concluido
+                if (estado?.value === 'Concluido' && !fechaFin?.value) {
+                    e.preventDefault();
+                    if (errorSpanFechaFin) {
+                        errorSpanFechaFin.textContent = 'La fecha de fin es obligatoria si el juicio está concluido.';
+                        errorSpanFechaFin.classList.add('text-red-500');
+                    }
+                } else {
+                    // Limpiar mensaje si es válido
+                    if (errorSpanFechaFin) {
+                        errorSpanFechaFin.textContent = '';
+                        errorSpanFechaFin.classList.remove('text-red-500');
+                    }
+                }
+
+                // Validar formato antes de enviar
+                validarFormatoFecha(fechaInicio);
+                validarFormatoFecha(fechaFin);
+            });
         });
     </script>
 }

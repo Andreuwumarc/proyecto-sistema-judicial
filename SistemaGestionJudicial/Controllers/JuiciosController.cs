@@ -314,7 +314,6 @@ namespace SistemaGestionJudicial.Controllers
 
 
         // POST: Juicios/Edit/id
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(long id,
@@ -329,8 +328,12 @@ namespace SistemaGestionJudicial.Controllers
         {
             if (id != juicio.IdJuicio) return NotFound();
 
+            Pena ??= "-";
+
             if (Pena.Length > 200)
                 ModelState.AddModelError("Pena", "La pena no debe superar los 200 caracteres.");
+
+            Observaciones ??= "-";
 
             if (Observaciones.Length > 300)
                 ModelState.AddModelError("Observaciones", "Las observaciones no deben superar los 300 caracteres.");
@@ -345,6 +348,7 @@ namespace SistemaGestionJudicial.Controllers
                     if (sentencia != null)
                     {
                         sentencia.TipoSentencia = TipoSentencia;
+                        sentencia.Pena = Pena;
                         sentencia.Observaciones = Observaciones;
                     }
                     else
@@ -353,6 +357,7 @@ namespace SistemaGestionJudicial.Controllers
                         {
                             IdJuicio = juicio.IdJuicio,
                             TipoSentencia = TipoSentencia,
+                            Pena = Pena,
                             Observaciones = Observaciones
                         });
                     }
