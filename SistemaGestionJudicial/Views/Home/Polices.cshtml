@@ -69,14 +69,24 @@
 <div class="flex-1 overflow-auto page-background">
     <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print">
         <h2 class="text-xl font-semibold text-gray-800">Gestión de Partes Policiales</h2>
-        <div class="flex items-center space-x-4">
-            <div class="flex items-center space-x-2">
+        <div class="relative flex items-center space-x-4">
+
+            <div class="flex items-center space-x-2 cursor-pointer" id="userMenuButton" tabindex="0" aria-haspopup="true" aria-expanded="false">
                 <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
                     <i class="fas fa-user"></i>
                 </div>
                 <span class="text-sm font-medium">
                     @(HttpContextAccessor.HttpContext.Session.GetString("PrimerNombre") ?? "Usuario")
                 </span>
+                <i class="fas fa-chevron-down ml-1 text-gray-600"></i>
+            </div>
+
+            <!-- Menú desplegable -->
+            <div id="userMenu" class="hidden absolute right-0 mt-10 w-40 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+                <a href="@Url.Action("Logout", "Account")"
+                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Cerrar sesión
+                </a>
             </div>
         </div>
     </header>
@@ -569,4 +579,24 @@
         }
     });
 
+</script>
+<script>
+    // Toggle menú usuario
+    const userMenuButton = document.getElementById('userMenuButton');
+    const userMenu = document.getElementById('userMenu');
+
+    userMenuButton.addEventListener('click', () => {
+        userMenu.classList.toggle('hidden');
+        // Actualizar aria-expanded para accesibilidad
+        const expanded = userMenuButton.getAttribute('aria-expanded') === 'true';
+        userMenuButton.setAttribute('aria-expanded', !expanded);
+    });
+
+    // Cerrar el menú si se hace clic fuera
+    document.addEventListener('click', (event) => {
+        if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+            userMenu.classList.add('hidden');
+            userMenuButton.setAttribute('aria-expanded', 'false');
+        }
+    });
 </script>

@@ -114,7 +114,165 @@
 
     </div>
 
+    <script>
+        let generatedToken = '';
+        let userEmail = '';
 
+        // Paso 1: Generar token
+        document.getElementById('recoveryForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            if (!email) {
+                alert('Ingresa tu correo.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/Account/GenerarToken', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(email)
+                });
+
+                if (!response.ok) {
+                    const error = await response.text();
+                    alert(error);
+                    return;
+                }
+
+                const data = await response.json();
+                generatedToken = data.token;
+                userEmail = email;
+
+                // Mostrar el token en input visible para copiar y mostrar botón copiar y continuar
+                const tokenContainer = document.getElementById('tokenContainer');
+                const generatedTokenField = document.getElementById('generatedTokenField');
+                const continueBtn = document.getElementById('continueBtn');
+
+                generatedTokenField.value = generatedToken;
+                tokenContainer.classList.remove('hidden');
+                continueBtn.disabled = true;
+
+            } catch (err) {
+                console.error(err);
+                alert('Error generando token.');
+            }
+        });
+
+        // Botón copiar token
+        document.getElementById('copyTokenBtn').addEventListener('click', function () {
+            const generatedTokenField = document.getElementById('generatedTokenField');
+            generatedTokenField.select();
+            generatedTokenField.setSelectionRange(0, 99999); // Para móviles
+
+            navigator.clipboard.writeText(generatedTokenField.value).then(() => {
+                alert('Token copiado al portapapeles.');
+                // Habilitar botón continuar solo después de copiar
+                document.getElementById('continueBtn').disabled = false;
+            }).catch(err => {
+                console.error('Error copiando token:', err);
+                alert('No se pudo copiar automáticamente. Copia manualmente.');
+                document.getElementById('continueBtn').disabled = false; // Habilitar para no bloquear
+            });
+        });
+
+        // Botón continuar hacia paso 2
+        document.getElementById('continueBtn').addEventListener('click', function (e) {
+            e.preventDefault();
+            // Ocultar paso 1 y mostrar paso 2
+            document.getElementById('stepEmail').classList.add('hidden');
+            document.getElementById('stepToken').classList.remove('hidden');
+        });
+
+        // Paso 2: Validar token
+        document.getElementById('tokenForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const tokenInput = document.getElementById('tokenInput').value.trim();
+
+            if (!tokenInput) {
+                alert('Ingresa el token.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/Account/ValidarToken', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo: userEmail, token: tokenInput })
+                });
+
+                if (!response.ok) {
+                    alert('Token inválido.');
+                    return;
+                }
+
+                // Ir al paso 3
+                document.getElementById('stepToken').classList.add('hidden');
+                document.getElementById('stepChangePassword').classList.remove('hidden');
+
+            } catch (err) {
+                console.error(err);
+                alert('Error validando token.');
+            }
+        });
+
+        // Paso 3: Cambiar contraseña con validación
+        document.getElementById('changePasswordForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const newPassword = document.getElementById('newPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+            const tokenInput = document.getElementById('tokenInput').value.trim();
+
+            if (!newPassword || !confirmPassword) {
+                alert('Llena ambos campos.');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert('Las contraseñas no coinciden.');
+                return;
+            }
+
+            // Validar: al menos una mayúscula, un número y más de 8 caracteres
+            const hasUppercase = /[A-Z]/.test(newPassword);
+            const hasNumber = /[0-9]/.test(newPassword);
+            const isLongEnough = newPassword.length >= 8;
+
+            if (!hasUppercase || !hasNumber || !isLongEnough) {
+                alert('La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un número.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/Account/CambiarPassword', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo: userEmail, token: tokenInput, newPassword: newPassword })
+                });
+
+                if (!response.ok) {
+                    alert('No se pudo cambiar la contraseña.');
+                    return;
+                }
+
+                document.getElementById('successMessage').classList.remove('hidden');
+                document.getElementById('changePasswordForm').classList.add('hidden');
+
+                setTimeout(() => {
+                    window.location.href = '@Url.Action("Login", "Account")';
+                }, 2000);
+
+            } catch (err) {
+                console.error(err);
+                alert('Error cambiando contraseña.');
+            }
+        });
+    </script>
+
+    @*
     <script>
         let generatedToken = '';
         let userEmail = '';
@@ -264,7 +422,7 @@
                 alert('Error cambiando contraseña.');
             }
         });
-    </script>
+    </script>*@
 
 
 
