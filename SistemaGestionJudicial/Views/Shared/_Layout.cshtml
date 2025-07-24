@@ -27,8 +27,8 @@
             </div>
 
             <nav class="mt-4">
-                
-                <a href="/Persona/Index"
+
+                @* <a href="/Persona/Index"
                    class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
                     <i class="fas fa-chart-pie mr-3"></i>
                     Personas
@@ -37,14 +37,24 @@
                    class="flex items-center px-4 py-3 text-white hover:bg-blue-800">
                     <i class="fas fa-chart-pie mr-3"></i>
                     Roles
-                </a>
-                
+                </a> *@
+
                 @* ✅ JUEZ: menú completo + reports *@
                 @if (rolUsuario == 1)
                 {
                     <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Main</div>
                     <a href="/Home/Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
                         <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+                    </a>
+
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider"></div>
+                    <a href="/Persona/Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
+                        <i class="fas fa-tachometer-alt mr-3"></i> Personas
+                    </a>
+
+                    <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider"></div>
+                    <a href="/Role/Index" class="flex items-center px-4 py-3 text-white hover:bg-blue-800 active-tab">
+                        <i class="fas fa-tachometer-alt mr-3"></i> Roles
                     </a>
 
                     <div class="px-4 py-2 text-blue-300 uppercase text-xs font-semibold tracking-wider">Case Management</div>
