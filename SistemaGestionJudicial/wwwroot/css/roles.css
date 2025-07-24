@@ -6,6 +6,11 @@
     --light: #f9fafb;
 }
 
+header {
+    opacity: 80%;
+    background-color: azure;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-image: url('/images/bgPersonas.png'); /* URL de la imagen que quieres usar */

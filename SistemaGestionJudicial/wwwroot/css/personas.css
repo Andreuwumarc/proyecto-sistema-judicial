@@ -29,6 +29,7 @@ body {
         transform: translateY(-2px);
     }
 
+
 .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -89,4 +90,9 @@ body {
     background-repeat: no-repeat; /* Evita que la imagen se repita */
     padding: 20px;
     
+}
+
+header{
+    opacity: 80%;
+    background-color:azure;
 }
