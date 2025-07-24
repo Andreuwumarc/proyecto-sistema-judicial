@@ -15,193 +15,137 @@ namespace SistemaGestionJudicial.Controllers
 
         [Route("/Home/CaseReports")]
         public async Task<IActionResult> Index(
-            DateOnly? fechaDenuncia,
+            DateOnly? fechaJuicio,
             string judgeName,
             string prosecutorName,
-            string denuncianteName
+            string denuncianteName,
+            string demandadoName
         )
         {
-            var query = dbContext.Denuncias
-                .Include(d => d.IdPersonaDenunciaNavigation)
-                .Include(d => d.IdDelitoNavigation)
-                .Include(d => d.Juicios)
-                    .ThenInclude(j => j.IdPersonaJuezNavigation)
-                .Include(d => d.Fiscales)
+            var query = dbContext.Juicios
+                .Include(j => j.IdDenunciaNavigation)
+                    .ThenInclude(d => d.IdDelitoNavigation)
+                .Include(j => j.IdDenunciaNavigation)
+                    .ThenInclude(d => d.IdPersonaDenunciaNavigation)
+                .Include(j => j.JuiciosAcusados)
+                    .ThenInclude(ja => ja.IdPersonaNavigation)
+                .Include(j => j.IdPersonaJuezNavigation)
+                .Include(j => j.IdDenunciaNavigation.Fiscales)
                     .ThenInclude(f => f.IdPersonaFiscalNavigation)
                 .AsQueryable();
 
-            if (fechaDenuncia.HasValue)
+            if (fechaJuicio.HasValue)
             {
-                query = query.Where(d => d.FechaDenuncia == fechaDenuncia.Value);
+                query = query.Where(j => j.FechaInicio.HasValue && j.FechaInicio.Value == fechaJuicio.Value);
             }
 
-            // Filtrar juez por nombre y apellido
             if (!string.IsNullOrEmpty(judgeName))
             {
                 var parts = judgeName.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length == 1)
                 {
                     var filtro = $"%{parts[0]}%";
-                    query = query.Where(d => d.Juicios.Any(j =>
+                    query = query.Where(j =>
                         EF.Functions.Like(j.IdPersonaJuezNavigation.Nombres, filtro) ||
-                        EF.Functions.Like(j.IdPersonaJuezNavigation.Apellidos, filtro)
-                    ));
+                        EF.Functions.Like(j.IdPersonaJuezNavigation.Apellidos, filtro));
                 }
                 else if (parts.Length >= 2)
                 {
                     var nombreFiltro = $"%{parts[0]}%";
                     var apellidoFiltro = $"%{parts[1]}%";
-                    query = query.Where(d => d.Juicios.Any(j =>
+                    query = query.Where(j =>
                         EF.Functions.Like(j.IdPersonaJuezNavigation.Nombres, nombreFiltro) &&
-                        EF.Functions.Like(j.IdPersonaJuezNavigation.Apellidos, apellidoFiltro)
-                    ));
+                        EF.Functions.Like(j.IdPersonaJuezNavigation.Apellidos, apellidoFiltro));
                 }
             }
 
-            // Filtrar fiscal por nombre y apellido
             if (!string.IsNullOrEmpty(prosecutorName))
             {
                 var parts = prosecutorName.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length == 1)
                 {
                     var filtro = $"%{parts[0]}%";
-                    query = query.Where(d => d.Fiscales.Any(f =>
+                    query = query.Where(j => j.IdDenunciaNavigation.Fiscales.Any(f =>
                         EF.Functions.Like(f.IdPersonaFiscalNavigation.Nombres, filtro) ||
-                        EF.Functions.Like(f.IdPersonaFiscalNavigation.Apellidos, filtro)
-                    ));
+                        EF.Functions.Like(f.IdPersonaFiscalNavigation.Apellidos, filtro)));
                 }
                 else if (parts.Length >= 2)
                 {
                     var nombreFiltro = $"%{parts[0]}%";
                     var apellidoFiltro = $"%{parts[1]}%";
-                    query = query.Where(d => d.Fiscales.Any(f =>
+                    query = query.Where(j => j.IdDenunciaNavigation.Fiscales.Any(f =>
                         EF.Functions.Like(f.IdPersonaFiscalNavigation.Nombres, nombreFiltro) &&
-                        EF.Functions.Like(f.IdPersonaFiscalNavigation.Apellidos, apellidoFiltro)
-                    ));
+                        EF.Functions.Like(f.IdPersonaFiscalNavigation.Apellidos, apellidoFiltro)));
                 }
             }
 
-            // Filtrar denunciante por nombre y apellido
             if (!string.IsNullOrEmpty(denuncianteName))
             {
                 var parts = denuncianteName.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length == 1)
                 {
                     var filtro = $"%{parts[0]}%";
-                    query = query.Where(d =>
-                        EF.Functions.Like(d.IdPersonaDenunciaNavigation.Nombres, filtro) ||
-                        EF.Functions.Like(d.IdPersonaDenunciaNavigation.Apellidos, filtro)
-                    );
+                    query = query.Where(j =>
+                        EF.Functions.Like(j.IdDenunciaNavigation.IdPersonaDenunciaNavigation.Nombres, filtro) ||
+                        EF.Functions.Like(j.IdDenunciaNavigation.IdPersonaDenunciaNavigation.Apellidos, filtro));
                 }
                 else if (parts.Length >= 2)
                 {
                     var nombreFiltro = $"%{parts[0]}%";
                     var apellidoFiltro = $"%{parts[1]}%";
-                    query = query.Where(d =>
-                        EF.Functions.Like(d.IdPersonaDenunciaNavigation.Nombres, nombreFiltro) &&
-                        EF.Functions.Like(d.IdPersonaDenunciaNavigation.Apellidos, apellidoFiltro)
-                    );
+                    query = query.Where(j =>
+                        EF.Functions.Like(j.IdDenunciaNavigation.IdPersonaDenunciaNavigation.Nombres, nombreFiltro) &&
+                        EF.Functions.Like(j.IdDenunciaNavigation.IdPersonaDenunciaNavigation.Apellidos, apellidoFiltro));
                 }
             }
 
-
-            var denuncias = await query.ToListAsync();
-
-            if (denuncias.Count == 0 && (
-                fechaDenuncia.HasValue ||
-                !string.IsNullOrEmpty(judgeName) ||
-                !string.IsNullOrEmpty(prosecutorName) ||
-                !string.IsNullOrEmpty(denuncianteName))
-                )
+            if (!string.IsNullOrEmpty(demandadoName))
             {
-                // No coincidieron los filtros con ningún resultado
-                ViewBag.FilterError = "No existen casos que coincidan con la combinación de filtros aplicados. Por favor, ajusta los criterios.";
+                var parts = demandadoName.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 1)
+                {
+                    var filtro = $"%{parts[0]}%";
+                    query = query.Where(j => j.JuiciosAcusados.Any(ja =>
+                        EF.Functions.Like(ja.IdPersonaNavigation.Nombres, filtro) ||
+                        EF.Functions.Like(ja.IdPersonaNavigation.Apellidos, filtro)));
+                }
+                else if (parts.Length >= 2)
+                {
+                    var nombreFiltro = $"%{parts[0]}%";
+                    var apellidoFiltro = $"%{parts[1]}%";
+                    query = query.Where(j => j.JuiciosAcusados.Any(ja =>
+                        EF.Functions.Like(ja.IdPersonaNavigation.Nombres, nombreFiltro) &&
+                        EF.Functions.Like(ja.IdPersonaNavigation.Apellidos, apellidoFiltro)));
+                }
             }
 
-            // Total de casos filtrados
-            int totalCases = denuncias.Count;
+            var juicios = await query.ToListAsync();
 
-            // Casos recientes (últimos 30 días)
+            if (juicios.Count == 0 && (
+                fechaJuicio.HasValue ||
+                !string.IsNullOrEmpty(judgeName) ||
+                !string.IsNullOrEmpty(prosecutorName) ||
+                !string.IsNullOrEmpty(denuncianteName) ||
+                !string.IsNullOrEmpty(demandadoName)))
+            {
+                ViewBag.FilterError = "No existen juicios que coincidan con la combinación de filtros aplicados.";
+            }
+
+            ViewBag.TotalCases = juicios.Count;
             DateOnly fechaLimite = DateOnly.FromDateTime(DateTime.Today.AddDays(-30));
-            int recentCases = denuncias.Count(d => d.FechaDenuncia >= fechaLimite);
+            ViewBag.RecentCases = juicios.Count(j => j.FechaInicio >= fechaLimite);
 
-            ViewBag.TotalCases = totalCases;
-            ViewBag.RecentCases = recentCases;
-
-            // Pasar los filtros actuales a la vista para mantener los valores en el formulario
             ViewBag.Filtros = new CaseReportsFilterViewModel
             {
-                FechaDenuncia = fechaDenuncia,
+                FechaDenuncia = fechaJuicio,
                 JudgeName = judgeName,
                 ProsecutorName = prosecutorName,
                 DenuncianteName = denuncianteName
             };
 
-            // Listas extras para filtros o dropdowns
-            ViewBag.Personas = await dbContext.Personas
-                .Select(p => new { p.IdPersona, p.Nombres, p.Apellidos })
-                .ToListAsync();
-
-            ViewBag.Delitos = await dbContext.Delitos
-                .Select(d => new { d.IdDelito, d.Nombre })
-                .ToListAsync();
-
-
-            return View("~/Views/Home/CaseReports.cshtml", denuncias);
+            return View("~/Views/Home/CaseReports.cshtml", juicios);
         }
 
-        [HttpGet]
-        public async Task<JsonResult> GetJudgeSuggestions(string term)
-        {
-            if (string.IsNullOrWhiteSpace(term))
-                return Json(new List<string>());
-
-            var results = await dbContext.Personas
-                .Where(p => p.Juicios.Any() &&
-                       (p.Nombres.Contains(term) || p.Apellidos.Contains(term)))
-                .Select(p => p.Nombres + " " + p.Apellidos)
-                .Distinct()
-                .Take(10)
-                .ToListAsync();
-
-            return Json(results);
-        }
-
-        [HttpGet]
-        public async Task<JsonResult> GetProsecutorSuggestions(string term)
-        {
-            if (string.IsNullOrWhiteSpace(term))
-                return Json(new List<string>());
-
-            var results = await dbContext.Personas
-                .Where(p => p.Fiscales.Any() &&
-                       (p.Nombres.Contains(term) || p.Apellidos.Contains(term)))
-                .Select(p => p.Nombres + " " + p.Apellidos)
-                .Distinct()
-                .Take(10)
-                .ToListAsync();
-
-            return Json(results);
-        }
-
-        [HttpGet]
-        public async Task<JsonResult> GetDenuncianteSuggestions(string term)
-        {
-            if (string.IsNullOrWhiteSpace(term))
-                return Json(new List<string>());
-
-            var results = await dbContext.Personas
-                .Where(p => p.Denuncia.Any() &&
-                       (p.Nombres.Contains(term) || p.Apellidos.Contains(term)))
-                .Select(p => p.Nombres + " " + p.Apellidos)
-                .Distinct()
-                .Take(10)
-                .ToListAsync();
-
-            return Json(results);
-        }
-
-
-
+        // Métodos de autocompletado igual pueden mantenerse
     }
 }

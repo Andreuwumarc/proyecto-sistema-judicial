@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SistemaGestionJudicial.Models.Denuncia>
+﻿@model IEnumerable<SistemaGestionJudicial.Models.Juicio>
 
 @{
     ViewData["Title"] = "CaseReports";
@@ -19,45 +19,43 @@
             <p class="text-gray-600">Track and analyze case progress</p>
         </div>
 
-        
         <!-- Filter Controls -->
         <form method="get" asp-controller="CaseReports" asp-action="Index">
             <div class="bg-white p-4 rounded-lg mb-6 shadow-sm">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
                         <label class="block text-sm text-gray-500 mb-1">Fecha de Inicio</label>
-                        <input type="date" name="FechaDenuncia"
+                        <input type="date" name="fechaJuicio"
                                class="w-full p-2 border rounded"
                                value="@(ViewBag.Filtros?.FechaDenuncia?.ToString("yyyy-MM-dd") ?? "")" />
                     </div>
                     <div>
                         <label class="block text-sm text-gray-500 mb-1">Judge</label>
-                        <input list="judgeList" name="JudgeName" id="judgeNameInput" placeholder="Nombre del juez" class="w-full p-2 border rounded" value="@(ViewBag.Filtros?.JudgeName ?? "")" />
+                        <input list="judgeList" name="judgeName" id="judgeNameInput" placeholder="Nombre del juez" class="w-full p-2 border rounded" value="@(ViewBag.Filtros?.JudgeName ?? "")" />
                         <datalist id="judgeList"></datalist>
                     </div>
                     <div>
                         <label class="block text-sm text-gray-500 mb-1">Prosecutor</label>
-                        <input list="prosecutorList" name="ProsecutorName" id="prosecutorNameInput" placeholder="Nombre del fiscal" class="w-full p-2 border rounded" value="@(ViewBag.Filtros?.ProsecutorName ?? "")" />
+                        <input list="prosecutorList" name="prosecutorName" id="prosecutorNameInput" placeholder="Nombre del fiscal" class="w-full p-2 border rounded" value="@(ViewBag.Filtros?.ProsecutorName ?? "")" />
                         <datalist id="prosecutorList"></datalist>
                     </div>
                     <div>
                         <label class="block text-sm text-gray-500 mb-1">Denunciante</label>
-                        <input list="denuncianteList" name="DenuncianteName" id="denuncianteNameInput" placeholder="Nombre del denunciante" class="w-full p-2 border rounded" value="@(ViewBag.Filtros?.DenuncianteName ?? "")" />
+                        <input list="denuncianteList" name="denuncianteName" id="denuncianteNameInput" placeholder="Nombre del denunciante" class="w-full p-2 border rounded" value="@(ViewBag.Filtros?.DenuncianteName ?? "")" />
                         <datalist id="denuncianteList"></datalist>
                     </div>
-                    <div class="flex items-end">
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded w-full">
-                            Apply Filters
-                        </button>
-                        <a href="/Home/CaseReports" class="bg-gray-400 text-white px-4 py-2 rounded w-full text-center">
-                            Clear Filters
-                        </a>
+                    <div>
+                        <label class="block text-sm text-gray-500 mb-1">Demandado</label>
+                        <input name="demandadoName" placeholder="Nombre del demandado" class="w-full p-2 border rounded" />
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <button type="submit" class="bg-blue-600 text-white px-2 py-2 rounded w-full">Apply Filters</button>
+                        <a href="/Home/CaseReports" class="bg-gray-400 text-white px-2 py-2 rounded w-full text-center">Clear Filters</a>
                     </div>
                 </div>
             </div>
         </form>
 
-        <!-- Alerta de error si no hay coincidencias -->
         @if (ViewBag.FilterError != null)
         {
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
@@ -65,7 +63,6 @@
             </div>
         }
 
-        <!-- Key Metrics -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div class="bg-white p-4 rounded-lg shadow-sm">
                 <div class="flex justify-between">
@@ -85,10 +82,8 @@
                     <i class="fas fa-gavel text-yellow-500 text-2xl"></i>
                 </div>
             </div>
-            
         </div>
 
-        <!-- Cases Table -->
         <div class="bg-white rounded-lg shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -96,45 +91,48 @@
                         <tr>
                             <th class="p-3 text-left text-sm font-medium text-gray-600">Case ID</th>
                             <th class="p-3 text-left text-sm font-medium text-gray-600">Fecha</th>
-                            <th class="p-3 text-left text-sm font-medium text-gray-600">Descripcion</th>
-                            <th class="p-3 text-left text-sm font-medium text-gray-600">Lugar</th>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Delito</th>
                             <th class="p-3 text-left text-sm font-medium text-gray-600">Denunciante</th>
                             <th class="p-3 text-left text-sm font-medium text-gray-600">Juez</th>
                             <th class="p-3 text-left text-sm font-medium text-gray-600">Fiscal</th>
-                            <th class="p-3 text-left text-sm font-medium text-gray-600">Delito</th>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Demandado</th>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Estado</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @{
                             var i = 0;
                         }
-                        @foreach (var denuncia in Model)
+                        @foreach (var juicio in Model)
                         {
-                            var rowClass = i < 10 ? "" : "hidden more-cases";
-                            var juez = denuncia.Juicios?.FirstOrDefault()?.IdPersonaJuezNavigation;
-                            var fiscal = denuncia.Fiscales?.FirstOrDefault()?.IdPersonaFiscalNavigation;
+                            var denunciante = juicio.IdDenunciaNavigation?.IdPersonaDenunciaNavigation;
+                            var delito = juicio.IdDenunciaNavigation?.IdDelitoNavigation?.Nombre;
+                            var fiscal = juicio.IdDenunciaNavigation?.Fiscales?.FirstOrDefault()?.IdPersonaFiscalNavigation;
+                            var juez = juicio.IdPersonaJuezNavigation;
+                            var demandado = juicio.JuiciosAcusados?.FirstOrDefault()?.IdPersonaNavigation;
+
+                            var rowClass = i < 5 ? "" : "hidden more-cases";
+
                             <tr class="@rowClass">
-                                <td class="p-3 text-sm">@denuncia.IdDenuncia</td>
-                                <td class="p-3 text-sm">@denuncia.FechaDenuncia</td>
-                                <td class="p-3 text-sm">@denuncia.Descripcion</td>
-                                <td class="p-3 text-sm">@denuncia.LugarHecho</td>
-                                <td class="p-3 text-sm">@($"{denuncia.IdPersonaDenunciaNavigation?.Nombres} {denuncia.IdPersonaDenunciaNavigation?.Apellidos}")</td>
+                                <td class="p-3 text-sm">@juicio.IdJuicio</td>
+                                <td class="p-3 text-sm">@juicio.FechaInicio?.ToString("dd/MM/yyyy")</td>
+                                <td class="p-3 text-sm">@delito</td>
+                                <td class="p-3 text-sm">@($"{denunciante?.Nombres} {denunciante?.Apellidos}")</td>
                                 <td class="p-3 text-sm">@($"{juez?.Nombres} {juez?.Apellidos}")</td>
                                 <td class="p-3 text-sm">@($"{fiscal?.Nombres} {fiscal?.Apellidos}")</td>
-                                <td class="p-3 text-sm">@denuncia.IdDelitoNavigation?.Nombre</td>
-                                
+                                <td class="p-3 text-sm">@($"{demandado?.Nombres} {demandado?.Apellidos}")</td>
+                                <td class="p-3 text-sm">@juicio.Estado</td>
                             </tr>
+
                             i++;
                         }
                     </tbody>
-
-                    
                 </table>
-            </div>
-            <div class="p-4 text-center border-t">
-                <button id="showMoreBtn" class="text-blue-600 hover:underline">
-                    Show More Cases <i class="fas fa-chevron-down ml-1"></i>
-                </button>
+                <div class="p-4 text-center border-t">
+                    <button id="showMoreBtn" class="text-blue-600 hover:underline">
+                        Show More Cases <i class="fas fa-chevron-down ml-1"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -142,13 +140,6 @@
 
 @section Scripts {
     <script>
-        document.getElementById('showMoreBtn').addEventListener('click', function () {
-            document.querySelectorAll('.more-cases').forEach(row => row.classList.remove('hidden'));
-            this.style.display = 'none'; // Oculta el botón después de mostrar más
-        });
-
-
-
         async function fetchSuggestions(url, inputId, listId) {
             const input = document.getElementById(inputId);
             const list = document.getElementById(listId);
@@ -156,7 +147,7 @@
             input.addEventListener('input', async () => {
                 const term = input.value;
                 if (term.length < 2) {
-                    list.innerHTML = ''; // limpia sugerencias si term es muy corto
+                    list.innerHTML = '';
                     return;
                 }
 
@@ -174,21 +165,30 @@
             });
         }
 
-        // Llamadas para cada input
         fetchSuggestions('/CaseReports/GetJudgeSuggestions', 'judgeNameInput', 'judgeList');
         fetchSuggestions('/CaseReports/GetProsecutorSuggestions', 'prosecutorNameInput', 'prosecutorList');
         fetchSuggestions('/CaseReports/GetDenuncianteSuggestions', 'denuncianteNameInput', 'denuncianteList');
-
-
-
-        // Si la página fue recargada con el botón del navegador
-        if (performance.navigation.type === 1) {
-            // Elimina la query string y recarga limpio
-            if (window.location.search.length) {
-                window.location.href = window.location.pathname;
-            }
-        }
-
     </script>
-}
+    <script>
+        const showMoreBtn = document.getElementById('showMoreBtn');
+        const rowsPerClick = 10;
 
+        showMoreBtn.addEventListener('click', function () {
+            const hiddenRows = document.querySelectorAll('.more-cases.hidden');
+            const nextRows = Array.from(hiddenRows).slice(0, rowsPerClick);
+
+            nextRows.forEach(row => row.classList.remove('hidden'));
+
+            // Verifica si ya no quedan más ocultos y oculta el botón
+            if (document.querySelectorAll('.more-cases.hidden').length === 0) {
+                showMoreBtn.style.display = 'none';
+            }
+        });
+
+        // Al cargar la página, verifica si hay menos de 5 ocultos y oculta el botón
+        if (document.querySelectorAll('.more-cases.hidden').length === 0) {
+            showMoreBtn.style.display = 'none';
+        }
+    </script>
+
+}

@@ -48,92 +48,15 @@ public class DashboardController : Controller
         return View("~/Views/Home/Panel.cshtml",viewModel);
     }
 
-    //public IActionResult Index()
-    //{
-    //    var now = DateTime.Now;
-    //    DateOnly cutoff = DateOnly.FromDateTime(DateTime.Today.AddMonths(-11));
-    //    //var cutoff = now.AddMonths(-11); // últimos 12 meses incluyendo actual
-
-    //    var stats = _context.Juicios
-    //        .Where(j => j.FechaInicio >= cutoff)
-    //        .AsEnumerable()
-    //        .GroupBy(j => j.FechaInicio.Value.ToString("MMMM", new CultureInfo("es-ES")))
-    //        .OrderBy(g => DateTime.ParseExact(g.Key, "MMMM", new CultureInfo("es-ES")))
-    //        .Select(g => new {
-    //            Month = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(g.Key),
-    //            Count = g.Count()
-    //        })
-    //        .ToList();
-
-    //    ViewBag.Labels = stats.Select(s => s.Month).ToList();
-    //    ViewBag.Values = stats.Select(s => s.Count).ToList();
-
-    //    return View();
-    //}
-
-
-    public async Task<IActionResult> GetDashboardData()
-    {
-        var totalOffenders = await _context.Personas.CountAsync(o => o.IdRol == 3);
-        var activeCases = await _context.Juicios.CountAsync(c => c.Estado == "En progreso");
-        var convictions = await _context.Juicios.CountAsync(c => c.Estado == "Concluido");
-        var pendingTrials = await _context.Juicios.CountAsync(c => c.Estado != "Concluido" );
-
-        var crimeStats = await _context.Juicios
-            .Where(j => j.FechaInicio != null)
-            .GroupBy(j => j.FechaInicio.Value.Month)
-            .Select(g => new
-            {
-                Month = g.Key,
-                Count = g.Count()
-            })
-            .OrderBy(g => g.Month)
-            .ToListAsync();
-
-
-        var recentCases = await _context.Juicios
-            .Include(j => j.IdDenunciaNavigation)
-                .ThenInclude(d => d.IdDelitoNavigation)
-            .Include(j => j.IdPersonaJuezNavigation)
-            //.ThenInclude(p => p.IdPersona)
-            .Include(j => j.JuiciosAcusados)
-                .ThenInclude(ja => ja.IdPersonaNavigation)
-            .OrderByDescending(j => j.FechaInicio)
-            .Take(4)
-            .Select(j => new
-            {
-                j.IdJuicio,
-                Infractor = j.JuiciosAcusados
-                            .Select(ja => ja.IdPersonaNavigation.Nombres + " " + ja.IdPersonaNavigation.Apellidos)
-                            .FirstOrDefault(), // Si hay más de un acusado, tomamos el primero
-                Crimen = j.IdDenunciaNavigation.IdDelitoNavigation.Nombre,
-                Juez = j.IdPersonaJuezNavigation.Nombres + " " + j.IdPersonaJuezNavigation.Apellidos,
-                Status = j.Estado
-            })
-            .ToListAsync();
-
-
-
-        return Json(new
-        {
-            totalOffenders,
-            activeCases,
-            convictions,
-            pendingTrials,
-            crimeStats,
-            recentCases
-        });
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetData(int days = 365)
     {
         DateOnly cutoff = DateOnly.FromDateTime(DateTime.Today.AddDays(-days));
         Console.WriteLine(cutoff.ToString());   
 
-        var crimeStatsFilter = await _context.Juicios
-            .Where(j => j.FechaInicio.HasValue && j.FechaInicio >= cutoff)
-            .GroupBy(j => j.FechaInicio.Value.Month)
+        var crimeStatsFilter = await _context.Denuncias
+            .Where(d => d.FechaDenuncia != null && d.FechaDenuncia >= cutoff)
+            .GroupBy(j => j.FechaDenuncia.Month)
             .Select(g => new {
                 Month = g.Key,
                 Count = g.Count()

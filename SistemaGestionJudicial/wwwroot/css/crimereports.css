@@ -4,7 +4,6 @@
 }
 
 .card {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
 }
 
@@ -32,4 +31,26 @@
 .badge-down {
     background-color: #dcfce7;
     color: #166534;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(-50%) translateX(0);
+    }
+
+    50% {
+        transform: translateY(-52%) translateX(2px);
+    }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+#iconmetricleft{
+    padding-left: 11rem;
+}
+
+#iconmetricr {
+    padding-right: 11rem;
 }
