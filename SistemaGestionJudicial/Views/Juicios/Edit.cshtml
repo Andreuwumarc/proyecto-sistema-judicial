@@ -156,6 +156,19 @@
             fechaFin?.addEventListener("input", function () {
                 validarFecha(this);
             });
+
+            // Forzar apertura del calendario al hacer clic en los inputs de fecha
+            [fechaInicio, fechaFin].forEach(input => {
+                if (input) {
+                    input.addEventListener("focus", function () {
+                        this.showPicker?.();
+                    });
+                    input.addEventListener("click", function () {
+                        this.showPicker?.();
+                    });
+                }
+            });
         });
     </script>
 }
+

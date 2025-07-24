@@ -144,6 +144,19 @@
                 validarFormatoFecha(fechaInicio);
                 validarFormatoFecha(fechaFin);
             });
+
+            // Forzar abrir calendario al hacer clic en los inputs de fecha
+            const dateInputs = document.querySelectorAll('input[type="date"]');
+
+            dateInputs.forEach(input => {
+                input.addEventListener("focus", function () {
+                    this.showPicker?.(); // Para navegadores compatibles
+                });
+
+                input.addEventListener("click", function () {
+                    this.showPicker?.();
+                });
+            });
         });
     </script>
 }
