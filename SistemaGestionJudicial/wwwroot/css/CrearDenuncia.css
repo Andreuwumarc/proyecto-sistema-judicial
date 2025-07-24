@@ -1,0 +1,37 @@
+﻿.form-control {
+    border-radius: 0.5rem;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+form label {
+    font-weight: 500;
+}
+
+.btn-outline-dark {
+    transition: all 0.3s ease-in-out;
+}
+
+    .btn-outline-dark:hover {
+        background-color: #222;
+        color: #fff;
+    }
+
+.body-background {
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden; /* opcional, para evitar scroll horizontal */
+}
+
+.body-background::before {
+    content: "";
+    position: fixed; /* fijo a la ventana */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/images/coliseo.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: -1; /* detrás del contenido */
+}

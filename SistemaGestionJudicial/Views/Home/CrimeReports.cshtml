@@ -3,6 +3,8 @@
     ViewData["Title"] = "CrimeReports";
 }
 
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
 @section Styles {
     <link rel="stylesheet" href="~/css/crimereports.css" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,10 +15,37 @@
 
     <!-- Main Content -->
     <div class="flex-1 p-4 overflow-auto">
-        <header class="bg-white p-4 rounded-lg shadow-sm mb-4">
-            <h1 class="text-xl font-semibold">Crime Analytics Dashboard</h1>
-            <p class="text-gray-600">Latest crime statistics and trends</p>
+        
+        <!-- Header -->
+    
+        <header class="bg-white/85 backdrop-blur-md shadow-sm py-4 px-6 flex flex-col md:flex-row md:justify-between md:items-center sticky top-0 z-10 no-print space-y-4 md:space-y-0 mb-6">
+            <!-- Título y descripción -->
+            <div>
+                <h1 class="text-xl font-semibold text-gray-800">Crime Analytics Dashboard</h1>
+                <p class="text-gray-600 text-sm">Latest crime statistics and trends</p>
+            </div>
+
+            <!-- Usuario con menú desplegable -->
+            <div class="relative flex items-center space-x-2">
+                <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
+                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="text-sm font-medium">
+                        @(HttpContextAccessor.HttpContext.Session.GetString("PrimerNombre") ?? "Usuario")
+                    </span>
+                    <i class="fas fa-chevron-down text-xs ml-1"></i>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div id="userDropdown" class="hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-20">
+                    <a href="/Account/Logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
+                    </a>
+                </div>
+            </div>
         </header>
+
 
         <!-- Quick Filters -->
         <div class="bg-white p-4 rounded-lg mb-4">
@@ -36,6 +65,7 @@
                 </button>
             </div>
         </div>
+
 
         <!-- Key Metrics -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -256,4 +286,16 @@
         );
     });
 </script>
+    <script>
+        const button = document.getElementById("userMenuButton");
+        const dropdown = document.getElementById("userDropdown");
+
+        document.addEventListener("click", (e) => {
+            if (button.contains(e.target)) {
+                dropdown.classList.toggle("hidden");
+            } else {
+                dropdown.classList.add("hidden");
+            }
+        });
+    </script>
 

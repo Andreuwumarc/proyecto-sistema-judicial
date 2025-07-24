@@ -1,0 +1,235 @@
+﻿@model IEnumerable<SistemaGestionJudicial.Models.Juicio>
+    @{
+        ViewData["Title"] = "Gestión de Juicios";
+    }
+    @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+    @section Styles {
+        <link rel="stylesheet" href="~/css/juicios.css" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    }
+
+    <!-- Estructura principal con fondo -->
+    <div class="flex h-screen overflow-hidden fondo-juicios">
+        <div class="flex-1 overflow-auto pb-32">
+            <!-- Header fijo blanco -->
+            <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-10">
+                <h2 class="text-xl font-semibold text-gray-800">Gestión de Juicios</h2>
+
+                <a asp-action="Create" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-plus mr-2"></i> Nuevo Juicio
+                </a>
+
+                <div class="relative flex items-center space-x-4">
+                    <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
+                        <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="text-sm font-medium">
+                            @(HttpContextAccessor.HttpContext.Session.GetString("PrimerNombre") ?? "Usuario")
+                        </span>
+                        <i class="fas fa-chevron-down text-xs ml-1"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="userDropdown" class="hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-20">
+                        <a href="/Account/Logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+
+            <!-- Contenido principal -->
+            <div class="p-6">
+                <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 rounded-lg shadow mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Juez</label>
+                        <select name="juezId" class="form-input">
+                            <option value="">-- Todos los jueces --</option>
+                            @foreach (var juez in (SelectList)ViewData["JuezId"])
+                            {
+                                <option value="@juez.Value" selected="@(juez.Selected ? "selected" : null)">
+                                    @juez.Text
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Fiscal</label>
+                        <select name="fiscalId" class="form-input">
+                            <option value="">-- Todos los fiscales --</option>
+                            @foreach (var fiscal in (SelectList)ViewData["FiscalId"])
+                            {
+                                <option value="@fiscal.Value" selected="@(fiscal.Selected ? "selected" : null)">
+                                    @fiscal.Text
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Ordenar por Fecha</label>
+                        <select name="ordenFecha" class="form-input">
+                            <option value="">-- Sin orden --</option>
+                            <option value="asc" selected="@(ViewData["OrdenFecha"]?.ToString() == "asc" ? "selected" : null)">
+                                Fecha más antigua
+                            </option>
+                            <option value="desc" selected="@(ViewData["OrdenFecha"]?.ToString() == "desc" ? "selected" : null)">
+                                Fecha más reciente
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Desde</label>
+                        <input type="date" name="fechaDesde" class="form-input" value="@ViewData["FechaDesde"]" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Hasta</label>
+                        <input type="date" name="fechaHasta" class="form-input" value="@ViewData["FechaHasta"]" />
+                    </div>
+
+                    @*<div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Estado del Juicio</label>
+                    <select name="estado" class="form-input">
+                        <option value="">-- Todos los estados --</option>
+                        @foreach (var e in (SelectList)ViewData["Estados"])
+                        {
+                            <option value="@e.Value" selected="@(e.Selected ? "selected" : null)">@e.Text</option>
+                        }
+                    </select>
+                </div> *@
+
+                    <div class="md:col-span-3 flex justify-end mt-2">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                            <i class="fas fa-filter mr-2"></i> Filtrar
+                        </button>
+                        <a href="@Url.Action("Index", "Juicios")" class="ml-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg inline-flex items-center">
+                            <i class="fas fa-times mr-2"></i> Limpiar Filtros
+                        </a>
+                    </div>
+                </form>
+
+                <!-- Tabla -->
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Inicio</th>
+                                <th>Fin</th>
+                                <th>Estado</th>
+                                <th>Juez</th>
+                                <th>Fiscal</th>
+                                <th>Delito</th>
+                                <th>Denunciante</th>
+                                <th>Acusados</th>
+                                <th>Sentencia</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var juicio in Model)
+                            {
+                                var juez = juicio.IdPersonaJuezNavigation;
+                                var denuncia = juicio.IdDenunciaNavigation;
+                                var delito = denuncia?.IdDelitoNavigation;
+                                var denunciante = denuncia?.IdPersonaDenunciaNavigation;
+                                var fiscalAsignado = juicio.IdDenunciaNavigation?.Fiscales.FirstOrDefault();
+                                var fiscalPersona = fiscalAsignado?.IdPersonaFiscalNavigation;
+                                var sentencia = juicio.Sentencia.FirstOrDefault();
+
+                                string badgeEstado = juicio.Estado switch
+                                {
+                                    "Concluido" => "badge-completed",
+                                    "En Progreso" => "badge-active",
+                                    "Programado" => "badge-pending",
+                                    _ => "badge"
+                                };
+
+                                string badgeSentencia = sentencia?.TipoSentencia?.ToLower() switch
+                                {
+                                    "culpable" => "badge-completed",
+                                    "inocente" => "badge-canceled",
+                                    _ => "badge-pending"
+                                };
+
+                                <tr>
+                                    <td>@juicio.IdJuicio</td>
+                                    <td>@(juicio.FechaInicio?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                    <td>@(juicio.FechaFin?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                    <td><span class="badge @badgeEstado">@juicio.Estado</span></td>
+                                    <td>@(juez?.Nombres + " " + juez?.Apellidos)</td>
+                                    <td>@(fiscalPersona?.Nombres + " " + fiscalPersona?.Apellidos)</td>
+                                    <td>@delito?.Nombre</td>
+                                    <td>@(denunciante?.Nombres + " " + denunciante?.Apellidos)</td>
+                                    <td>
+                                        @foreach (var acusado in juicio.JuiciosAcusados)
+                                        {
+                                            <div>@(acusado.IdPersonaNavigation?.Nombres + " " + acusado.IdPersonaNavigation?.Apellidos)</div>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (sentencia != null)
+                                        {
+                                            <span class="badge @badgeSentencia">@sentencia.TipoSentencia</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-pending">Pendiente</span>
+                                        }
+                                    </td>
+                                    <td class="whitespace-nowrap">
+                                        <a asp-action="Details" asp-route-id="@juicio.IdJuicio" class="text-blue-600 hover:text-blue-800 mr-2">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@juicio.IdJuicio" class="text-green-600 hover:text-green-800 mr-2">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@juicio.IdJuicio" class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const dateInputs = document.querySelectorAll('input[type="date"]');
+
+                dateInputs.forEach(input => {
+                    input.addEventListener("focus", function () {
+                        this.showPicker?.(); // Para navegadores que soportan showPicker()
+                    });
+
+                    input.addEventListener("click", function () {
+                        this.showPicker?.();
+                    });
+                });
+            });
+        </script>
+        <script>
+            const button = document.getElementById("userMenuButton");
+            const dropdown = document.getElementById("userDropdown");
+
+            document.addEventListener("click", (e) => {
+                if (button.contains(e.target)) {
+                    dropdown.classList.toggle("hidden");
+                } else {
+                    dropdown.classList.add("hidden");
+                }
+            });
+        </script>
+    }

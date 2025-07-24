@@ -1,0 +1,68 @@
+﻿@model SistemaGestionJudicial.Models.Persona
+
+@{
+    ViewData["Title"] = "Eliminar Delincuente";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<script src="https://cdn.tailwindcss.com"></script>
+
+@* APLICAMOS ESTOS CAMBIOS AQUÍ para centrar y limitar el ancho *@
+<div class="container mx-auto p-6 max-w-xl">
+    @* max-w-xl para confirmación es un buen tamaño *@
+    <div class="card bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold mb-6 text-red-700"><i class="fas fa-trash-alt mr-2"></i> @ViewData["Title"]</h2>
+
+        <h3 class="text-xl font-semibold mb-4 text-gray-800">¿Estás seguro de que deseas eliminar este delincuente?</h3>
+        <p class="text-sm text-red-500 mb-6">Esta acción no se puede deshacer.</p>
+
+        <div class="mb-6 border-t pt-4">
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-gray-700">
+                <dt class="font-bold">ID:</dt>
+                <dd>@Model.IdPersona</dd>
+
+                <dt class="font-bold">Cédula:</dt>
+                <dd>@Model.Cedula</dd>
+
+                <dt class="font-bold">Nombres:</dt>
+                <dd>@Model.Nombres</dd>
+
+                <dt class="font-bold">Apellidos:</dt>
+                <dd>@Model.Apellidos</dd>
+
+                <dt class="font-bold">Fecha de Nacimiento:</dt>
+                <dd>@(Model.FechaNacimiento?.ToString("yyyy-MM-dd") ?? "N/A")</dd>
+
+                <dt class="font-bold">Género:</dt>
+                <dd>
+                    @{
+                        string generoDisplay = "N/A";
+                        if (Model.Genero == "M") { generoDisplay = "Masculino"; }
+                        else if (Model.Genero == "F") { generoDisplay = "Femenino"; }
+                        else if (Model.Genero == "O") { generoDisplay = "Otro"; }
+                    }
+                    @generoDisplay
+                </dd>
+
+                <dt class="font-bold">Dirección:</dt>
+                <dd>@(Model.Direccion ?? "N/A")</dd>
+
+                <dt class="font-bold">Teléfono:</dt>
+                <dd>@(Model.Telefono ?? "N/A")</dd>
+
+                <dt class="font-bold">Correo Electrónico:</dt>
+                <dd>@(Model.CorreoElectronico ?? "N/A")</dd>
+            </dl>
+        </div>
+
+        <form asp-action="Delete" method="post" class="flex justify-end space-x-4 mt-6">
+            <input type="hidden" asp-for="IdPersona" />
+            <a asp-action="Index" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Cancelar
+            </a>
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-trash-alt mr-2"></i> Confirmar Eliminación
+            </button>
+        </form>
+    </div>
+</div>
