@@ -42,8 +42,12 @@ namespace SistemaGestionJudicial.Controllers
             HttpContext.Session.SetString("NombreUsuario", user.Usuario1);
             HttpContext.Session.SetInt32("RolUsuario", (int)user.IdPersonaNavigation.IdRol);
 
+            // 🟢 Aquí guardas el primer nombre
+            string primerNombre = user.IdPersonaNavigation.Nombres.Split(' ')[0];
+            HttpContext.Session.SetString("PrimerNombre", primerNombre);
 
-            return RedirectToAction("Index", "Home");
+            /*return RedirectToAction("Index", "Home");*/
+            return RedirectToAction("Index", "Dashboard");
         }
 
 
@@ -193,6 +197,15 @@ namespace SistemaGestionJudicial.Controllers
             public string Token { get; set; }
             public string NewPassword { get; set; }
         }
+
+
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear(); // Elimina todos los datos de sesión
+            return RedirectToAction("Login", "Account"); // Redirige al login
+        }
+
 
     }
 
