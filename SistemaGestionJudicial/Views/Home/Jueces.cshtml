@@ -6,10 +6,19 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>@ViewData["Title"]</title>
+
+    <!-- 1) jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 2) jQuery Validate -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <!-- 3) Unobtrusive Validation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         .modal {
             z-index: 50;
@@ -37,8 +46,8 @@
 
         .form-input {
             border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            padding: 0.5rem 0.75rem;
+            border-radius: .375rem;
+            padding: .5rem .75rem;
             width: 100%;
         }
 
@@ -57,24 +66,35 @@
         }
     </style>
 </head>
+<body class="min-h-screen relative">
 
-<body class="min-h-screen">
-    @* MODAL DE ERROR (TempData) *@
+    <!-- Fondo -->
+    <div class="absolute inset-0 -z-10 bg-cover bg-center"
+         style="background-image: url('/img/greco_roman_court.png');"></div>
+
+    <!-- MODAL ERROR TempData -->
     @if (TempData["ErrorMensaje"] != null)
     {
-        <div id="error-modal" class="modal fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+        <div id="error-modal"
+             class="modal fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
             <div class="modal-content bg-white rounded-lg p-6 w-96">
                 <h3 class="text-lg font-bold mb-4 text-red-700">Error</h3>
                 <p class="mb-4 text-gray-700">@TempData["ErrorMensaje"]</p>
                 <div class="flex justify-end">
-                    <button onclick="closeModal('error-modal')" class="bg-red-600 text-white px-4 py-2 rounded-lg">Cerrar</button>
+                    <button type="button"
+                            onclick="closeModal('error-modal')"
+                            class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg mr-2">
+                        Cerrar
+                    </button>
                 </div>
             </div>
         </div>
         <script>
-            setTimeout(function () { closeModal('error-modal'); }, 5000);
+            setTimeout(function(){ closeModal('error-modal'); },5000);
         </script>
     }
+
+    <!-- Abrir modal si ModelState inválido -->
     @if (!ViewData.ModelState.IsValid || ViewBag.OpenCreateModal == true)
     {
         <script>
@@ -83,292 +103,409 @@
             }
         </script>
     }
-
-    @if (!ViewData.ModelState.IsValid)
+    else if (ViewBag.OpenEditModal == true)
     {
-        <div class="bg-red-100 text-red-800 border border-red-400 rounded px-4 py-3 mb-4">
-            <b>Errores:</b>
-            <ul>
-                @foreach (var e in ViewData.ModelState)
-                {
-                    foreach (var err in e.Value.Errors)
-                    {
-                        <li>@e.Key: @err.ErrorMessage</li>
-                    }
-                }
-            </ul>
-        </div>
+        <script>
+            window.onload = function() {
+                openModal('edit-judge-modal');
+            }
+        </script>
     }
 
-
-    <div class="p-6">
+    <div class="relative p-6">
         <h2 class="text-2xl font-bold mb-4">Gestión de Jueces</h2>
-        <div class="mb-6 flex flex-wrap justify-between items-center">
-            <div>
-                <label for="rowsPerPage" class="text-sm font-medium mr-2">Mostrar</label>
-                <select id="rowsPerPage" class="form-input w-24 inline" onchange="changeRowsPerPage()">
-                    <option value="5">5</option>
-                    <option value="10" selected>10</option>
-                    <option value="25">25</option>
-                    <option value="all">Todos</option>
-                </select>
-                <span class="ml-2 text-sm">por página</span>
-            </div>
-            <button onclick="openModal('add-judge-modal')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                <i class="fas fa-plus mr-2"></i> Añadir Juez
-            </button>
-        </div>
-        <div class="card bg-white rounded-lg p-6">
-            <div class="overflow-x-auto">
-                <table class="data-table w-full" id="judgesTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre Completo</th>
-                            <th>Cédula</th>
-                            <th>Correo</th>
-                            <th>Teléfono</th>
-                            <th>Género</th>
-                            <th>Dirección</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        @if (Model != null && Model.Any())
+        <button onclick="openModal('add-judge-modal')"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center mb-6">
+            <i class="fas fa-plus mr-2"></i> Añadir Juez
+        </button>
+
+        <div class="card bg-white bg-opacity-75 rounded-lg p-6 overflow-x-auto">
+            <table class="data-table w-full" id="judgesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre Completo</th>
+                        <th>Cédula</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>Género</th>
+                        <th>Dirección</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    @if (Model != null && Model.Any())
+                    {
+                        var row = 0;
+                        foreach (var judge in Model)
                         {
-                            int row = 0;
-                            foreach (var judge in Model)
-                            {
-                                <tr data-row="@row">
-                                    <td>@judge.IdPersona</td>
-                                    <td>@judge.Nombres @judge.Apellidos</td>
-                                    <td>@judge.Cedula</td>
-                                    <td>@judge.CorreoElectronico</td>
-                                    <td>@judge.Telefono</td>
-                                    <td>@judge.Genero</td>
-                                    <td>@judge.Direccion</td>
-                                    <td>
-                                        <button type="button" class="text-green-600 hover:text-green-800 mr-2"
-                                                onclick="openEditModal('@judge.IdPersona', '@judge.Cedula', '@judge.Nombres', '@judge.Apellidos', '@(judge.FechaNacimiento?.ToString("yyyy-MM-dd") ?? "")', '@judge.Genero', '@judge.Direccion', '@judge.Telefono', '@judge.CorreoElectronico')">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button type="button" class="text-red-600 hover:text-red-800"
-                                                onclick="openDeleteModal('@judge.IdPersona', '@judge.Nombres @judge.Apellidos')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                row++;
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="8" class="text-center text-gray-500 py-4">No existen jueces registrados.</td>
+                            <tr data-row="@row">
+                                <td>@judge.IdPersona</td>
+                                <td>@judge.Nombres @judge.Apellidos</td>
+                                <td>@judge.Cedula</td>
+                                <td>@judge.CorreoElectronico</td>
+                                <td>@judge.Telefono</td>
+                                <td>@judge.Genero</td>
+                                <td>@judge.Direccion</td>
+                                <td>
+                                    <button class="text-blue-600 hover:text-blue-800 mr-2"
+                                            onclick="openDetailModal(
+                                                '@judge.IdPersona',
+                                                '@judge.Cedula',
+                                                '@judge.Nombres',
+                                                '@judge.Apellidos',
+                                                '@(judge.FechaNacimiento?.ToString("yyyy-MM-dd")??"")',
+                                                '@judge.Genero',
+                                                '@judge.Direccion',
+                                                '@judge.Telefono',
+                                                '@judge.CorreoElectronico')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800 mr-2"
+                                            onclick="openEditModal(
+                                                '@judge.IdPersona',
+                                                '@judge.Cedula',
+                                                '@judge.Nombres',
+                                                '@judge.Apellidos',
+                                                '@(judge.FechaNacimiento?.ToString("yyyy-MM-dd")??"")',
+                                                '@judge.Genero',
+                                                '@judge.Direccion',
+                                                '@judge.Telefono',
+                                                '@judge.CorreoElectronico')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-red-600 hover:text-red-800"
+                                            onclick="openDeleteModal(
+                                                '@judge.IdPersona',
+                                                '@judge.Nombres @judge.Apellidos')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
+                            row++;
                         }
-                    </tbody>
-                </table>
-                <div class="flex justify-between items-center mt-4" id="paginationControls">
-                    <button onclick="changePage(-1)" id="prevBtn" class="bg-gray-200 text-gray-700 px-3 py-1 rounded mr-2" disabled>Anterior</button>
-                    <span id="pageInfo"></span>
-                    <button onclick="changePage(1)" id="nextBtn" class="bg-gray-200 text-gray-700 px-3 py-1 rounded ml-2">Siguiente</button>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-gray-500 py-4">
+                                No existen jueces registrados.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <!-- Paginación -->
+            <div class="flex justify-between items-center mt-4" id="paginationControls">
+                <button onclick="changePage(-1)" id="prevBtn"
+                        class="bg-gray-200 text-gray-700 px-3 py-1 rounded mr-2" disabled>
+                    Anterior
+                </button>
+                <span id="pageInfo"></span>
+                <button onclick="changePage(1)" id="nextBtn"
+                        class="bg-gray-200 text-gray-700 px-3 py-1 rounded ml-2">
+                    Siguiente
+                </button>
+                <div class="inline-block ml-auto">
+                    <label for="rowsPerPage" class="block text-sm">Mostrar</label>
+                    <select id="rowsPerPage" class="form-input w-20" onchange="changeRowsPerPage()">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="25">25</option>
+                        <option value="all">Todos</option>
+                    </select>
+                    <span class="block text-xs mt-1">por página</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CREAR JUEZ -->
-    <div id="add-judge-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+    <!-- Detalle Modal -->
+    <div id="judge-detail-modal"
+         class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 w-full max-w-3xl">
+            <h3 class="text-lg text-center text-blue-600 font-bold mb-4">Detalles del Juez</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label>Cédula</label><p id="det-cedula" class="form-input"></p></div>
+                <div><label>Nombres</label><p id="det-nombres" class="form-input"></p></div>
+                <div><label>Apellidos</label><p id="det-apellidos" class="form-input"></p></div>
+                <div><label>Fecha de nacimiento</label><p id="det-fecha" class="form-input"></p></div>
+                <div><label>Género</label><p id="det-genero" class="form-input"></p></div>
+                <div><label>Dirección</label><p id="det-direccion" class="form-input"></p></div>
+                <div><label>Teléfono</label><p id="det-telefono" class="form-input"></p></div>
+                <div><label>Correo electrónico</label><p id="det-correo" class="form-input"></p></div>
+            </div>
+            <div class="flex justify-center mt-6">
+                <button onclick="closeModal('judge-detail-modal')"
+                        class="bg-gray-500 text-white px-4 py-2 rounded-lg">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Añadir Modal -->
+    <div id="add-judge-modal"
+         class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
         <div class="modal-content bg-white rounded-lg p-6 w-96">
             <h3 class="text-lg font-bold mb-4">Añadir Juez</h3>
-            <form asp-action="CreateJuez" asp-controller="Jueces" method="post">
+            <form id="addForm" asp-action="CreateJuez" asp-controller="Jueces" method="post" novalidate>
+                @Html.AntiForgeryToken()
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Cédula</label>
-                    <input type="text" name="Cedula" class="form-input" maxlength="10" required>
+                    <label>Cédula</label>
+                    <input id="addCedula" name="Cedula" class="form-input" maxlength="10" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Nombres</label>
-                    <input type="text" name="Nombres" class="form-input" maxlength="100" required>
+                    <label>Nombres</label>
+                    <input id="addNombres" name="Nombres" class="form-input" maxlength="100" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Apellidos</label>
-                    <input type="text" name="Apellidos" class="form-input" maxlength="100" required>
+                    <label>Apellidos</label>
+                    <input id="addApellidos" name="Apellidos" class="form-input" maxlength="100" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Fecha de nacimiento</label>
-                    <input type="date" name="FechaNacimiento" class="form-input">
+                    <label>Fecha de nacimiento</label>
+                    <input id="addFecha" name="FechaNacimiento" type="date" class="form-input" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Género</label>
-                    <select name="Genero" class="form-input">
+                    <label>Género</label>
+                    <select id="addGenero" name="Genero" class="form-input" required>
                         <option value="">Seleccionar</option>
                         <option value="M">Masculino</option>
                         <option value="F">Femenino</option>
-                        <option value="O">Otro</option>
                     </select>
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Dirección</label>
-                    <input type="text" name="Direccion" class="form-input" maxlength="200">
+                    <label>Dirección</label>
+                    <input id="addDireccion" name="Direccion" class="form-input" maxlength="200" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Teléfono</label>
-                    <input type="text" name="Telefono" class="form-input" maxlength="20">
+                    <label>Teléfono</label>
+                    <input id="addTelefono" name="Telefono" class="form-input" maxlength="20" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Correo electrónico</label>
-                    <input type="email" name="CorreoElectronico" class="form-input" maxlength="200">
+                    <label>Correo electrónico</label>
+                    <input id="addCorreoElectronico" name="CorreoElectronico"
+                           type="email" class="form-input" maxlength="200" required />
                 </div>
                 <div class="flex justify-end">
-                    <button type="button" onclick="closeModal('add-judge-modal')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg mr-2">Cancelar</button>
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Guardar</button>
+                    <button type="button" onclick="closeModal('add-judge-modal')"
+                            class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg mr-2">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg">
+                        Guardar
+                    </button>
                 </div>
             </form>
         </div>
     </div>
-    <!-- MODAL EDITAR JUEZ -->
+
+    <!-- Editar Modal -->
     <div id="edit-judge-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
         <div class="modal-content bg-white rounded-lg p-6 w-96">
             <h3 class="text-lg font-bold mb-4">Editar Juez</h3>
-            <form id="editJudgeForm" method="post">
+            <form id="editForm" asp-action="Edit" asp-controller="Jueces" method="post" novalidate>
+                @Html.AntiForgeryToken()
                 <input type="hidden" name="IdPersona" id="editIdPersona" />
+
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Cédula</label>
-                    <input type="text" name="Cedula" id="editCedula" class="form-input" maxlength="10" required>
+                    <label>Cédula</label>
+                    <input name="Cedula" id="editCedula" class="form-input" maxlength="10" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Nombres</label>
-                    <input type="text" name="Nombres" id="editNombres" class="form-input" maxlength="100" required>
+                    <label>Nombres</label>
+                    <input name="Nombres" id="editNombres" class="form-input" maxlength="100" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Apellidos</label>
-                    <input type="text" name="Apellidos" id="editApellidos" class="form-input" maxlength="100" required>
+                    <label>Apellidos</label>
+                    <input name="Apellidos" id="editApellidos" class="form-input" maxlength="100" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Fecha de nacimiento</label>
-                    <input type="date" name="FechaNacimiento" id="editFechaNacimiento" class="form-input">
+                    <label>Fecha de nacimiento</label>
+                    <input name="FechaNacimiento" id="editFechaNacimiento" type="date" class="form-input" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Género</label>
-                    <select name="Genero" id="editGenero" class="form-input">
+                    <label>Género</label>
+                    <select name="Genero" id="editGenero" class="form-input" required>
                         <option value="">Seleccionar</option>
                         <option value="M">Masculino</option>
                         <option value="F">Femenino</option>
-                        <option value="O">Otro</option>
                     </select>
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Dirección</label>
-                    <input type="text" name="Direccion" id="editDireccion" class="form-input" maxlength="200">
+                    <label>Dirección</label>
+                    <input name="Direccion" id="editDireccion" class="form-input" maxlength="200" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Teléfono</label>
-                    <input type="text" name="Telefono" id="editTelefono" class="form-input" maxlength="20">
+                    <label>Teléfono</label>
+                    <input name="Telefono" id="editTelefono" class="form-input" maxlength="20" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Correo electrónico</label>
-                    <input type="email" name="CorreoElectronico" id="editCorreoElectronico" class="form-input" maxlength="200">
+                    <label>Correo electrónico</label>
+                    <input name="CorreoElectronico" id="editCorreoElectronico" type="email" class="form-input" maxlength="200" required />
                 </div>
+
                 <div class="flex justify-end">
                     <button type="button" onclick="closeModal('edit-judge-modal')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg mr-2">Cancelar</button>
-                    <button type="button" onclick="submitEditForm()" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Guardar Cambios</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- MODAL ELIMINAR JUEZ -->
-    <div id="delete-judge-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-        <div class="modal-content bg-white rounded-lg p-6 w-96">
-            <h3 class="text-lg font-bold mb-4">Eliminar Juez</h3>
-            <form id="deleteJudgeForm" method="post">
-                <input type="hidden" name="IdPersona" id="deleteIdPersona" />
-                <p class="mb-4">¿Estás seguro de que deseas eliminar al juez <span id="deleteJudgeName" class="font-bold"></span>?</p>
-                <div class="flex justify-end">
-                    <button type="button" onclick="closeModal('delete-judge-modal')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg mr-2">Cancelar</button>
-                    <button type="button" onclick="submitDeleteForm()" class="bg-red-600 text-white px-4 py-2 rounded-lg">Eliminar</button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Guardar Cambios</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <script>
+        console.log('jQuery version:', $.fn.jquery, 'validate:', typeof $.fn.validate);
+        if (typeof $.fn.validate !== 'function') console.warn('jQuery Validate NO está cargado');
+        else {
+          $('#editForm').validate({
+            errorClass: 'text-red-600 text-xs mt-1',
+            errorElement: 'span',
+            highlight: e => $(e).addClass('border-red-500'),
+            unhighlight: e => $(e).removeClass('border-red-500'),
+            errorPlacement: (err, el) => err.insertAfter(el),
+            submitHandler: form => form.submit()
+          });
+        }
+    </script>
+
+    <!-- Eliminar Modal -->
+    <div id="delete-judge-modal"
+         class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-bold mb-4">Eliminar Juez</h3>
+            <form id="deleteJudgeForm" asp-action="Delete" asp-controller="Jueces" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="IdPersona" id="deleteIdPersona" />
+                <p class="mb-4">
+                    ¿Seguro que deseas eliminar al juez
+                    <span id="deleteJudgeName" class="font-bold"></span>?
+                </p>
+                <div class="flex justify-end">
+                    <button type="button" onclick="closeModal('delete-judge-modal')"
+                            class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg mr-2">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                            class="bg-red-600 text-white px-4 py-2 rounded-lg">
+                        Eliminar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ScrollTop Btn -->
     <button id="scrollTopBtn" class="scroll-btn" onclick="scrollToTop()">
         <i class="fas fa-arrow-up"></i>
     </button>
 
+    <!-- SCRIPTS GENERALES -->
     <script>
-        // PAGINACIÓN
-        let currentPage = 1;
-        let rowsPerPage = 10;
-        let judgesRows = [];
-        let totalRows = 0;
-        let tableBody = document.getElementById('tableBody');
-        document.addEventListener("DOMContentLoaded", function () {
-            judgesRows = Array.from(tableBody.querySelectorAll('tr[data-row]'));
-            totalRows = judgesRows.length;
-            paginate();
+        // --- PAGINACIÓN ---
+        let currentPage = 1,
+            rowsPerPage   = 10,
+            judgesRows    = [],
+            totalRows     = 0;
+        const tableBody = document.getElementById('tableBody');
+        document.addEventListener("DOMContentLoaded", () => {
+          judgesRows = Array.from(tableBody.querySelectorAll('tr[data-row]'));
+          totalRows  = judgesRows.length;
+          paginate();
         });
         function paginate() {
-            let value = document.getElementById('rowsPerPage').value;
-            rowsPerPage = value === "all" ? totalRows : parseInt(value);
-            let totalPages = Math.ceil(totalRows / rowsPerPage);
-            if (currentPage > totalPages) currentPage = totalPages || 1;
-            let start = (currentPage - 1) * rowsPerPage;
-            let end = (value === "all") ? totalRows : start + rowsPerPage;
-            judgesRows.forEach((row, i) => {
-                row.style.display = (i >= start && i < end) ? "" : "none";
-            });
-            document.getElementById('pageInfo').innerText = `Página ${currentPage} de ${totalPages || 1}`;
-            document.getElementById('prevBtn').disabled = currentPage <= 1;
-            document.getElementById('nextBtn').disabled = currentPage >= totalPages || value === "all";
+          const value = document.getElementById('rowsPerPage').value;
+          rowsPerPage = (value === "all") ? totalRows : parseInt(value);
+          const totalPages = Math.ceil(totalRows / rowsPerPage) || 1;
+          if (currentPage > totalPages) currentPage = totalPages;
+          const start = (currentPage - 1) * rowsPerPage;
+          const end   = (value === "all") ? totalRows : start + rowsPerPage;
+          judgesRows.forEach((r,i) => {
+            r.style.display = (i >= start && i < end) ? "" : "none";
+          });
+          document.getElementById('pageInfo').innerText =
+            `Página ${currentPage} de ${totalPages}`;
+          document.getElementById('prevBtn').disabled =
+            currentPage <= 1;
+          document.getElementById('nextBtn').disabled =
+            (currentPage >= totalPages || value === "all");
         }
         function changeRowsPerPage() { currentPage = 1; paginate(); }
-        function changePage(dir) { currentPage += dir; paginate(); }
+        function changePage(dir)      { currentPage += dir; paginate(); }
 
-        // BOTÓN FLOTANTE PARA SCROLL TOP
-        window.onscroll = function () {
-            document.getElementById('scrollTopBtn').style.display =
-                (window.scrollY > 200) ? 'block' : 'none';
+        // --- SCROLL TOP ---
+        window.onscroll = () => {
+          document.getElementById('scrollTopBtn').style.display =
+            (window.scrollY > 200) ? 'block' : 'none';
         };
         function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // MODALES CRUD
-        function openModal(id) {
-            document.getElementById(id).classList.remove('hidden');
+        // --- MODALES ---
+        function openModal(id)  { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        // --- HANDLERS DETALLE / EDITAR / ELIMINAR ---
+        function openDetailModal(id, cedula, nombres, apellidos, fecha, genero, direccion, telefono, correo) {
+          $('#det-cedula').text(cedula);
+          $('#det-nombres').text(nombres);
+          $('#det-apellidos').text(apellidos);
+          $('#det-fecha').text(fecha);
+          $('#det-genero').text(genero);
+          $('#det-direccion').text(direccion);
+          $('#det-telefono').text(telefono);
+          $('#det-correo').text(correo);
+          openModal('judge-detail-modal');
         }
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-        function openEditModal(id, cedula, nombres, apellidos, fechaNacimiento, genero, direccion, telefono, correo) {
-            document.getElementById('editIdPersona').value = id;
-            document.getElementById('editCedula').value = cedula;
-            document.getElementById('editNombres').value = nombres;
-            document.getElementById('editApellidos').value = apellidos;
-            document.getElementById('editFechaNacimiento').value = fechaNacimiento;
-            document.getElementById('editGenero').value = genero;
-            document.getElementById('editDireccion').value = direccion;
-            document.getElementById('editTelefono').value = telefono;
-            document.getElementById('editCorreoElectronico').value = correo;
-            openModal('edit-judge-modal');
+        function openEditModal(id, cedula, nombres, apellidos, fecha, genero, direccion, telefono, correo) {
+          $('#editIdPersona').val(id);
+          $('#editCedula').val(cedula);
+          $('#editNombres').val(nombres);
+          $('#editApellidos').val(apellidos);
+          $('#editFechaNacimiento').val(fecha);
+          $('#editGenero').val(genero);
+          $('#editDireccion').val(direccion);
+          $('#editTelefono').val(telefono);
+          $('#editCorreoElectronico').val(correo);
+          openModal('edit-judge-modal');
         }
         function openDeleteModal(id, nombre) {
-            document.getElementById('deleteIdPersona').value = id;
-            document.getElementById('deleteJudgeName').textContent = nombre;
-            openModal('delete-judge-modal');
+          $('#deleteIdPersona').val(id);
+          $('#deleteJudgeName').text(nombre);
+          openModal('delete-judge-modal');
         }
-        function submitEditForm() {
-            var form = document.getElementById('editJudgeForm');
-            form.action = '/Jueces/Edit/' + document.getElementById('editIdPersona').value;
-            form.method = 'post';
-            form.submit();
-        }
-        function submitDeleteForm() {
-            var form = document.getElementById('deleteJudgeForm');
-            form.action = '/Jueces/Delete/' + document.getElementById('deleteIdPersona').value;
-            form.method = 'post';
-            form.submit();
+
+        // --- INICIALIZACIÓN de jQuery Validate (sin unobtrusive) ---
+        $(function(){
+          $('#addForm, #editForm').validate({
+            errorClass:    'text-red-600 text-xs mt-1',
+            errorElement:  'span',
+            highlight(el)   { $(el).addClass('border-red-500'); },
+            unhighlight(el) { $(el).removeClass('border-red-500'); },
+            errorPlacement(error, element) {
+              error.insertAfter(element);
+            },
+            submitHandler(form) {
+              form.submit();
+            }
+          });
+        });
+              // Inicialización de jQuery Validate para el formulario de creación
+        console.log('Inicializando validación en #addForm, validate:', typeof $.fn.validate);
+        if (typeof $.fn.validate !== 'function') {
+          console.warn('jQuery Validate NO está cargado para #addForm');
+        } else {
+          $('#addForm').validate({
+            errorClass: 'text-red-600 text-xs mt-1',
+            errorElement: 'span',
+            highlight: e => $(e).addClass('border-red-500'),
+            unhighlight: e => $(e).removeClass('border-red-500'),
+            errorPlacement: (err, el) => err.insertAfter(el),
+            submitHandler: form => form.submit()
+          });
         }
     </script>
 </body>

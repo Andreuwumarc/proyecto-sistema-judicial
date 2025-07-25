@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Linq;
 using SistemaGestionJudicial.Models;
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace SistemaGestionJudicial.Controllers
 {
@@ -10,14 +13,24 @@ namespace SistemaGestionJudicial.Controllers
     {
         private readonly ProyectoContext _context;
 
+        /// <summary>
+        /// Constructor que recibe el contexto de la base de datos.
+        /// </summary>
+        /// <param name="context"></param>
         public JuecesController(ProyectoContext context)
         {
             _context = context;
         }
 
+        #region Métodos de PersonaController (Jueces)
         // -----------------------
         // Métodos de PersonaController (Jueces)
         // -----------------------
+
+        /// <summary>
+        /// Muestra la lista de jueces (Personas con rol de juez).
+        /// </summary>
+        /// <returns></returns>
         [Route("/Home/Jueces")]
         public IActionResult Jueces()
         {
@@ -25,63 +38,113 @@ namespace SistemaGestionJudicial.Controllers
             return View("~/Views/Home/Jueces.cshtml", jueces);
         }
 
-        /*
-        public async Task<IActionResult> Jueces()
+        /// <summary>
+        /// Comprueba si ya existe un juez con esta cédula (excluyendo opcionalmente un IdPersona).
+        /// </summary>
+        private bool CedulaDuplicada(string cedula, long? idAExcluir = null)
         {
-            var jueces = await _context.Personas
-                .Include(p => p.IdRolNavigation)
-                .Where(p => p.IdRol == 1)
-                .ToListAsync();
-            return View("~/Views/Home/Jueces.cshtml", jueces);
-        }*/
+            return _context.Personas
+                           .Any(p => p.IdRol == 1
+                                  && p.Cedula == cedula
+                                  && (!idAExcluir.HasValue || p.IdPersona != idAExcluir.Value));
+        }
 
+        /// <summary>
+        /// Valida que la cédula sea solo dígitos y hasta 10 caracteres.
+        /// </summary>
+        private bool CedulaValidaFormato(string cedula)
+            => !string.IsNullOrEmpty(cedula)
+               && Regex.IsMatch(cedula, @"^\d{1,10}$");
+
+        /// <summary>
+        /// Crea un nuevo juez (Persona con rol de juez).
+        /// </summary>
+        /// <param name="persona"></param>
+        /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> CreateJuez([Bind("Cedula,Nombres,Apellidos,FechaNacimiento,Genero,Direccion,Telefono,CorreoElectronico")] Persona persona)
+        public async Task<IActionResult> CreateJuez(
+    [Bind("Cedula,Nombres,Apellidos,FechaNacimiento,Genero,Direccion,Telefono,CorreoElectronico")]
+    Persona persona)
         {
             persona.IdRol = 1;
 
-            long maxId = await _context.Personas.MaxAsync(p => (long?)p.IdPersona) ?? 0;
-            persona.IdPersona = maxId + 1;
+            // 1) Validaciones
+            if (string.IsNullOrWhiteSpace(persona.Cedula))
+                ModelState.AddModelError("Cedula", "La cédula es obligatoria.");
+            else if (!CedulaValidaFormato(persona.Cedula))
+                ModelState.AddModelError("Cedula", "La cédula debe contener solo dígitos y hasta 10 caracteres.");
+            else if (CedulaDuplicada(persona.Cedula))
+                ModelState.AddModelError("Cedula", "Ya existe un juez con esa cédula.");
 
-            if (ModelState.IsValid)
+            // 2) Si hay errores, vuelve a la vista y abre el modal de Crear
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Add(persona);
-                    await _context.SaveChangesAsync();
-                }
-                catch (Exception)
-                {
-                    TempData["ErrorMensaje"] = "No se pudo crear el juez. Verifique los datos.";
-                }
+                ViewBag.OpenCreateModal = true;
+                var jueces = _context.Personas.Where(p => p.IdRol == 1).ToList();
+                return View("~/Views/Home/Jueces.cshtml", jueces);
             }
 
+            // 3) Guardar
+            long maxId = await _context.Personas.MaxAsync(p => (long?)p.IdPersona) ?? 0;
+            persona.IdPersona = maxId + 1;
+            _context.Add(persona);
+            await _context.SaveChangesAsync();
+
+            // 4) Redirigir al listado
             return RedirectToAction(nameof(Jueces));
         }
 
+        /// <summary>
+        /// Muestra el formulario de edición de un juez (Persona con rol de juez).
+        /// </summary>
+        /// <param name="IdPersona"></param>
+        /// <param name="persona"></param>
+        /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Edit(long IdPersona, [Bind("IdPersona,Cedula,Nombres,Apellidos,FechaNacimiento,Genero,Direccion,Telefono,CorreoElectronico")] Persona persona)
+        public async Task<IActionResult> Edit(long IdPersona,
+    [Bind("IdPersona,Cedula,Nombres,Apellidos,FechaNacimiento,Genero,Direccion,Telefono,CorreoElectronico")]
+    Persona persona)
         {
             if (IdPersona != persona.IdPersona)
-                return NotFound();
+                return BadRequest();
 
-            var personaDb = await _context.Personas.FindAsync(IdPersona);
-            if (personaDb == null || personaDb.IdRol != 1)
-                return NotFound();
+            // 1) Validaciones
+            if (string.IsNullOrWhiteSpace(persona.Cedula))
+                ModelState.AddModelError("Cedula", "La cédula es obligatoria.");
+            else if (!CedulaValidaFormato(persona.Cedula))
+                ModelState.AddModelError("Cedula", "La cédula debe contener solo dígitos y hasta 10 caracteres.");
+            else if (CedulaDuplicada(persona.Cedula, persona.IdPersona))
+                ModelState.AddModelError("Cedula", "Ya existe otro juez con esa cédula.");
 
-            personaDb.Cedula = persona.Cedula;
-            personaDb.Nombres = persona.Nombres;
-            personaDb.Apellidos = persona.Apellidos;
-            personaDb.FechaNacimiento = persona.FechaNacimiento;
-            personaDb.Genero = persona.Genero;
-            personaDb.Direccion = persona.Direccion;
-            personaDb.Telefono = persona.Telefono;
-            personaDb.CorreoElectronico = persona.CorreoElectronico;
+            // 2) Si hay errores, vuelve a la vista y abre el modal de Editar
+            if (!ModelState.IsValid)
+            {
+                ViewBag.OpenEditModal = true;
+                var jueces = _context.Personas.Where(p => p.IdRol == 1).ToList();
+                return View("~/Views/Home/Jueces.cshtml", jueces);
+            }
 
+            // 3) Guardar cambios
+            var db = await _context.Personas.FindAsync(IdPersona);
+            db.Cedula = persona.Cedula;
+            db.Nombres = persona.Nombres;
+            db.Apellidos = persona.Apellidos;
+            db.FechaNacimiento = persona.FechaNacimiento;
+            db.Genero = persona.Genero;
+            db.Direccion = persona.Direccion;
+            db.Telefono = persona.Telefono;
+            db.CorreoElectronico = persona.CorreoElectronico;
             await _context.SaveChangesAsync();
+
+            // 4) Redirigir al listado
             return RedirectToAction(nameof(Jueces));
         }
 
+        /// <summary>
+        /// Elimina un juez (Persona con rol de juez) por su IdPersona.
+        /// </summary>
+        /// <param name="IdPersona"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Delete(long IdPersona)
         {
@@ -107,16 +170,28 @@ namespace SistemaGestionJudicial.Controllers
             return RedirectToAction(nameof(Jueces));
         }
 
+#endregion
+
+        #region Métodos de RolController
         // -----------------------
         // Métodos de RolController
         // -----------------------
 
+        /// <summary>
+        /// Muestra la lista de roles disponibles en el sistema.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> IndexRoles()
         {
             var roles = await _context.Roles.ToListAsync();
             return View(roles);
         }
 
+        /// <summary>
+        /// Muestra los detalles de un rol específico por su IdRol.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> DetailsRol(long? id)
         {
             if (id == null)
@@ -129,6 +204,10 @@ namespace SistemaGestionJudicial.Controllers
             return View(rol);
         }
 
+        /// <summary>
+        /// Muestra el formulario para crear un nuevo rol.
+        /// </summary>
+        /// <returns></returns>
         public IActionResult CreateRol()
         {
             return View();
@@ -147,6 +226,11 @@ namespace SistemaGestionJudicial.Controllers
             return View(rol);
         }
 
+        /// <summary>
+        /// Muestra el formulario para editar un rol existente por su IdRol.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> EditRol(long? id)
         {
             if (id == null)
@@ -159,6 +243,12 @@ namespace SistemaGestionJudicial.Controllers
             return View(rol);
         }
 
+        /// <summary>
+        /// Actualiza un rol existente en la base de datos.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rol"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditRol(long id, [Bind("IdRol,Nombre")] Role rol)
@@ -185,6 +275,11 @@ namespace SistemaGestionJudicial.Controllers
             return View(rol);
         }
 
+        /// <summary>
+        /// Muestra el formulario de confirmación para eliminar un rol por su IdRol.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> DeleteRol(long? id)
         {
             if (id == null)
@@ -197,6 +292,11 @@ namespace SistemaGestionJudicial.Controllers
             return View(rol);
         }
 
+        /// <summary>
+        /// Elimina un rol de la base de datos por su IdRol.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost, ActionName("DeleteRol")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmedRol(long id)
@@ -210,10 +310,17 @@ namespace SistemaGestionJudicial.Controllers
             return RedirectToAction(nameof(IndexRoles));
         }
 
+        #endregion
+
+        #region Métodos de UsuarioController
         // -----------------------
         // Métodos de UsuarioController
         // -----------------------
 
+        /// <summary>
+        /// Muestra la lista de usuarios registrados en el sistema.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> IndexUsuarios()
         {
             var usuarios = await _context.Usuarios
@@ -222,6 +329,11 @@ namespace SistemaGestionJudicial.Controllers
             return View(usuarios);
         }
 
+        /// <summary>
+        /// Muestra los detalles de un usuario específico por su IdUsuario.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> DetailsUsuario(long? id)
         {
             if (id == null)
@@ -237,12 +349,21 @@ namespace SistemaGestionJudicial.Controllers
             return View(usuario);
         }
 
+        /// <summary>
+        /// Muestra el formulario para crear un nuevo usuario.
+        /// </summary>
+        /// <returns></returns>
         public IActionResult CreateUsuario()
         {
             ViewBag.Personas = _context.Personas.ToList();
             return View();
         }
 
+        /// <summary>
+        /// Crea un nuevo usuario en el sistema.
+        /// </summary>
+        /// <param name="usuario"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> CreateUsuario([Bind("Usuario,Contrasena,IdPersona")] Usuario usuario)
         {
@@ -256,6 +377,11 @@ namespace SistemaGestionJudicial.Controllers
             return View(usuario);
         }
 
+        /// <summary>
+        /// Muestra el formulario para editar un usuario existente por su IdUsuario.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> EditUsuario(long? id)
         {
             if (id == null)
@@ -269,6 +395,12 @@ namespace SistemaGestionJudicial.Controllers
             return View(usuario);
         }
 
+        /// <summary>
+        /// Actualiza un usuario existente en la base de datos.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="usuario"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> EditUsuario(long id, [Bind("IdUsuario,Usuario,Contrasena,IdPersona")] Usuario usuario)
         {
@@ -294,6 +426,11 @@ namespace SistemaGestionJudicial.Controllers
             return View(usuario);
         }
 
+        /// <summary>
+        /// Muestra el formulario de confirmación para eliminar un usuario por su IdUsuario.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IActionResult> DeleteUsuario(long? id)
         {
             if (id == null)
@@ -308,6 +445,11 @@ namespace SistemaGestionJudicial.Controllers
             return View(usuario);
         }
 
+        /// <summary>
+        /// Elimina un usuario de la base de datos por su IdUsuario.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost, ActionName("DeleteUsuario")]
         public async Task<IActionResult> DeleteConfirmedUsuario(long id)
         {
@@ -320,9 +462,16 @@ namespace SistemaGestionJudicial.Controllers
             return RedirectToAction(nameof(IndexUsuarios));
         }
 
+        /// <summary>
+        /// Verifica si una persona tiene un usuario asociado en el sistema.
+        /// </summary>
+        /// <param name="idPersona"></param>
+        /// <returns></returns>
         public bool PersonaTieneUsuario(long idPersona)
         {
             return _context.Usuarios.Any(u => u.IdPersona == idPersona);
         }
+
+        #endregion
     }
 }
