@@ -3,6 +3,8 @@
     ViewData["Title"] = "Gestión de Jueces";
 }
 
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -507,6 +509,18 @@
             submitHandler: form => form.submit()
           });
         }
+    </script>
+    <script>
+        const button = document.getElementById("userMenuButton");
+        const dropdown = document.getElementById("userDropdown");
+
+        document.addEventListener("click", (e) => {
+            if (button.contains(e.target)) {
+                dropdown.classList.toggle("hidden");
+            } else {
+                dropdown.classList.add("hidden");
+            }
+        });
     </script>
 </body>
 </html>

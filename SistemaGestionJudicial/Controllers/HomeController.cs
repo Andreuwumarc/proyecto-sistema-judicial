@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SistemaGestionJudicial.Models;
 
 namespace SistemaGestionJudicial.Controllers
@@ -7,11 +8,13 @@ namespace SistemaGestionJudicial.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ProyectoContext _context; // <<-- CORRECCIÓN CLAVE: Tipo correcto y readonly
 
-
-        public HomeController(ILogger<HomeController> logger)
+        // <<-- CORRECCIÓN CLAVE: Inyecta ProyectoContext aquí
+        public HomeController(ILogger<HomeController> logger, ProyectoContext context)
         {
             _logger = logger;
+            _context = context; // <<-- CORRECCIÓN CLAVE: Asigna el contexto inyectado
         }
 
 
@@ -38,9 +41,12 @@ namespace SistemaGestionJudicial.Controllers
             return View();
         }
 
+        // <<-- AQUÍ ES DONDE ESTABA EL PROBLEMA ORIGINAL DEL "NO EXISTE DELINCUENTE"
+        // Porque _context era null. Ahora, al inyectarlo, ya no será null.
+        // En HomeController.cs
         public IActionResult Delincuentes()
         {
-            return View();
+            return RedirectToAction("Index", "Delincuente"); // Redirige al DelincuenteController
         }
 
         public IActionResult Crimenes()
@@ -61,20 +67,26 @@ namespace SistemaGestionJudicial.Controllers
             return View();
         }
 
-        public IActionResult Fiscales()
+        /*public IActionResult Fiscales()
         {
-            return View();
-        }
+            
+            var fiscales = _context.Fiscales
+                .Include(f => f.IdPersonaFiscalNavigation) // Datos de la tabla 'Persona'
+                .Include(f => f.IdDenunciaNavigation) // Datos de la tabla 'Denuncia'
+                .Include(f => f.IdDenunciaNavigation.IdDelitoNavigation)
+                .ToList();
+            return View(fiscales);
+        }*/
 
         public IActionResult CrimeReports()
         {
             return View();
         }
 
-        public IActionResult CaseReports()
+        /*public IActionResult CaseReports()
         {
             return View();
-        }
+        }*/
 
         public IActionResult Privacy()
         {

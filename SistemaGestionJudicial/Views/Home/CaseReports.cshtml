@@ -1,7 +1,9 @@
-﻿
+﻿@model IEnumerable<SistemaGestionJudicial.Models.Denuncia>
+
 @{
     ViewData["Title"] = "CaseReports";
 }
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @section Styles {
     <link rel="stylesheet" href="~/css/casereports.css" />
@@ -10,59 +12,104 @@
 }
 
 <div class="flex">
+
     <!-- Main Content -->
     <div class="flex-1 p-6">
+        
         <!-- Header -->
-        <div class="bg-white p-4 rounded-lg mb-6 shadow-sm">
-            <h1 class="text-xl font-semibold">Case Reports</h1>
-            <p class="text-gray-600">Track and analyze case progress</p>
-        </div>
+        <header class="bg-white/85 backdrop-blur-md shadow-sm py-4 px-6 flex flex-col md:flex-row md:justify-between md:items-center sticky top-0 z-10 no-print space-y-4 md:space-y-0 mb-6">
+            <!-- Título y descripción -->
+            <div>
+                <h1 class="text-xl font-semibold text-gray-800">Case Reports</h1>
+                <p class="text-gray-600 text-sm">Track and analyze case progress</p>
+            </div>
 
-        <!-- Filter Controls -->
-        <div class="bg-white p-4 rounded-lg mb-6 shadow-sm">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                    <label class="block text-sm text-gray-500 mb-1">Status</label>
-                    <select class="w-full p-2 border rounded">
-                        <option>All Statuses</option>
-                        <option>Pending</option>
-                        <option>Active</option>
-                        <option>Closed</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm text-gray-500 mb-1">Judge</label>
-                    <select class="w-full p-2 border rounded">
-                        <option>All Judges</option>
-                        <option>Judge Smith</option>
-                        <option>Judge Johnson</option>
-                        <option>Judge Williams</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm text-gray-500 mb-1">Prosecutor</label>
-                    <select class="w-full p-2 border rounded">
-                        <option>All Prosecutors</option>
-                        <option>ADA Johnson</option>
-                        <option>ADA Smith</option>
-                        <option>ADA Davis</option>
-                    </select>
-                </div>
-                <div class="flex items-end">
-                    <button class="bg-blue-600 text-white px-4 py-2 rounded w-full">
-                        Apply Filters
-                    </button>
+            <!-- Usuario con menú desplegable -->
+            <div class="relative flex items-center space-x-2">
+                <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
+                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="text-sm font-medium">
+                        @(HttpContextAccessor.HttpContext.Session.GetString("PrimerNombre") ?? "Usuario")
+                    </span>
+                    <i class="fas fa-chevron-down text-xs ml-1"></i>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div id="userDropdown" class="hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-20">
+                    <a href="/Account/Logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
+                    </a>
                 </div>
             </div>
-        </div>
+        </header>
+
+
+        <!-- Filter Controls -->
+        <form method="get" asp-controller="CaseReports" asp-action="Index">
+            <div class="bg-white p-6 rounded-lg mb-6 shadow-sm">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div>
+                        <label class="block text-sm text-gray-500 mb-1">Fecha de Inicio</label>
+                        <input type="date" name="FechaDenuncia"
+                               class="w-full p-2 border rounded"
+                               value="@(ViewBag.Filtros?.FechaDenuncia?.ToString("yyyy-MM-dd") ?? "")" />
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-500 mb-1">Judge</label>
+                        <input list="judgeList" name="JudgeName" id="judgeNameInput"
+                               placeholder="Nombre del juez"
+                               class="w-full p-2 border rounded"
+                               value="@(ViewBag.Filtros?.JudgeName ?? "")" />
+                        <datalist id="judgeList"></datalist>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-500 mb-1">Prosecutor</label>
+                        <input list="prosecutorList" name="ProsecutorName" id="prosecutorNameInput"
+                               placeholder="Nombre del fiscal"
+                               class="w-full p-2 border rounded"
+                               value="@(ViewBag.Filtros?.ProsecutorName ?? "")" />
+                        <datalist id="prosecutorList"></datalist>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-500 mb-1">Denunciante</label>
+                        <input list="denuncianteList" name="DenuncianteName" id="denuncianteNameInput"
+                               placeholder="Nombre del denunciante"
+                               class="w-full p-2 border rounded"
+                               value="@(ViewBag.Filtros?.DenuncianteName ?? "")" />
+                        <datalist id="denuncianteList"></datalist>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="mt-6 flex flex-col md:flex-row gap-4">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded w-full md:w-auto">
+                        Apply Filters
+                    </button>
+                    <a href="/Home/CaseReports" class="bg-gray-400 text-white px-4 py-2 rounded w-full md:w-auto text-center">
+                        Clear Filters
+                    </a>
+                </div>
+            </div>
+        </form>
+
+
+        <!-- Alerta de error si no hay coincidencias -->
+        @if (ViewBag.FilterError != null)
+        {
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
+                <strong>Atención:</strong> @ViewBag.FilterError
+            </div>
+        }
 
         <!-- Key Metrics -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div class="bg-white p-4 rounded-lg shadow-sm">
                 <div class="flex justify-between">
                     <div>
                         <p class="text-gray-500">Total Cases</p>
-                        <h3 class="text-2xl font-bold">372</h3>
+                        <h3 class="text-2xl font-bold">@ViewBag.TotalCases</h3>
                     </div>
                     <i class="fas fa-folder text-blue-500 text-2xl"></i>
                 </div>
@@ -70,21 +117,13 @@
             <div class="bg-white p-4 rounded-lg shadow-sm">
                 <div class="flex justify-between">
                     <div>
-                        <p class="text-gray-500">Active Cases</p>
-                        <h3 class="text-2xl font-bold">158</h3>
+                        <p class="text-gray-500">Casos Recientes</p>
+                        <h3 class="text-2xl font-bold">@ViewBag.RecentCases</h3>
                     </div>
                     <i class="fas fa-gavel text-yellow-500 text-2xl"></i>
                 </div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow-sm">
-                <div class="flex justify-between">
-                    <div>
-                        <p class="text-gray-500">Conviction Rate</p>
-                        <h3 class="text-2xl font-bold">82%</h3>
-                    </div>
-                    <i class="fas fa-scale-balanced text-green-500 text-2xl"></i>
-                </div>
-            </div>
+            
         </div>
 
         <!-- Cases Table -->
@@ -94,68 +133,112 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="p-3 text-left text-sm font-medium text-gray-600">Case ID</th>
-                            <th class="p-3 text-left text-sm font-medium text-gray-600">Case Title</th>
-                            <th class="p-3 text-left text-sm font-medium text-gray-600">Offender</th>
-                            <th class="p-3 text-left text-sm font-medium text-gray-600">Crime</th>
-                            <th class="p-3 text-left text-sm font-medium text-gray-600">Judge</th>
-                            <th class="p-3 text-left text-sm font-medium text-gray-600">Prosecutor</th>
-                            <th class="p-3 text-left text-sm font-medium text-gray-600">Status</th>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Fecha</th>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Descripcion</th>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Lugar</th>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Denunciante</th>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Juez</th>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Fiscal</th>
+                            <th class="p-3 text-left text-sm font-medium text-gray-600">Delito</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
-                        <tr>
-                            <td class="p-3 text-sm">CR-2023-1245</td>
-                            <td class="p-3 text-sm">State vs. Johnson</td>
-                            <td class="p-3 text-sm">Johnson</td>
-                            <td class="p-3 text-sm">Fraud</td>
-                            <td class="p-3 text-sm">Judge Smith</td>
-                            <td class="p-3 text-sm">ADA Johnson</td>
-                            <td class="p-3">
-                                <span class="status-badge active">Active</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="p-3 text-sm">CR-2023-1244</td>
-                            <td class="p-3 text-sm">State vs. Anderson</td>
-                            <td class="p-3 text-sm">Anderson</td>
-                            <td class="p-3 text-sm">Fraud</td>
-                            <td class="p-3 text-sm">Judge Williams</td>
-                            <td class="p-3 text-sm">ADA Smith</td>
-                            <td class="p-3">
-                                <span class="status-badge closed">Closed</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="p-3 text-sm">CR-2023-1243</td>
-                            <td class="p-3 text-sm">State vs. Martinez</td>
-                            <td class="p-3 text-sm">Martinez</td>
-                            <td class="p-3 text-sm">Fraud</td>
-                            <td class="p-3 text-sm">Judge Johnson</td>
-                            <td class="p-3 text-sm">ADA Davis</td>
-                            <td class="p-3">
-                                <span class="status-badge pending">Pending</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="p-3 text-sm">CR-2023-1242</td>
-                            <td class="p-3 text-sm">State vs. Brown</td>
-                            <td class="p-3 text-sm">Brown</td>
-                            <td class="p-3 text-sm">Fraud</td>
-                            <td class="p-3 text-sm">Judge Smith</td>
-                            <td class="p-3 text-sm">ADA Johnson</td>
-                            <td class="p-3">
-                                <span class="status-badge active">Active</span>
-                            </td>
-                        </tr>
+                        @{
+                            var i = 0;
+                        }
+                        @foreach (var denuncia in Model)
+                        {
+                            var rowClass = i < 10 ? "" : "hidden more-cases";
+                            var juez = denuncia.Juicios?.FirstOrDefault()?.IdPersonaJuezNavigation;
+                            var fiscal = denuncia.Fiscales?.FirstOrDefault()?.IdPersonaFiscalNavigation;
+                            <tr class="@rowClass">
+                                <td class="p-3 text-sm">@denuncia.IdDenuncia</td>
+                                <td class="p-3 text-sm">@denuncia.FechaDenuncia</td>
+                                <td class="p-3 text-sm">@denuncia.Descripcion</td>
+                                <td class="p-3 text-sm">@denuncia.LugarHecho</td>
+                                <td class="p-3 text-sm">@($"{denuncia.IdPersonaDenunciaNavigation?.Nombres} {denuncia.IdPersonaDenunciaNavigation?.Apellidos}")</td>
+                                <td class="p-3 text-sm">@($"{juez?.Nombres} {juez?.Apellidos}")</td>
+                                <td class="p-3 text-sm">@($"{fiscal?.Nombres} {fiscal?.Apellidos}")</td>
+                                <td class="p-3 text-sm">@denuncia.IdDelitoNavigation?.Nombre</td>
+                                
+                            </tr>
+                            i++;
+                        }
                     </tbody>
+
+                    
                 </table>
             </div>
             <div class="p-4 text-center border-t">
-                <button class="text-blue-600 hover:underline">
+                <button id="showMoreBtn" class="text-blue-600 hover:underline">
                     Show More Cases <i class="fas fa-chevron-down ml-1"></i>
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById('showMoreBtn').addEventListener('click', function () {
+            document.querySelectorAll('.more-cases').forEach(row => row.classList.remove('hidden'));
+            this.style.display = 'none'; // Oculta el botón después de mostrar más
+        });
+
+
+
+        async function fetchSuggestions(url, inputId, listId) {
+            const input = document.getElementById(inputId);
+            const list = document.getElementById(listId);
+
+            input.addEventListener('input', async () => {
+                const term = input.value;
+                if (term.length < 2) {
+                    list.innerHTML = ''; // limpia sugerencias si term es muy corto
+                    return;
+                }
+
+                const response = await fetch(`${url}?term=${encodeURIComponent(term)}`);
+                if (!response.ok) return;
+
+                const suggestions = await response.json();
+
+                list.innerHTML = '';
+                suggestions.forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s;
+                    list.appendChild(option);
+                });
+            });
+        }
+
+        // Llamadas para cada input
+        fetchSuggestions('/CaseReports/GetJudgeSuggestions', 'judgeNameInput', 'judgeList');
+        fetchSuggestions('/CaseReports/GetProsecutorSuggestions', 'prosecutorNameInput', 'prosecutorList');
+        fetchSuggestions('/CaseReports/GetDenuncianteSuggestions', 'denuncianteNameInput', 'denuncianteList');
+
+
+
+        // Si la página fue recargada con el botón del navegador
+        if (performance.navigation.type === 1) {
+            // Elimina la query string y recarga limpio
+            if (window.location.search.length) {
+                window.location.href = window.location.pathname;
+            }
+        }
+
+    </script>
+    <script>
+        const button = document.getElementById("userMenuButton");
+        const dropdown = document.getElementById("userDropdown");
+
+        document.addEventListener("click", (e) => {
+            if (button.contains(e.target)) {
+                dropdown.classList.toggle("hidden");
+            } else {
+                dropdown.classList.add("hidden");
+            }
+        });
+    </script>
+}
 
