@@ -1,4 +1,5 @@
-﻿// Ruta: SistemaGestionJudicial/Controllers/DelincuentesController.cs
+// Ruta: SistemaGestionJudicial/Controllers/DelincuentesController.cs
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaGestionJudicial.Models; // Asegúrate de que este namespace sea correcto
@@ -14,6 +15,7 @@ namespace SistemaGestionJudicial.Controllers
         private readonly ProyectoContext _context;
 
         public DelincuenteController(ProyectoContext context)
+
         {
             _context = context;
         }
@@ -145,12 +147,14 @@ namespace SistemaGestionJudicial.Controllers
             }
 
             // Aseguramos que el rol no sea modificado accidentalmente desde el cliente
+
             persona.IdRol = 3;
 
             if (ModelState.IsValid)
             {
                 try
                 {
+
                     // Es bueno cargar la entidad existente para asegurar que el IdRol y otras propiedades no modificables
                     // se mantengan, y luego actualizar solo las propiedades necesarias.
                     // Para un proyecto universitario, 'Update(persona)' directamente es aceptable si 'persona'
@@ -233,6 +237,7 @@ namespace SistemaGestionJudicial.Controllers
         private bool PersonaExists(long id) // Cambiado a long
         {
             return _context.Personas.Any(e => e.IdPersona == id);
+
         }
     }
 }

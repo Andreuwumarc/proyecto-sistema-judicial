@@ -1,4 +1,5 @@
-﻿@model List<SistemaGestionJudicial.Models.Persona>
+
+@model List<SistemaGestionJudicial.Models.Persona>
 
     @{
         ViewData["Title"] = "Delincuentes";
@@ -84,8 +85,10 @@
                         </div>
                         <span class="text-sm font-medium">
                         </span>
+
                     </div>
                 </div>
+
             </header>
 
             <div class="p-6">
@@ -166,6 +169,7 @@
                             </tbody>
                         </table>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -360,9 +364,9 @@
                     Eliminar
                 </button>
             </div>
+
         </div>
     </div>
-
     <script>
         const antiForgeryToken = '@requestToken.ToString().Replace("\"", "'")';
         const antiForgeryHeaderName = antiForgeryToken.split('=')[0].replace('<input name=', '').replace('type=\'hidden\' value=\'', '').replace('\' />', '').trim();
@@ -462,6 +466,7 @@
 
                 const result = await response.json();
 
+
                 if (result.success) {
                     alert(result.message);
                     closeModal('add-offender-modal');
@@ -502,7 +507,20 @@
                 console.error('Error al abrir el modal de edición:', error);
                 alert('No se pudo cargar los datos del delincuente para editar.');
             }
+
         }
+    }
+
+    document.getElementById('editDelincuenteForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        const data = {};
+        formData.forEach((value, key) => data[key] = value);
+        data[antiForgeryHeaderName] = antiForgeryTokenValue;
+
+        const id = document.getElementById('editIdPersona').value;
+
 
         document.getElementById('editDelincuenteForm').addEventListener('submit', async function (event) {
             event.preventDefault();
@@ -548,7 +566,32 @@
             delincuenteToDeleteId = id;
             document.getElementById('delete-id-display').innerText = id;
             openModal('delete-confirm-modal');
+
         }
+    });
+
+    // --- FUNCIONALIDAD PARA ELIMINAR DELINCUENTE ---
+    let delincuenteToDeleteId = null; // Variable para almacenar el ID del delincuente a eliminar
+
+    function confirmDelete(id) {
+        delincuenteToDeleteId = id;
+        document.getElementById('delete-id-display').innerText = id;
+        openModal('delete-confirm-modal');
+    }
+
+    document.getElementById('confirmDeleteButton').addEventListener('click', async function () {
+        if (delincuenteToDeleteId === null) return;
+
+        try {
+            const response = await fetch(`/Delincuentes/Delete/${delincuenteToDeleteId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [antiForgeryHeaderName]: antiForgeryTokenValue
+                },
+                body: JSON.stringify({ id: delincuenteToDeleteId }) // Enviar el ID en el cuerpo
+            });
+
 
         document.getElementById('confirmDeleteButton').addEventListener('click', async function () {
             if (delincuenteToDeleteId === null) return;
@@ -737,3 +780,4 @@
             }
         }
     </script>
+

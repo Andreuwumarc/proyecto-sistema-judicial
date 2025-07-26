@@ -1,20 +1,23 @@
+// Ruta: SistemaGestionJudicial/Controllers/HomeController.cs
+
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaGestionJudicial.Models;
+
 
 namespace SistemaGestionJudicial.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ProyectoContext _context; // <<-- CORRECCIÓN CLAVE: Tipo correcto y readonly
+        private readonly ProyectoContext _context; // <<-- CORRECCIÃ“N CLAVE: Tipo correcto y readonly
 
-        // <<-- CORRECCIÓN CLAVE: Inyecta ProyectoContext aquí
+        // <<-- CORRECCIÃ“N CLAVE: Inyecta ProyectoContext aquÃ­
         public HomeController(ILogger<HomeController> logger, ProyectoContext context)
         {
             _logger = logger;
-            _context = context; // <<-- CORRECCIÓN CLAVE: Asigna el contexto inyectado
+            _context = context; // <<-- CORRECCIÃ“N CLAVE: Asigna el contexto inyectado
         }
 
 
@@ -41,12 +44,13 @@ namespace SistemaGestionJudicial.Controllers
             return View();
         }
 
-        // <<-- AQUÍ ES DONDE ESTABA EL PROBLEMA ORIGINAL DEL "NO EXISTE DELINCUENTE"
-        // Porque _context era null. Ahora, al inyectarlo, ya no será null.
+        // <<-- AQUÃ ES DONDE ESTABA EL PROBLEMA ORIGINAL DEL "NO EXISTE DELINCUENTE"
+        // Porque _context era null. Ahora, al inyectarlo, ya no serÃ¡ null.
         // En HomeController.cs
         public IActionResult Delincuentes()
         {
             return RedirectToAction("Index", "Delincuente"); // Redirige al DelincuenteController
+
         }
 
         public IActionResult Crimenes()
