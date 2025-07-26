@@ -1,0 +1,210 @@
+﻿@model IEnumerable<SistemaGestionJudicial.Models.Role>
+
+    @{
+        ViewData["Title"] = "Index";
+    }
+
+    @section Styles {
+        <link rel="stylesheet" href="~/css/roles.css" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    }
+
+    <div class="flex h-screen overflow-hidden">
+        <div class="flex-1 overflow-auto">
+            <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print">
+                <h2 class="text-xl font-semibold text-gray-800" id="view-title">Gestión de Roles</h2>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Buscar..."
+                               class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="text-sm font-medium">Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Listado de Roles</h2>
+                    <button onclick="openModal('add-role-modal')"
+                        <a asp-action="Create" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Agregar Rol
+                        </a>
+                </button>
+                </div>
+
+                <div class="card bg-white rounded-lg p-6">
+                    <div class="overflow-x-auto">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    @foreach (var role in Model)
+                                    {
+                                        <tr>
+                                            <td>@role.Nombre</td>
+                                            <td>
+                                                <button class="text-blue-600 hover:text-blue-800 mr-2" onclick="openEditModal('@role.IdRol', '@role.Nombre')">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-600 hover:text-red-800" onclick="confirmDelete(@role.IdRol)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Role Modal -->
+    <div id="add-role-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-bold mb-4 text-center text-primary">Agregar Nuevo Rol</h3>
+            <form id="addRoleForm">
+                <div class="mb-4">
+                    <label for="roleName" class="block text-sm font-medium text-gray-700">Nombre Rol</label>
+                    <input type="text" id="roleName" class="form-input" required>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2" onclick="closeModal('add-role-modal')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Guardar Rol</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Role Modal -->
+    <div id="edit-role-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-bold mb-4 text-center text-primary">Editar Rol</h3>
+            <form id="editRoleForm">
+                <input type="hidden" id="editRoleId" />  <!-- Campo oculto para almacenar el ID del rol -->
+                <div class="mb-4">
+                    <label for="editRoleName" class="block text-sm font-medium text-gray-700">Nombre Rol</label>
+                    <input type="text" id="editRoleName" class="form-input" required>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2" onclick="closeModal('edit-role-modal')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Actualizar Rol</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Role Modal -->
+    <div id="delete-confirm-modal" class="modal hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 w-96">
+            <h3 class="text-lg font-bold mb-4 text-center text-primary">¿Estás seguro de eliminar este rol?</h3>
+            <input type="hidden" id="roleToDelete" />  <!-- Campo oculto para almacenar el ID del rol a eliminar -->
+            <div class="flex justify-end">
+                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2" onclick="closeModal('delete-confirm-modal')">
+                    Cancelar
+                </button>
+                <button type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg" onclick="deleteRole()">
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+    @* CREAR *@
+    <script>
+        document.getElementById('addRoleForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const nombre = document.getElementById('roleName').value;
+            const response = await fetch('/Role/Create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ Nombre: nombre })
+            });
+            const result = await response.json();
+            if (result.success) {
+                closeModal('add-role-modal');
+                location.reload(); // Recarga la página para ver el nuevo rol
+            } else {
+                alert('Error: ' + result.errors.join(', '));
+            }
+        });
+
+        //EDIT
+
+        function openEditModal(id, name) {
+            document.getElementById('editRoleId').value = id;   // Establecer el ID en el campo del modal
+            document.getElementById('editRoleName').value = name;   // Establecer el nombre en el campo del modal
+            openModal('edit-role-modal');   // Abrir el modal de edición
+        }
+
+        //DELETE
+            function confirmDelete(id) {
+            // Asignamos el ID del rol a un campo oculto para poder eliminarlo luego
+            document.getElementById('roleToDelete').value = id;
+            openModal('delete-confirm-modal');  // Abrir el modal de confirmación
+        }
+
+        async function deleteRole() {
+            const id = document.getElementById('roleToDelete').value;  // Obtener el ID del rol
+            const response = await fetch(`/Role/Delete/${id}`, {
+            method: 'POST'
+            });
+            const result = await response.json();
+            if (result.success) {
+                closeModal('delete-confirm-modal');  // Cerrar el modal de confirmación
+                location.reload();  // Recargar la página para reflejar la eliminación
+            } else {
+                alert('Error al eliminar el rol');
+            }
+        }
+
+            // Función para manejar el envío del formulario de edición
+        document.getElementById('editRoleForm').addEventListener('submit', async function (e) {
+            e.preventDefault();  // Prevenir la recarga de la página
+            const id = document.getElementById('editRoleId').value;
+            const name = document.getElementById('editRoleName').value;
+            const response = await fetch(`/Role/Edit/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ IdRol: id, Nombre: name })
+            });
+            const result = await response.json();
+            if (result.success) {
+                closeModal('edit-role-modal');  // Cerrar el modal de edición
+                location.reload();  // Recargar la página para reflejar los cambios
+            } else {
+                alert('Error al actualizar el rol');
+            }
+        });
+
+        // Función para abrir cualquier modal
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        // Función para cerrar cualquier modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+    </script>

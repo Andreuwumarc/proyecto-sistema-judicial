@@ -2,34 +2,39 @@
 
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; // Necesario para usar DbContext y métodos como .Where(), .ToList()
-using SistemaGestionJudicial.Models; // Necesario para ErrorViewModel, Persona, etc.
-using System.Linq; // Necesario para .Where()
+using Microsoft.EntityFrameworkCore;
+using SistemaGestionJudicial.Models;
+
 
 namespace SistemaGestionJudicial.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ProyectoContext _context; // <<-- CORRECCIÓN CLAVE: Tipo correcto y readonly
+        private readonly ProyectoContext _context; // <<-- CORRECCIÃ“N CLAVE: Tipo correcto y readonly
 
-        // <<-- CORRECCIÓN CLAVE: Inyecta ProyectoContext aquí
+        // <<-- CORRECCIÃ“N CLAVE: Inyecta ProyectoContext aquÃ­
         public HomeController(ILogger<HomeController> logger, ProyectoContext context)
         {
             _logger = logger;
-            _context = context; // <<-- CORRECCIÓN CLAVE: Asigna el contexto inyectado
+            _context = context; // <<-- CORRECCIÃ“N CLAVE: Asigna el contexto inyectado
         }
 
-        public IActionResult Login()
+
+        public IActionResult Home()
         {
             return View();
         }
 
+
+        public IActionResult CrearDenuncia()
+        {
+            return View();
+        }
+
+
+        
         public IActionResult RecuperacionCuenta()
-        {
-            return View();
-        }
-        public IActionResult Token()
         {
             return View();
         }
@@ -39,23 +44,23 @@ namespace SistemaGestionJudicial.Controllers
             return View();
         }
 
-        // <<-- AQUÍ ES DONDE ESTABA EL PROBLEMA ORIGINAL DEL "NO EXISTE DELINCUENTE"
-        // Porque _context era null. Ahora, al inyectarlo, ya no será null.
+        // <<-- AQUÃ ES DONDE ESTABA EL PROBLEMA ORIGINAL DEL "NO EXISTE DELINCUENTE"
+        // Porque _context era null. Ahora, al inyectarlo, ya no serÃ¡ null.
+        // En HomeController.cs
         public IActionResult Delincuentes()
         {
-            // Obtener la lista de personas con id_rol = 3 (asumiendo que es el rol de delincuente)
-            // .ToList() ejecuta la consulta y trae los datos a la memoria.
-            var delincuentes = _context.Personas.Where(p => p.IdRol == 3).ToList();
+            return RedirectToAction("Index", "Delincuente"); // Redirige al DelincuenteController
 
-            // Pasa la lista de delincuentes a la vista
-            return View(delincuentes);
         }
 
         public IActionResult Crimenes()
         {
             return View();
         }
-
+        public IActionResult Polices()
+        {
+            return View();
+        }
         public IActionResult Casos()
         {
             return View();
@@ -66,20 +71,26 @@ namespace SistemaGestionJudicial.Controllers
             return View();
         }
 
-        public IActionResult Fiscales()
+        /*public IActionResult Fiscales()
         {
-            return View();
-        }
+            
+            var fiscales = _context.Fiscales
+                .Include(f => f.IdPersonaFiscalNavigation) // Datos de la tabla 'Persona'
+                .Include(f => f.IdDenunciaNavigation) // Datos de la tabla 'Denuncia'
+                .Include(f => f.IdDenunciaNavigation.IdDelitoNavigation)
+                .ToList();
+            return View(fiscales);
+        }*/
 
         public IActionResult CrimeReports()
         {
             return View();
         }
 
-        public IActionResult CaseReports()
+        /*public IActionResult CaseReports()
         {
             return View();
-        }
+        }*/
 
         public IActionResult Privacy()
         {

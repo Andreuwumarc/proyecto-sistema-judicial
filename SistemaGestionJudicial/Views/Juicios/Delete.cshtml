@@ -1,0 +1,96 @@
+﻿@model SistemaGestionJudicial.Models.Juicio
+
+@{
+    ViewData["Title"] = "Eliminar Juicio";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/juicios.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+
+<div class="fondo-juicios min-h-screen">
+    <!-- Header fijo -->
+    <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-10">
+        <h2 class="text-xl font-semibold text-red-700">¿Estás seguro que deseas eliminar este juicio?</h2>
+        <a asp-action="Index" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
+            <i class="fas fa-arrow-left mr-2"></i> Volver
+        </a>
+    </header>
+
+    <!-- Contenido -->
+    <div class="p-8">
+        <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-xl mx-auto">
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                    <dt class="text-sm font-medium text-gray-600">Fecha de Inicio</dt>
+                    <dd class="text-gray-900">@Model.FechaInicio</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-600">Fecha de Fin</dt>
+                    <dd class="text-gray-900">@Model.FechaFin</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-600">Estado</dt>
+                    <dd class="text-gray-900">@Model.Estado</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-600">Denuncia</dt>
+                    <dd class="text-gray-900">
+                        Denuncia #@Model.IdDenunciaNavigation?.IdDenuncia -
+                        @Model.IdDenunciaNavigation?.IdPersonaDenunciaNavigation?.Nombres
+                        @Model.IdDenunciaNavigation?.IdPersonaDenunciaNavigation?.Apellidos
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-600">Juez</dt>
+                    <dd class="text-gray-900">@Model.IdPersonaJuezNavigation?.Nombres @Model.IdPersonaJuezNavigation?.Apellidos</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-600">Fiscal</dt>
+                    <dd class="text-gray-900">
+                        @Model.IdDenunciaNavigation?.Fiscales.FirstOrDefault()?.IdPersonaFiscalNavigation?.Nombres
+                        @Model.IdDenunciaNavigation?.Fiscales.FirstOrDefault()?.IdPersonaFiscalNavigation?.Apellidos
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-600">Delito</dt>
+                    <dd class="text-gray-900">
+                        @Model.IdDenunciaNavigation?.IdDelitoNavigation?.Nombre
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-600">Denunciante</dt>
+                    <dd class="text-gray-900">
+                        @Model.IdDenunciaNavigation?.IdPersonaDenunciaNavigation?.Nombres
+                        @Model.IdDenunciaNavigation?.IdPersonaDenunciaNavigation?.Apellidos
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-600">Acusado</dt>
+                    <dd class="text-gray-900">
+                        @Model.JuiciosAcusados.FirstOrDefault()?.IdPersonaNavigation?.Nombres
+                        @Model.JuiciosAcusados.FirstOrDefault()?.IdPersonaNavigation?.Apellidos
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-600">Sentencia</dt>
+                    <dd class="text-gray-900">
+                        @Model.Sentencia.FirstOrDefault()?.TipoSentencia
+                    </dd>
+                </div>
+            </dl>
+
+            <form asp-action="Delete" class="mt-6 flex justify-end items-center space-x-4">
+                <input type="hidden" asp-for="IdJuicio" />
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
+                    <i class="fas fa-trash mr-2"></i> Eliminar
+                </button>
+                <a asp-action="Index" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+                    Cancelar
+                </a>
+            </form>
+        </div>
+    </div>
+</div>

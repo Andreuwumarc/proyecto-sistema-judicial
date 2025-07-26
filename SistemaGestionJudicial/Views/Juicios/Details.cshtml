@@ -1,0 +1,111 @@
+﻿@model SistemaGestionJudicial.Models.Juicio
+
+@{
+    ViewData["Title"] = "Detalles del Juicio";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/juicios.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+
+<div class="fondo-juicios min-h-screen">
+    <!-- Header fijo con altura moderada -->
+    <header class="bg-white shadow-sm py-4 px-6 flex flex-col md:flex-row justify-between md:items-center gap-4 sticky top-0 z-10 min-h-[80px]">
+        <h2 class="text-xl font-semibold text-gray-800">Detalles del Juicio</h2>
+        <div class="flex gap-3">
+            <a asp-action="Edit" asp-route-id="@Model?.IdJuicio" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+                <i class="fas fa-edit mr-1"></i> Editar
+            </a>
+            <a asp-action="Index" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
+                <i class="fas fa-arrow-left mr-1"></i> Volver
+            </a>
+        </div>
+    </header>
+
+
+
+    <!-- Contenido -->
+    <div class="p-8">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Fecha de Inicio</dt>
+                    <dd class="mt-1 text-lg text-gray-800">@Model.FechaInicio?.ToString("dd/MM/yyyy")</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Fecha de Fin</dt>
+                    <dd class="mt-1 text-lg text-gray-800">@Model.FechaFin?.ToString("dd/MM/yyyy")</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Estado</dt>
+                    <dd class="mt-1 text-lg text-gray-800">@Model.Estado</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Denuncia Asociada</dt>
+                    <dd class="mt-1 text-lg text-gray-800">
+                        Denuncia #@Model.IdDenunciaNavigation?.IdDenuncia -
+                        @(Model.IdDenunciaNavigation?.IdPersonaDenunciaNavigation?.Nombres + " " + Model.IdDenunciaNavigation?.IdPersonaDenunciaNavigation?.Apellidos)
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Juez Asignado</dt>
+                    <dd class="mt-1 text-lg text-gray-800">
+                        @(Model.IdPersonaJuezNavigation?.Nombres + " " + Model.IdPersonaJuezNavigation?.Apellidos)
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Delito</dt>
+                    <dd class="mt-1 text-lg text-gray-800">
+                        @Model.IdDenunciaNavigation?.IdDelitoNavigation?.Nombre
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Denunciante</dt>
+                    <dd class="mt-1 text-lg text-gray-800">
+                        @(Model.IdDenunciaNavigation?.IdPersonaDenunciaNavigation?.Nombres + " " + Model.IdDenunciaNavigation?.IdPersonaDenunciaNavigation?.Apellidos)
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Fiscal Asignado</dt>
+                    <dd class="mt-1 text-lg text-gray-800">
+                        @Model.IdDenunciaNavigation?.Fiscales.FirstOrDefault()?.IdPersonaFiscalNavigation?.Nombres
+                        @Model.IdDenunciaNavigation?.Fiscales.FirstOrDefault()?.IdPersonaFiscalNavigation?.Apellidos
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Acusado</dt>
+                    <dd class="mt-1 text-lg text-gray-800">
+                        @Model.JuiciosAcusados.FirstOrDefault()?.IdPersonaNavigation?.Nombres
+                        @Model.JuiciosAcusados.FirstOrDefault()?.IdPersonaNavigation?.Apellidos
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Sentencia</dt>
+                    @{
+                        var sentencia = Model.Sentencia.FirstOrDefault();
+                    }
+                    <dd class="mt-1 text-lg text-gray-800">
+                        @if (sentencia != null)
+                        {
+                            <div>Tipo: @sentencia.TipoSentencia</div>
+                            <div>Pena: @sentencia.Pena</div>
+                            <div>Fecha: @(sentencia.FechaSentencia?.ToString("dd/MM/yyyy") ?? "Sin fecha")</div>
+                        }
+                        else
+                        {
+                            <span>No hay sentencia registrada</span>
+                        }
+                    </dd>
+                </div>
+                <div class="md:col-span-2">
+                    <dt class="text-sm font-medium text-gray-500">Observaciones</dt>
+                    <dd class="mt-1 text-lg text-gray-800">
+                        @sentencia?.Observaciones
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+</div>

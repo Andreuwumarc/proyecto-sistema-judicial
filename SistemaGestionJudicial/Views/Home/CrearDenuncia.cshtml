@@ -1,0 +1,245 @@
+﻿@{
+    ViewData["Title"] = "Crear Denuncia";
+}
+
+
+@model SistemaGestionJudicial.Models.CrearDenunciaViewModel
+
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/CrearDenuncia.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="body-background">
+    <!-- ✅ Aquí envuelves TODO -->
+    <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center no-print fixed top-0 z-50"
+            style="left: 16rem; width: calc(100% - 16rem);">
+        <h2 class="text-xl font-semibold text-gray-800" id="view-title">Ingresar denuncia</h2>
+
+        <div class="relative flex items-center space-x-4">
+            <div class="flex items-center space-x-2 cursor-pointer" id="userMenuButton" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="text-sm font-medium">
+                    @(HttpContextAccessor.HttpContext.Session.GetString("PrimerNombre") ?? "Usuario")
+                </span>
+                <i class="fas fa-chevron-down ml-1 text-gray-600"></i>
+            </div>
+
+            <!-- Menú desplegable -->
+            <div id="userMenu" class="hidden absolute right-0 mt-10 w-40 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+                <a href="@Url.Action("Logout", "Account")"
+                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Cerrar sesión
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex justify-center p-6 min-h-screen mt-[90px]">
+		@*<div class="flex justify-center p-6 bg-gray-50 min-h-screen mt-[90px]">*@
+
+        <form asp-controller="IngresarDenuncia" asp-action="EnviarDenuncia" method="post" class="bg-white rounded-lg shadow p-6 w-[80%] max-w-4xl space-y-8">
+
+            <!-- Datos del Denunciante -->
+            <section>
+                <h2 class="text-xl font-semibold text-blue-800 border-b border-blue-300 pb-2 mb-4">Datos del Denunciante</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Cédula</label>
+                        <input type="text" name="DatosPersona.Cedula" value="@Model.DatosPersona.Cedula" readonly
+                               class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombres</label>
+                        <input type="text" name="DatosPersona.Nombres" value="@Model.DatosPersona.Nombres" readonly
+                               class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Apellidos</label>
+                        <input type="text" name="DatosPersona.Apellidos" value="@Model.DatosPersona.Apellidos" readonly
+                               class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento</label>
+                        <input type="text" name="DatosPersona.FechaNacimiento" value="@Model.DatosPersona.FechaNacimiento" readonly
+                               class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Género</label>
+                        <input type="text" name="DatosPersona.Genero" value="@(Model.DatosPersona.Genero == "M" ? "Masculino" : Model.DatosPersona.Genero == "F" ? "Femenino" : "otro")" readonly
+                               class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                        <input type="text" name="DatosPersona.Direccion" value="@Model.DatosPersona.Direccion" readonly
+                               class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                        <input type="tel" name="DatosPersona.Telefono" value="@Model.DatosPersona.Telefono" readonly
+                               class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
+                        <input type="email" name="DatosPersona.CorreoElectronico" value="@Model.DatosPersona.CorreoElectronico" readonly
+                               class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 cursor-not-allowed" />
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detalles de la Denuncia -->
+            <section>
+                <h2 class="text-xl font-semibold text-blue-800 border-b border-blue-300 pb-2 mb-4">Detalles de la Denuncia</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Denuncia</label>
+                        <input asp-for="NuevaDenuncia.FechaDenuncia"
+                               type="date"
+                               class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               value="@(Model.NuevaDenuncia.FechaDenuncia == default ? DateTime.Today.ToString("yyyy-MM-dd") : Model.NuevaDenuncia.FechaDenuncia.ToString("yyyy-MM-dd"))" />
+                        <span asp-validation-for="NuevaDenuncia.FechaDenuncia" class="text-red-500 text-sm"></span>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Lugar del Hecho</label>
+                        <input asp-for="NuevaDenuncia.LugarHecho" type="text" id="LugarHecho"
+                               class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <span asp-validation-for="NuevaDenuncia.LugarHecho" class="text-red-500 text-sm"></span>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Descripción del Hecho</label>
+                        <textarea asp-for="NuevaDenuncia.Descripcion" rows="4" id="Descripcion" required
+                                  class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        <span asp-validation-for="NuevaDenuncia.Descripcion" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Delito Cometido</label>
+                        <select asp-for="NuevaDenuncia.IdDelito" required
+                                class="w-full border border-gray-300 rounded px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Seleccione un delito</option>
+                            @foreach (var delito in Model.TiposDelito)
+                            {
+                                <option value="@delito.IdDelito">@delito.Nombre</option>
+                            }
+                        </select>
+                        <span asp-validation-for="NuevaDenuncia.IdDelito" class="text-red-500 text-sm"></span>
+                    </div>
+                </div>
+            </section>
+
+            <div class="text-right">
+                <button type="submit"
+                        class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-2 rounded shadow">
+                    Enviar Denuncia
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div id="modalExito" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg p-6 shadow-lg text-center">
+            <h2 class="text-xl font-bold text-green-600 mb-4">¡Éxito!</h2>
+            <p>@TempData["Success"]</p>
+            <button onclick="cerrarModal()" class="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                Aceptar
+            </button>
+        </div>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div id="modalError" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg p-6 shadow-lg text-center">
+            <h2 class="text-xl font-bold text-red-600 mb-4">¡Error!</h2>
+            <p>@TempData["Error"]</p>
+            <button onclick="cerrarModal()" class="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                Cerrar
+            </button>
+        </div>
+    </div>
+}
+
+<script>
+    function cerrarModal() {
+        const modales = document.querySelectorAll("#modalExito, #modalError");
+        modales.forEach(m => m.remove());
+    }
+
+    // Validación extra de caracteres permitidos para LugarHecho y Descripcion
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const lugar = document.getElementById('LugarHecho').value.trim();
+        const descripcion = document.getElementById('Descripcion').value.trim();
+
+        // Regex: letras, números, espacios, comas, puntos, guiones y acentos
+        const regex = /^[a-zA-Z0-9\s,.áéíóúÁÉÍÓÚñÑüÜ\-]+$/;
+
+        let errorMsgLugar = document.getElementById('errorLugarHechoExtra');
+        let errorMsgDescripcion = document.getElementById('errorDescripcionExtra');
+
+        // Crear spans si no existen (para mostrar error adicional)
+        if(!errorMsgLugar){
+            errorMsgLugar = document.createElement('span');
+            errorMsgLugar.id = 'errorLugarHechoExtra';
+            errorMsgLugar.className = 'text-red-500 text-sm block mt-1';
+            errorMsgLugar.textContent = 'Sólo se permiten letras, números, espacios, comas, puntos, guiones y acentos.';
+            document.getElementById('LugarHecho').after(errorMsgLugar);
+        }
+        if(!errorMsgDescripcion){
+            errorMsgDescripcion = document.createElement('span');
+            errorMsgDescripcion.id = 'errorDescripcionExtra';
+            errorMsgDescripcion.className = 'text-red-500 text-sm block mt-1';
+            errorMsgDescripcion.textContent = 'Sólo se permiten letras, números, espacios, comas, puntos, guiones y acentos.';
+            document.getElementById('Descripcion').after(errorMsgDescripcion);
+        }
+
+        // Ocultar ambos mensajes inicialmente
+        errorMsgLugar.style.display = 'none';
+        errorMsgDescripcion.style.display = 'none';
+
+        let valid = true;
+
+        if(lugar !== '' && !regex.test(lugar)) {
+            errorMsgLugar.style.display = 'block';
+            valid = false;
+        }
+
+        if(descripcion !== '' && !regex.test(descripcion)) {
+            errorMsgDescripcion.style.display = 'block';
+            valid = false;
+        }
+
+        if(!valid) {
+            e.preventDefault();
+        }
+    });
+</script>
+<script>
+    // Toggle menú usuario
+    const userMenuButton = document.getElementById('userMenuButton');
+    const userMenu = document.getElementById('userMenu');
+
+    userMenuButton.addEventListener('click', () => {
+        userMenu.classList.toggle('hidden');
+        const expanded = userMenuButton.getAttribute('aria-expanded') === 'true';
+        userMenuButton.setAttribute('aria-expanded', !expanded);
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+            userMenu.classList.add('hidden');
+            userMenuButton.setAttribute('aria-expanded', 'false');
+        }
+    });
+</script>

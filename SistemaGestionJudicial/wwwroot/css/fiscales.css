@@ -8,7 +8,10 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f3f4f6;
+    background-image: url(/images/FiscalBG.jpg);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
 }
 
 .sidebar {
@@ -32,23 +35,24 @@ body {
 .data-table {
     width: 100%;
     border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.6) !important;
 }
 
     .data-table th,
     .data-table td {
         padding: 12px 15px;
         text-align: left;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid rgba(229, 231, 235, 0.7) !important;
     }
 
     .data-table th {
-        background-color: var(--primary);
+        background-color: rgba(30, 64, 175, 0.9) !important;
         color: white;
         font-weight: 600;
     }
 
     .data-table tr:hover {
-        background-color: #f8fafc;
+        background-color: rgba(248, 250, 252, 0.7) !important;
     }
 
 .form-input {

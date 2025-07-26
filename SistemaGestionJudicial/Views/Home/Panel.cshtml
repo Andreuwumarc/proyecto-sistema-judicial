@@ -1,0 +1,154 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@section Styles {
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/DashStyles.css" />
+}
+
+<header class="bg-white/85 backdrop-blur-md shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-10 no-print">
+    <h2 class="text-xl font-semibold text-gray-800">Dashboard</h2>
+
+    <div class="relative">
+        <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
+            <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                <i class="fas fa-user"></i>
+            </div>
+            <span class="text-sm font-medium">
+                @(HttpContextAccessor.HttpContext.Session.GetString("PrimerNombre") ?? "Usuario")
+            </span>
+            <i class="fas fa-chevron-down text-xs ml-1"></i>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-20">
+            <a href="/Account/Logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
+            </a>
+        </div>
+    </div>
+</header>
+
+
+<section class="p-4 flex-1 min-h-[calc(100vh-4rem)] overflow-auto">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div class="card bg-white/70 backdrop-blur-md rounded-lg p-6 shadow-lg">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-gray-500 text-sm">Total Offenders</p>
+                    <h3 class="text-2xl font-bold mt-1">@Model.TotalOffenders</h3>
+                </div>
+                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+            </div>
+        </div>
+        <div class="card bg-white/70 backdrop-blur-md rounded-lg p-6 shadow-lg">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-gray-500 text-sm">Active Cases</p>
+                    <h3 class="text-2xl font-bold mt-1">@Model.ActiveCases</h3>
+                </div>
+                <div class="p-3 rounded-full bg-green-100 text-green-600">
+                    <i class="fas fa-folder-open"></i>
+                </div>
+            </div>
+        </div>
+        <div class="card bg-white/70 backdrop-blur-md rounded-lg p-6 shadow-lg">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-gray-500 text-sm">Convictions</p>
+                    <h3 class="text-2xl font-bold mt-1">@Model.Convictions</h3>
+                </div>
+                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                    <i class="fas fa-gavel"></i>
+                </div>
+            </div>
+        </div>
+        <div class="card bg-white/70 backdrop-blur-md rounded-lg p-6 shadow-lg">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-gray-500 text-sm">Pending Trials</p>
+                    <h3 class="text-2xl font-bold mt-1">@Model.PendingTrials</h3>
+                </div>
+                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div class="card bg-white/70 backdrop-blur-md rounded-lg p-6 shadow-lg lg:col-span-2">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-2">
+                <h3 class="font-semibold text-lg">Crime Statistics</h3>
+                <select id="filterRange" class="rounded-lg px-2 py-1 text-sm bg-white bg-opacity-50 shadow max-w-xs">
+                    <option value="7">Last 7 days</option>
+                    <option value="30">Last 30 days</option>
+                    <option value="365" selected>Last 12 months</option>
+                </select>
+            </div>
+            <div class="h-64">
+                <canvas id="crimeChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card bg-white/70 backdrop-blur-md rounded-lg p-6 shadow-lg">
+            <h3 class="font-semibold text-lg mb-4">Recent Cases</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm text-left">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="p-2">Case ID</th>
+                            <th class="p-2">Offender</th>
+                            <th class="p-2">Crime</th>
+                            <th class="p-2">Judge</th>
+                            <th class="p-2">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var caso in Model.RecentCases)
+                        {
+                            <tr class="border-b">
+                                <td class="p-2">@caso.IdJuicio</td>
+                                <td class="p-2">@caso.Infractor</td>
+                                <td class="p-2">@caso.Crimen</td>
+                                <td class="p-2">@caso.Juez</td>
+                                <td class="p-2">
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium
+                                        @(caso.Status == "En Progreso" ? "bg-yellow-100 text-yellow-700" :
+                                          caso.Status == "Concluido" ? "bg-green-100 text-green-700" :
+                                          "bg-blue-100 text-blue-700")">
+                                        @caso.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/DashScript.js"></script>
+    <script>
+        const button = document.getElementById("userMenuButton");
+        const dropdown = document.getElementById("userDropdown");
+
+        document.addEventListener("click", (e) => {
+            if (button.contains(e.target)) {
+                dropdown.classList.toggle("hidden");
+            } else {
+                dropdown.classList.add("hidden");
+            }
+        });
+    </script>
+
+}

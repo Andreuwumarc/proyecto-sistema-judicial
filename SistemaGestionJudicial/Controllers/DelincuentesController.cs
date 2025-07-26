@@ -1,206 +1,243 @@
-﻿// Ruta: SistemaGestionJudicial/Controllers/DelincuentesController.cs
+// Ruta: SistemaGestionJudicial/Controllers/DelincuentesController.cs
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SistemaGestionJudicial.Models;
+using SistemaGestionJudicial.Models; // Asegúrate de que este namespace sea correcto
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using System.Collections.Generic; // Agregado para List<T>
+using System; // Agregado para Exception
 
 namespace SistemaGestionJudicial.Controllers
 {
-    public class DelincuentesController : Controller
+    public class DelincuenteController : Controller
     {
         private readonly ProyectoContext _context;
 
-        public DelincuentesController(ProyectoContext context)
+        public DelincuenteController(ProyectoContext context)
+
         {
             _context = context;
         }
 
-        // Modificamos la acción Index para cargar y pasar el modelo a la vista principal
+        // GET: Delincuente
+        // Muestra la lista de delincuentes
         public async Task<IActionResult> Index()
         {
+            // Filtra solo las personas con IdRol = 3 (asumiendo que es el rol de delincuente)
             var delincuentes = await _context.Personas
-                                             .Where(p => p.IdRol == 3)
-                                             .ToListAsync();
-            // Devuelve la vista principal (Delincuentes.cshtml) con el modelo de delincuentes
-            return View("~/Views/Home/Delincuentes.cshtml", delincuentes);
+                                            .Where(p => p.IdRol == 3)
+                                            .ToListAsync();
+            // La vista de Index ahora mostrará los mensajes de TempData si existen.
+            return View(delincuentes);
         }
 
-        // Nueva acción para obtener la lista de delincuentes como JSON, usada por JavaScript
-        [HttpGet]
-        public async Task<IActionResult> GetDelincuentesList()
+        // GET: Delincuente/Details/5
+        // Muestra los detalles de un delincuente específico
+        public async Task<IActionResult> Details(long? id) // Cambiado a long? para coincidir con IdPersona
         {
-            var delincuentes = await _context.Personas
-                                             .Where(p => p.IdRol == 3)
-                                             .ToListAsync();
-
-            // Proyectamos a un tipo anónimo para enviar solo los datos necesarios al cliente
-            return Json(delincuentes.Select(p => new
+            if (id == null)
             {
-                idPersona = p.IdPersona,
-                cedula = p.Cedula,
-                nombres = p.Nombres,
-                apellidos = p.Apellidos,
-                fechaNacimiento = p.FechaNacimiento?.ToString("yyyy-MM-dd"),
-                genero = p.Genero,
-                // No incluyas detalles de juicio/delito/sentencia aquí, ya que se obtienen con GetDelincuenteDetails
-            }).ToList());
-        }
+                // Si el ID es nulo, redirige a Index con un mensaje de error.
+                TempData["ErrorMessage"] = "ID de delincuente no especificado para ver detalles.";
+                return RedirectToAction(nameof(Index));
+            }
 
-        [HttpGet]
-        public async Task<IActionResult> GetDelincuenteDetails(int id)
-        {
+            // Carga los detalles del delincuente incluyendo sus juicios, delitos y sentencias
             var persona = await _context.Personas
-                                         .Where(p => p.IdPersona == id && p.IdRol == 3) // Aseguramos que sea un delincuente
-                                         .Include(p => p.JuiciosAcusados)
-                                             .ThenInclude(ja => ja.IdJuicioNavigation)
-                                                 .ThenInclude(j => j.IdDenunciaNavigation)
-                                                     .ThenInclude(d => d.IdDelitoNavigation)
-                                         .Include(p => p.JuiciosAcusados)
-                                             .ThenInclude(ja => ja.IdJuicioNavigation)
-                                                 .ThenInclude(j => j.Sentencia) // Aquí 'Sentencia' es tu ICollection<Sentencia>
-                                         .FirstOrDefaultAsync();
+                                        .Where(p => p.IdPersona == id && p.IdRol == 3) // Aseguramos que sea un delincuente
+                                        .Include(p => p.JuiciosAcusados)
+                                            .ThenInclude(ja => ja.IdJuicioNavigation)
+                                                .ThenInclude(j => j.IdDenunciaNavigation)
+                                                    .ThenInclude(d => d.IdDelitoNavigation)
+                                        .Include(p => p.JuiciosAcusados)
+                                            .ThenInclude(ja => ja.IdJuicioNavigation)
+                                                .ThenInclude(j => j.Sentencia) // Aquí 'Sentencia' es tu ICollection<Sentencia>
+                                        .FirstOrDefaultAsync();
 
             if (persona == null)
             {
-                return NotFound();
+                // Si no se encuentra, redirige a Index con un mensaje de error.
+                TempData["ErrorMessage"] = "Delincuente no encontrado o no tiene el rol correcto para ver detalles.";
+                return RedirectToAction(nameof(Index));
             }
 
-            var juiciosYDelitos = persona.JuiciosAcusados
-                .Select(ja => new
-                {
-                    idJuicioAcusado = ja.IdJuicioAcusado,
-                    idJuicio = ja.IdJuicioNavigation?.IdJuicio,
-                    estadoJuicio = ja.IdJuicioNavigation?.Estado,
-                    fechaInicioJuicio = ja.IdJuicioNavigation?.FechaInicio?.ToString("yyyy-MM-dd"),
-                    fechaFinJuicio = ja.IdJuicioNavigation?.FechaFin?.ToString("yyyy-MM-dd"),
-
-                    // Información del Delito
-                    nombreDelito = ja.IdJuicioNavigation?.IdDenunciaNavigation?.IdDelitoNavigation?.Nombre,
-                    tipoDelito = ja.IdJuicioNavigation?.IdDenunciaNavigation?.IdDelitoNavigation?.TipoDelito,
-                    descripcionDelito = ja.IdJuicioNavigation?.IdDenunciaNavigation?.IdDelitoNavigation?.Descripcion,
-                    gravedadDelito = ja.IdJuicioNavigation?.IdDenunciaNavigation?.IdDelitoNavigation?.GravedadDelito,
-
-                    // Proyección de la colección de Sentencias
-                    sentencias = ja.IdJuicioNavigation?.Sentencia? // Accede a la colección 'Sentencia'
-                                   .Select(s => new // Itera sobre cada sentencia en la colección
-                                   {
-                                       idSentencia = s.IdSentencia,
-                                       fechaSentencia = s.FechaSentencia?.ToString("yyyy-MM-dd"),
-                                       tipoSentencia = s.TipoSentencia,
-                                       pena = s.Pena,
-                                       observaciones = s.Observaciones
-                                   })
-                                   .ToList() // Convierte la selección a una lista
-                })
-                .ToList();
-
-            return Json(new
-            {
-                id = persona.IdPersona,
-                nombres = persona.Nombres,
-                apellidos = persona.Apellidos,
-                fechaNacimiento = persona.FechaNacimiento?.ToString("yyyy-MM-dd"),
-                genero = persona.Genero,
-                cedula = persona.Cedula,
-                direccion = persona.Direccion,
-                telefono = persona.Telefono,
-                correoElectronico = persona.CorreoElectronico,
-                juiciosYDelitos = juiciosYDelitos
-            });
+            return View(persona); // Devuelve la vista de detalles con el modelo completo.
         }
 
+        // GET: Delincuente/Create
+        // Muestra el formulario para crear un nuevo delincuente
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Delincuente/Create
+        // Acción para manejar el envío del formulario de creación de delincuentes
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nombres,Apellidos,FechaNacimiento,Genero,Cedula,Direccion,Telefono,CorreoElectronico")] Persona persona)
+        // Se utiliza [Bind] para seguridad, solo las propiedades listadas pueden ser sobreescritas por la entrada del cliente.
+        // Asegúrate de incluir todas las propiedades que el formulario de creación puede enviar.
+        public async Task<IActionResult> Create([Bind("Nombres,Apellidos,Cedula,Direccion,Telefono,CorreoElectronico,FechaNacimiento,Genero")] Persona persona)
         {
-            persona.IdRol = 3; // Asegura que se crea como delincuente
+            persona.IdRol = 3; // Se asegura que es delincuente
 
-            // Si el IdPersona viene con un valor (ej. 0 por defecto), lo reseteamos a 0 para que la DB le asigne uno.
-            // Si tu BD usa IDENTITY para IdPersona, esto podría no ser estrictamente necesario, pero es una buena práctica.
-            if (persona.IdPersona != 0)
+            // Obtener el ID más alto existente en la tabla y sumarle 1
+            long maxId = 0;
+            if (await _context.Personas.AnyAsync())
             {
-                persona.IdPersona = 0;
+                maxId = await _context.Personas.MaxAsync(p => p.IdPersona);
             }
+            persona.IdPersona = maxId + 1;
 
             if (ModelState.IsValid)
             {
-                _context.Add(persona);
-                await _context.SaveChangesAsync();
-                return Json(new { success = true, message = "Delincuente añadido correctamente." });
+                try
+                {
+                    _context.Add(persona);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = $"El delincuente '{persona.Nombres} {persona.Apellidos}' ha sido añadido correctamente.";
+                    return RedirectToAction(nameof(Index)); // Redirige a la acción Index para ver la lista
+                }
+                catch (Exception ex)
+                {
+                    // Manejo de errores de base de datos u otros
+                    TempData["ErrorMessage"] = $"Error al añadir el delincuente: {ex.Message}";
+                    // Aquí podrías loggear el error completo: _logger.LogError(ex, "Error al crear delincuente.");
+                }
             }
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-            return Json(new { success = false, message = "Errores de validación", errors = errors });
+            // Si ModelState no es válido, se regresa a la misma vista 'Create'
+            TempData["WarningMessage"] = "Por favor, corrige los errores en el formulario para añadir el delincuente.";
+            return View(persona); // Vuelve a mostrar el formulario con los errores
         }
 
 
-        // POST: Delincuentes/Edit - Actualiza un delincuente existente (recibe datos de formulario vía AJAX)
+        // GET: Delincuente/Edit/5
+        // Muestra el formulario para editar un delincuente existente
+        [HttpGet]
+        public async Task<IActionResult> Edit(long? id) // Cambiado a long?
+        {
+            if (id == null)
+            {
+                TempData["ErrorMessage"] = "ID de delincuente no especificado para edición.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var persona = await _context.Personas.FindAsync(id);
+            if (persona == null || persona.IdRol != 3) // Asegúrate de que sea un delincuente
+            {
+                TempData["ErrorMessage"] = "Delincuente no encontrado o no tiene el rol correcto para edición.";
+                return RedirectToAction(nameof(Index));
+            }
+            return View(persona);
+        }
+
+        // POST: Delincuente/Edit/5
+        // Acción para manejar el envío del formulario de edición
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombres,Apellidos,FechaNacimiento,Genero,Cedula,Direccion,Telefono,CorreoElectronico")] Persona persona)
+        // Asegúrate de que IdPersona esté en el Bind para que el modelo se vincule correctamente.
+        // Asegúrate de incluir todas las propiedades que el formulario de edición puede enviar.
+        public async Task<IActionResult> Edit(long id, [Bind("IdPersona,Nombres,Apellidos,Cedula,Direccion,Telefono,CorreoElectronico,FechaNacimiento,Genero")] Persona persona)
         {
             if (id != persona.IdPersona)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "El ID del delincuente proporcionado no coincide.";
+                return RedirectToAction(nameof(Index));
             }
 
-            // Buscar la persona existente y asegurarse de que sea un delincuente (IdRol = 3)
-            var existingPersona = await _context.Personas.AsNoTracking().FirstOrDefaultAsync(p => p.IdPersona == id && p.IdRol == 3);
-            if (existingPersona == null)
-            {
-                // Mensaje más claro si no se encuentra o no es un delincuente válido para editar aquí
-                return Json(new { success = false, message = "Delincuente no encontrado o no tiene el rol correcto para ser editado desde esta vista." });
-            }
+            // Aseguramos que el rol no sea modificado accidentalmente desde el cliente
 
-            // Aseguramos que el rol permanezca como 3, ya que esta vista es para delincuentes
             persona.IdRol = 3;
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(persona);
+
+                    // Es bueno cargar la entidad existente para asegurar que el IdRol y otras propiedades no modificables
+                    // se mantengan, y luego actualizar solo las propiedades necesarias.
+                    // Para un proyecto universitario, 'Update(persona)' directamente es aceptable si 'persona'
+                    // contiene todas las propiedades relevantes y 'IdRol' se fuerza a 3.
+                    _context.Update(persona); // Esto adjunta la entidad y marca todas las propiedades como modificadas
                     await _context.SaveChangesAsync();
-                    return Json(new { success = true, message = "Delincuente actualizado correctamente." });
+                    TempData["SuccessMessage"] = $"El delincuente '{persona.Nombres} {persona.Apellidos}' ha sido actualizado correctamente.";
+                    return RedirectToAction(nameof(Index)); // Redirige a la lista después de editar
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_context.Personas.Any(e => e.IdPersona == persona.IdPersona))
+                    if (!PersonaExists(persona.IdPersona))
                     {
-                        return NotFound(); // Delincuente ya no existe
+                        TempData["ErrorMessage"] = "El delincuente que intentas editar ya no existe en la base de datos.";
+                        return RedirectToAction(nameof(Index));
                     }
                     else
                     {
-                        throw; // Otro error de concurrencia
+                        throw; // Otro error de concurrencia que deberías manejar o dejar que se propague.
                     }
                 }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = $"Error al actualizar el delincuente: {ex.Message}";
+                }
             }
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-            return Json(new { success = false, message = "Errores de validación", errors = errors });
+            // Si ModelState no es válido
+            TempData["WarningMessage"] = "Por favor, corrige los errores en el formulario para actualizar el delincuente.";
+            return View(persona); // Vuelve a mostrar el formulario de edición con los errores
         }
 
-        // POST: Delincuentes/Delete/5 - Elimina un delincuente (recibe ID vía AJAX)
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        // GET: Delincuente/Delete/5
+        // Muestra la página de confirmación para eliminar un delincuente
+        public async Task<IActionResult> Delete(long? id) // Cambiado a long?
         {
-            // Busca la persona por ID y asegura que su IdRol sea 3.
-            // Si no se encuentra o el rol no es 3, 'persona' será null.
-            var persona = await _context.Personas.FirstOrDefaultAsync(p => p.IdPersona == id && p.IdRol == 3);
-
-            if (persona == null)
+            if (id == null)
             {
-                // Si la persona no se encontró con el ID y el rol de delincuente,
-                // devuelve un mensaje indicando que no se puede eliminar.
-                return Json(new { success = false, message = "No se pudo eliminar: Delincuente no encontrado o no tiene el rol correcto (IdRol=3)." });
+                TempData["ErrorMessage"] = "ID de delincuente no especificado para eliminar.";
+                return RedirectToAction(nameof(Index));
             }
 
-            // Si la persona fue encontrada y tiene IdRol = 3, procede con la eliminación.
-            _context.Personas.Remove(persona);
-            await _context.SaveChangesAsync();
-            return Json(new { success = true, message = "Delincuente eliminado correctamente." });
+            var persona = await _context.Personas
+                                        .FirstOrDefaultAsync(m => m.IdPersona == id && m.IdRol == 3);
+            if (persona == null)
+            {
+                TempData["ErrorMessage"] = "Delincuente no encontrado o no tiene el rol correcto para eliminar.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(persona); // Devuelve la vista de confirmación de eliminación
+        }
+
+        // POST: Delincuente/Delete/5
+        // Acción para eliminar un delincuente
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(long id) // Cambiado a long
+        {
+            var persona = await _context.Personas.FindAsync(id);
+            if (persona != null && persona.IdRol == 3) // Confirma que es un delincuente antes de eliminar
+            {
+                try
+                {
+                    _context.Personas.Remove(persona);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = $"El delincuente '{persona.Nombres} {persona.Apellidos}' ha sido eliminado correctamente.";
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = $"Error al eliminar el delincuente: {ex.Message}";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "No se pudo eliminar: Delincuente no encontrado o no tiene el rol correcto (IdRol=3).";
+            }
+            return RedirectToAction(nameof(Index)); // Redirige siempre a la lista después de intentar eliminar
+        }
+
+        private bool PersonaExists(long id) // Cambiado a long
+        {
+            return _context.Personas.Any(e => e.IdPersona == id);
+
         }
     }
 }

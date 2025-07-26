@@ -1,5 +1,6 @@
 ﻿@{
     Layout = null;
+    ViewData["Title"] = "Login";
 }
 
 <!DOCTYPE html>
@@ -23,18 +24,28 @@
         </div>
 
         <div class="p-8">
-            <form id="loginForm" class="space-y-6">
-                <div id="errorMessage" class="hidden error-message bg-red-50 text-red-700 p-3 rounded-md text-sm"></div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="bg-red-100 text-red-700 p-3 mb-4 rounded-md text-center">
+                    @ViewBag.Error
+                </div>
+            }
+
+            <form id="loginForm" asp-controller="Account" asp-action="Login" method="post" class="space-y-6">
+
+                @*<div id="errorMessage" class="hidden error-message bg-red-50 text-red-700 p-3 rounded-md text-sm"></div>*@
+
 
                 <div class="input-group">
                     <i class="fas fa-user input-icon"></i>
-                    <input type="text" id="username" name="username" placeholder="Username" required
+                    <input type="text" id="username" name="username" placeholder="Ingrese sus dos Nombres" required
                            class="form-input input-with-icon" autocomplete="username">
                 </div>
 
                 <div class="input-group">
                     <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="password" name="password" placeholder="Password" required
+                    <input type="password" id="password" name="password" placeholder="Ingrese su contraseña" required
                            class="form-input input-with-icon" autocomplete="current-password">
                 </div>
 
@@ -45,6 +56,14 @@
                         <label for="remember" class="ml-2 block text-sm text-gray-700">Remember me</label>
                     </div>
                     <a href="@Url.Action("RecuperacionCuenta", "Home")" class="text-sm text-blue-600 hover:text-blue-800">Forgot password?</a>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button id="openRegisterModal" type="button" class="text-sm text-blue-600 hover:text-blue-800">
+                        Don't have an account? Create one
+                    </button>
+
+
                 </div>
 
                 <button type="submit"
@@ -67,69 +86,401 @@
         </div>
     </div>
 
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg w-full max-w-md p-6 relative max-h-[90vh] overflow-y-auto">
+            <button id="closeRegisterModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="text-xl font-bold mb-4 text-center">Create an Account</h2>
+            <form id="registerForm" class="space-y-4">
+                <div id="registerErrorMessage" class="hidden bg-red-50 text-red-700 p-3 rounded-md text-sm"></div>
+
+                <div class="input-group">
+                    <i class="fas fa-id-card input-icon"></i>
+                    <input type="text" id="registerCedula" name="registerCedula" placeholder="Cédula" required
+                           class="form-input input-with-icon w-full" maxlength="10" pattern="\d{10}">
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="registerNombres" name="registerNombres" placeholder="Nombres" required
+                           class="form-input input-with-icon w-full">
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="registerApellidos" name="registerApellidos" placeholder="Apellidos" required
+                           class="form-input input-with-icon w-full">
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-calendar-alt input-icon"></i>
+                    <input type="date" id="registerFechaNacimiento" name="registerFechaNacimiento" placeholder="Fecha de Nacimiento" required
+                           class="form-input input-with-icon w-full" max="{{= new Date().toISOString().split('T')[0] }}">
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-venus-mars input-icon"></i>
+                    <select id="registerGenero" name="registerGenero" required class="form-input input-with-icon w-full">
+                        <option value="">Seleccione Género</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                        <option value="O">Otro</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-home input-icon"></i>
+                    <input type="text" id="registerDireccion" name="registerDireccion" placeholder="Dirección"
+                           class="form-input input-with-icon w-full" maxlength="200">
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-phone input-icon"></i>
+                    <input type="tel" id="registerTelefono" name="registerTelefono" placeholder="Teléfono" required
+                           class="form-input input-with-icon w-full" pattern="[\d\s+-]{7,20}">
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="registerCorreoElectronico" name="registerCorreoElectronico" placeholder="Correo Electrónico" required
+                           class="form-input input-with-icon w-full">
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-key input-icon"></i>
+                    <select id="registerRole" name="registerRole" required class="form-input input-with-icon w-full">
+                        <option value="">Seleccione Rol</option>
+                        <option value="4">Demandante</option>
+                        <option value="1">Administrador</option>
+                        <!-- Más roles aquí -->
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="registerPassword" name="registerPassword" placeholder="Contraseña" required
+                           class="form-input input-with-icon w-full" minlength="6">
+                </div>
+
+                <button type="submit"
+                        class="btn-primary text-white w-full py-2 px-4 rounded-md flex items-center justify-center">
+                    <i class="fas fa-user-plus mr-2"></i> Registrar Cuenta
+                </button>
+            </form>
+        </div>
+    </div>
+
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
+        // Poner fecha máxima en input fecha al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const fechaInput = document.getElementById('registerFechaNacimiento');
+            if (fechaInput) {
+                const hoy = new Date().toISOString().split('T')[0];
+                fechaInput.setAttribute('max', hoy);
+            }
+        });
+
+        // Abrir y cerrar modal registro
+        document.getElementById('openRegisterModal').addEventListener('click', () => {
+            document.getElementById('registerModal').classList.remove('hidden');
+        });
+
+        // Cerrar modal con la X y limpiar formulario
+        document.getElementById('closeRegisterModal').addEventListener('click', closeRegisterModal);
+
+        // Cerrar modal haciendo clic fuera del contenido, sin limpiar formulario
+        document.getElementById('registerModal').addEventListener('click', function (e) {
+            if (e.target === this) closeRegisterModalWithoutClear();
+        });
+
+        function closeRegisterModal() {
+            document.getElementById('registerModal').classList.add('hidden');
+            clearRegisterForm();
+        }
+
+        // Cierra modal sin limpiar formulario
+        function closeRegisterModalWithoutClear() {
+            document.getElementById('registerModal').classList.add('hidden');
+            // NO limpiar formulario para mantener datos
+        }
+
+        function clearRegisterForm() {
+            const form = document.getElementById('registerForm');
+            form.reset();
+            document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+            const errorElement = document.getElementById('registerErrorMessage');
+            errorElement.classList.add('hidden');
+            errorElement.textContent = '';
+        }
+
+        // Obtener elementos inputs para validaciones y evitar redeclarar luego
+        const cedulaInput = document.getElementById('registerCedula');
+        cedulaInput.insertAdjacentHTML('afterend', '<span id="cedulaError" class="field-error text-red-500 text-xs"></span>');
+        cedulaInput.addEventListener('input', () => {
+            const val = cedulaInput.value.trim();
+            const error = document.getElementById('cedulaError');
+            if (!/^\d*$/.test(val)) {
+                error.textContent = 'Solo números.';
+            } else if (val.length !== 10) {
+                error.textContent = 'Debe tener 10 dígitos.';
+            } else {
+                error.textContent = '';
+            }
+        });
+
+        const nombresInput = document.getElementById('registerNombres');
+        nombresInput.insertAdjacentHTML('afterend', '<span id="nombresError" class="field-error text-red-500 text-xs"></span>');
+        nombresInput.addEventListener('input', () => {
+            const val = nombresInput.value.trim();
+            const error = document.getElementById('nombresError');
+            if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]*$/.test(val)) {
+                error.textContent = 'Solo letras y espacios.';
+            } else if (val.split(' ').filter(w => w).length > 2) {
+                error.textContent = 'Máximo dos nombres.';
+            } else if (val.length < 3) {
+                error.textContent = 'Muy corto.';
+            } else {
+                error.textContent = '';
+            }
+        });
+
+        const apellidosInput = document.getElementById('registerApellidos');
+        apellidosInput.insertAdjacentHTML('afterend', '<span id="apellidosError" class="field-error text-red-500 text-xs"></span>');
+        apellidosInput.addEventListener('input', () => {
+            const val = apellidosInput.value.trim();
+            const error = document.getElementById('apellidosError');
+            if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]*$/.test(val)) {
+                error.textContent = 'Solo letras y espacios.';
+            } else if (val.split(' ').filter(w => w).length > 2) {
+                error.textContent = 'Máximo dos apellidos.';
+            } else if (val.length < 3) {
+                error.textContent = 'Muy corto.';
+            } else {
+                error.textContent = '';
+            }
+        });
+
+        const direccionInput = document.getElementById('registerDireccion');
+        direccionInput.insertAdjacentHTML('afterend', '<span id="direccionError" class="field-error text-red-500 text-xs"></span>');
+        direccionInput.addEventListener('input', () => {
+            const val = direccionInput.value.trim();
+            const error = document.getElementById('direccionError');
+            if (!/^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ#.,\- ]*$/.test(val)) {
+                error.textContent = 'Caracteres inválidos.';
+            } else {
+                error.textContent = '';
+            }
+        });
+
+        const telefonoInput = document.getElementById('registerTelefono');
+        telefonoInput.insertAdjacentHTML('afterend', '<span id="telefonoError" class="field-error text-red-500 text-xs"></span>');
+        telefonoInput.addEventListener('input', () => {
+            const val = telefonoInput.value.trim();
+            const error = document.getElementById('telefonoError');
+            if (!/^\d*$/.test(val)) {
+                error.textContent = 'Solo números.';
+            } else if (val.length !== 10) {
+                error.textContent = 'Debe tener exactamente 10 dígitos.';
+            } else {
+                error.textContent = '';
+            }
+        });
+
+        const passwordInput = document.getElementById('registerPassword');
+        passwordInput.insertAdjacentHTML('afterend', '<span id="passwordError" class="field-error text-red-500 text-xs"></span>');
+        passwordInput.addEventListener('input', () => {
+            const val = passwordInput.value;
+            const error = document.getElementById('passwordError');
+            const hasUpper = /[A-Z]/.test(val);
+            const hasNum = /\d/.test(val);
+            const hasLength = val.length >= 8;
+            let msg = [];
+            if (!hasUpper) msg.push('1 mayúscula.');
+            if (!hasNum) msg.push('Número.');
+            if (!hasLength) msg.push('8+ caracteres.');
+            error.textContent = msg.join(' ');
+        });
+
+        // Submit del registro con validación
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const errorElement = document.getElementById('errorMessage');
-
-            // Clear previous errors
-            errorElement.classList.add('hidden');
-
-            // Basic validation
-            if (!username || !password) {
-                showError('Please enter both username and password');
+            if ([...document.querySelectorAll('.field-error')].some(el => el.textContent !== '')) {
+                alert('❌ Corrija los errores antes de enviar.');
                 return;
             }
 
-            // Simulate authentication (replace with actual authentication)
-            simulateAuthentication(username, password);
+            const cedulaValue = cedulaInput.value.trim();
+            const nombresValue = nombresInput.value.trim();
+            const apellidosValue = apellidosInput.value.trim();
+            const fechaNacimientoValue = document.getElementById('registerFechaNacimiento').value;
+            const generoValue = document.getElementById('registerGenero').value;
+            const direccionValue = direccionInput.value.trim();
+            const telefonoValue = telefonoInput.value.trim();
+            const correoValue = document.getElementById('registerCorreoElectronico').value.trim();
+            const roleValue = document.getElementById('registerRole').value;
+            const passwordValue = passwordInput.value;
+
+            const errorElement = document.getElementById('registerErrorMessage');
+            errorElement.classList.add('hidden');
+            errorElement.textContent = '';
+
+            if (!cedulaValue || !nombresValue || !apellidosValue || !fechaNacimientoValue || !generoValue || !telefonoValue || !correoValue || !roleValue || !passwordValue) {
+                errorElement.textContent = 'Complete todos los campos.';
+                errorElement.classList.remove('hidden');
+                return;
+            }
+
+            fetch('/Account/Register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    cedula: cedulaValue,
+                    nombres: nombresValue,
+                    apellidos: apellidosValue,
+                    fechaNacimiento: fechaNacimientoValue,
+                    genero: generoValue,
+                    direccion: direccionValue,
+                    telefono: telefonoValue,
+                    correoElectronico: correoValue,
+                    idRol: roleValue,
+                    contrasena: passwordValue
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('✅ Cuenta creada con éxito.');
+                    closeRegisterModal();
+                } else {
+                    errorElement.textContent = '❌ Error al registrar.';
+                    errorElement.classList.remove('hidden');
+                }
+            })
+            .catch(() => {
+                errorElement.textContent = '❌ Error inesperado.';
+                errorElement.classList.remove('hidden');
+            });
+        });
+    </script>
+
+
+
+    @*
+    <script>
+        // Poner fecha máxima en input fecha al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const fechaInput = document.getElementById('registerFechaNacimiento');
+            if (fechaInput) {
+                const hoy = new Date().toISOString().split('T')[0];
+                fechaInput.setAttribute('max', hoy);
+            }
         });
 
-        function showError(message) {
-            const errorElement = document.getElementById('errorMessage');
-            errorElement.textContent = message;
-            errorElement.classList.remove('hidden');
+        // Mostrar error del login si viene del servidor
+        document.addEventListener('DOMContentLoaded', function () {
+            const errorFromServer = '@ViewBag.Error';
+
+            if (errorFromServer && errorFromServer !== '') {
+                const errorElement = document.getElementById('errorMessage');
+                errorElement.textContent = errorFromServer;
+                errorElement.classList.remove('hidden');
+            }
+        });
+
+        // Abrir modal registro
+        document.getElementById('openRegisterModal').addEventListener('click', function () {
+            document.getElementById('registerModal').classList.remove('hidden');
+        });
+
+        // Cerrar modal registro con la X
+        document.getElementById('closeRegisterModal').addEventListener('click', function () {
+            document.getElementById('registerModal').classList.add('hidden');
+            clearRegisterForm();
+        });
+
+        // Cerrar modal registro clic fuera del contenido
+        document.getElementById('registerModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+                clearRegisterForm();
+            }
+        });
+
+        // Limpiar formulario registro
+        function clearRegisterForm() {
+            const form = document.getElementById('registerForm');
+            form.reset();
+            const errorElement = document.getElementById('registerErrorMessage');
+            errorElement.classList.add('hidden');
+            errorElement.textContent = '';
         }
 
-        function simulateAuthentication(username, password) {
-            // In a real application, you would make an API call here
-            // For demo purposes, we'll use a timeout to simulate network delay
+        // Submit registro con fetch 🔥
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            e.preventDefault();
 
-            const submitButton = document.querySelector('#loginForm button[type="submit"]');
-            const originalButtonText = submitButton.innerHTML;
+            const cedula = document.getElementById('registerCedula').value.trim();
+            const nombres = document.getElementById('registerNombres').value.trim();
+            const apellidos = document.getElementById('registerApellidos').value.trim();
+            const fechaNacimiento = document.getElementById('registerFechaNacimiento').value;
+            const genero = document.getElementById('registerGenero').value;
+            const direccion = document.getElementById('registerDireccion').value.trim();
+            const telefono = document.getElementById('registerTelefono').value.trim();
+            const correoElectronico = document.getElementById('registerCorreoElectronico').value.trim();
+            const role = document.getElementById('registerRole').value;
+            const password = document.getElementById('registerPassword').value;
 
-            // Show loading state
-            submitButton.disabled = true;
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Authenticating...';
+            const errorElement = document.getElementById('registerErrorMessage');
 
-            setTimeout(() => {
-                // Demo credentials (in production, this would be server-side validation)
-                const validCredentials = [
-                    { username: 'admin', password: 'adminis', role: 'Administrator' },
-                    { username: 'judge', password: 'OrderInCourt', role: 'Judge' },
-                    { username: 'prosecutor', password: 'LegalEagle', role: 'Prosecutor' }
-                ];
+            errorElement.classList.add('hidden');
+            errorElement.textContent = '';
 
-                const matchedCredential = validCredentials.find(
-                    cred => cred.username === username && cred.password === password
-                );
+            if (!cedula || !nombres || !apellidos || !fechaNacimiento || !genero || !telefono || !correoElectronico || !role || !password) {
+                errorElement.textContent = 'Por favor complete todos los campos.';
+                errorElement.classList.remove('hidden');
+                return;
+            }
 
-                if (matchedCredential) {
-                    // Successful login - redirect to main application
-                    window.location.href = '/Home/Index';
+            // ✅ Aquí va el fetch
+            fetch('/Account/Register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    cedula: cedula,
+                    nombres: nombres,
+                    apellidos: apellidos,
+                    fechaNacimiento: fechaNacimiento,
+                    genero: genero,
+                    direccion: direccion,
+                    telefono: telefono,
+                    correoElectronico: correoElectronico,
+                    idRol: role,
+                    contrasena: password
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('✅ Cuenta creada con éxito. Ahora puedes iniciar sesión.');
+                    document.getElementById('registerModal').classList.add('hidden');
+                    clearRegisterForm();
                 } else {
-                    showError('Invalid credentials. Please try again.');
+                    errorElement.textContent = '❌ Error al registrar la cuenta. Inténtelo de nuevo.';
+                    errorElement.classList.remove('hidden');
                 }
+            })
+            .catch(error => {
+                console.error(error);
+                errorElement.textContent = '❌ Ocurrió un error inesperado.';
+                errorElement.classList.remove('hidden');
+            });
 
-                // Restore button state
-                submitButton.disabled = false;
-                submitButton.innerHTML = originalButtonText;
-            }, 1000);
-        }
-    </script>
+        });
+    </script>*@
+
+
 </body>
 
 </html>

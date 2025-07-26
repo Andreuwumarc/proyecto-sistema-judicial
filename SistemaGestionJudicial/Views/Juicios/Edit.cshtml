@@ -1,0 +1,173 @@
+﻿@model SistemaGestionJudicial.Models.Juicio
+
+@{
+    ViewData["Title"] = "Editar Juicio";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/juicios.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+}
+
+<div class="fondo-juicios min-h-screen">
+    <!-- Header fijo -->
+    <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-10">
+        <h2 class="text-xl font-semibold text-gray-800">Editar Juicio</h2>
+        <a asp-action="Index" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
+            <i class="fas fa-arrow-left mr-2"></i> Volver
+        </a>
+    </header>
+
+    <!-- Contenido principal -->
+    <div class="p-8 pt-6 pb-32">
+        <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-xl mx-auto">
+            <form asp-action="Edit" class="space-y-4">
+                <input type="hidden" asp-for="IdJuicio" />
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label asp-for="FechaInicio" class="block text-sm font-medium text-gray-700">Fecha de Inicio</label>
+                        <input asp-for="FechaInicio" type="date" class="form-input w-full" />
+                        <span asp-validation-for="FechaInicio" class="text-red-600 text-sm"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="FechaFin" class="block text-sm font-medium text-gray-700">Fecha de Fin</label>
+                        <input asp-for="FechaFin" type="date" class="form-input w-full" />
+                        <span asp-validation-for="FechaFin" class="text-red-600 text-sm"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <label asp-for="IdDenuncia" class="block text-sm font-medium text-gray-700">Denuncia</label>
+                    <select asp-for="IdDenuncia" class="form-input" asp-items="ViewBag.IdDenuncia"></select>
+                    <span asp-validation-for="IdDenuncia" class="text-red-600 text-sm"></span>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Juez</label>
+                    <select asp-for="IdPersonaJuez" class="form-input" asp-items="ViewBag.IdPersonaJuez">
+                        <option value="">-- Seleccione un juez --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Fiscal</label>
+                    <select name="IdPersonaFiscal" class="form-input" asp-items="ViewBag.Fiscales">
+                        <option value="">-- Seleccione un fiscal --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Delito</label>
+                    <select name="IdDelito" class="form-input" asp-items="ViewBag.Delitos">
+                        <option value="">-- Seleccione un delito --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Denunciante</label>
+                    <select name="IdPersonaDenunciante" class="form-input" asp-items="ViewBag.Denunciantes">
+                        <option value="">-- Seleccione un denunciante --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Acusado</label>
+                    <select name="IdPersonaAcusado" class="form-input" asp-items="ViewBag.Acusados">
+                        <option value="">-- Seleccione un acusado --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Sentencia</label>
+                    <div class="grid grid-cols-6 gap-4">
+                        <div class="col-span-2">
+                            <select name="TipoSentencia" class="form-input w-full" asp-items="ViewBag.Sentencias">
+                                <option value="">-- Seleccione una sentencia --</option>
+                            </select>
+                        </div>
+                        <div class="col-span-2">
+                            <input name="Pena" type="text"
+                                   maxlength="200"
+                                   value="@(Model.Sentencia.FirstOrDefault()?.Pena ?? "")"
+                                   placeholder="Años de condena"
+                                   class="form-input w-full" />
+                        </div>
+                        <div class="col-span-2">
+                            <input name="FechaSentencia" type="date"
+                                   value="@(Model.Sentencia.FirstOrDefault()?.FechaSentencia?.ToString("yyyy-MM-dd") ?? "")"
+                                   class="form-input w-full" />
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Observaciones</label>
+                    <textarea name="Observaciones" maxlength="300" class="form-input w-full h-32 resize-y">@(Model.Sentencia.FirstOrDefault()?.Observaciones ?? "")</textarea>
+                    <small class="text-gray-500">Máximo 300 caracteres</small>
+                </div>
+
+                <div class="mb-4">
+                    <label>Estado del juicio</label>
+                    <select asp-for="Estado" class="form-select">
+                        <option value="Programado">Programado</option>
+                        <option value="En proceso">En proceso</option>
+                        <option value="Concluido">Concluido</option>
+                    </select>
+                    <span asp-validation-for="Estado" class="text-danger"></span>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                        <i class="fas fa-save mr-2"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const fechaInicio = document.querySelector("input[name='FechaInicio']");
+            const fechaFin = document.querySelector("input[name='FechaFin']");
+
+            function validarFecha(input) {
+                const valor = input.value;
+                const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+                if (!regex.test(valor)) {
+                    input.setCustomValidity("La fecha debe tener el formato correcto (yyyy-MM-dd).");
+                } else {
+                    input.setCustomValidity("");
+                }
+            }
+
+            fechaInicio?.addEventListener("input", function () {
+                validarFecha(this);
+            });
+
+            fechaFin?.addEventListener("input", function () {
+                validarFecha(this);
+            });
+
+            // Forzar apertura del calendario al hacer clic en los inputs de fecha
+            [fechaInicio, fechaFin].forEach(input => {
+                if (input) {
+                    input.addEventListener("focus", function () {
+                        this.showPicker?.();
+                    });
+                    input.addEventListener("click", function () {
+                        this.showPicker?.();
+                    });
+                }
+            });
+        });
+    </script>
+}
